@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+web/node_modules/
+
+# Build output
+.next/
+web/.next/
+out/
+web/out/
+build/
+web/build/
+coverage/
+web/coverage/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Platform
+.vercel/
+.netlify/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Generated
+*.tsbuildinfo
+next-env.d.ts
+
+# Archives and local exports
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.rar
