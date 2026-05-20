@@ -2,17 +2,17 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "DOC-RENAME",
-    short_name: "DOC-RENAME",
+    name: "BimDoc Renamer",
+    short_name: "BimDoc",
     description:
-      "Renommage local de fichiers selon des conventions documentaires par metier.",
+      "Renommer vos livrables BIM (ISO 19650 / SIA) avant dépôt CDE, en local navigateur.",
     start_url: "/",
     scope: "/",
     display: "standalone",
     background_color: "#FAF7EE",
     theme_color: "#FAF7EE",
     lang: "fr",
-    categories: ["business", "productivity", "utilities"],
+    categories: ["business", "productivity"],
     icons: [
       {
         src: "/favicon.ico",

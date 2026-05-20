@@ -84,7 +84,7 @@ export function SceneSolution() {
                 fontWeight: 500,
               }}
             >
-              Multi-métiers · Local-first · Convention claire
+              ISO 19650 · SIA 2051 · Local-first
             </p>
           </div>
           <div
@@ -97,7 +97,7 @@ export function SceneSolution() {
               opacity: chipsOpacity,
             }}
           >
-            {['BIM', 'Finance', 'RH', 'Juridique', 'Santé', 'Industrie', 'Immobilier', 'Convention maison'].map(
+            {['ISO 19650', 'SIA 2051', 'BIM France', 'Plans', 'IFC', 'DWG', 'DOE', 'Convention maison'].map(
               (label, i) => {
                 const t = softSpring({ frame, fps, delay: 80 + i * 4 });
                 return (

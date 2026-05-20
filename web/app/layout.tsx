@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import { TelemetryProvider } from "@/components/TelemetryProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,22 +21,22 @@ const newsreader = Newsreader({
   display: "swap",
 });
 
-const siteUrl = "https://bimdoc-renamer.vercel.app";
-const appTitle = "DOC-RENAME - Renommage documentaire par metier";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bimdoc-renamer.vercel.app";
+const appTitle = "BimDoc Renamer — Renommer vos livrables BIM avant dépôt CDE";
 const appDescription =
-  "Outil local de renommage en lot pour conventions documentaires BIM, finance, RH, sante, juridique, industrie, immobilier et profils personnalises.";
+  "Outil local-first pour appliquer une convention de nommage ISO 19650 ou SIA 2051 à vos lots de plans, IFC, DWG, PDF. Aucun upload : tout reste dans votre navigateur. Compatible Autodesk Docs, Trimble Connect, Kroqi.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: appTitle,
-    template: "%s — DOC-RENAME",
+    template: "%s — BimDoc Renamer",
   },
   description: appDescription,
-  applicationName: "DOC-RENAME",
+  applicationName: "BimDoc Renamer",
   authors: [{ name: "Jawani Fernandes" }],
   creator: "Jawani Fernandes",
-  publisher: "DOC-RENAME",
+  publisher: "BimDoc Renamer",
   alternates: {
     canonical: "/",
   },
@@ -44,7 +45,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     url: "/",
-    siteName: "DOC-RENAME",
+    siteName: "BimDoc Renamer",
     title: appTitle,
     description: appDescription,
   },
@@ -110,7 +111,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: earlyThemeScript }} />
         <link rel="prefetch" href="/pdf.worker.min.mjs" as="script" />
       </head>
-      <body>{children}</body>
+      <body>
+        <TelemetryProvider>{children}</TelemetryProvider>
+      </body>
     </html>
   );
 }

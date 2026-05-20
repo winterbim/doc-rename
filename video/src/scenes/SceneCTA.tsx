@@ -93,9 +93,9 @@ export function SceneCTA() {
             lineHeight: 1.55,
           }}
         >
-          Le moteur de conventions documentaires pour vos équipes.
+          Convention ISO 19650 / SIA appliquée à vos livrables BIM.
           <br />
-          Multi-métiers, local, sans dépendance cloud.
+          Local, sans compte, sans dépendance cloud.
         </p>
 
         <div

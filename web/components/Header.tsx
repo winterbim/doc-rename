@@ -19,10 +19,10 @@ export function Header() {
         </span>
         <div>
           <h1 className="text-base font-sans font-semibold leading-none tracking-[-0.01em] text-ink">
-            DOC-RENAME
+            BimDoc Renamer
           </h1>
           <p className="mt-0.5 text-xs font-sans text-ink-mute">
-            Conventions documentaires par metier
+            Convention ISO 19650 / SIA — livrables BIM
           </p>
         </div>
       </div>
