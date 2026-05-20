@@ -48,7 +48,9 @@ export const FPS = 30;
 
 /**
  * Master scene durations (in frames @ 30fps).
- * Times match the brief in seconds.
+ *
+ * V1 BIM-only timeline (no more "Others" scene). Total ≈ 82 s — short
+ * enough for hero embed, long enough to demo the full flow.
  */
 export const SCENE_FRAMES = {
   problem: 10 * FPS, //   0 – 10  s
@@ -56,10 +58,9 @@ export const SCENE_FRAMES = {
   imports: 12 * FPS, //   20 – 32 s
   nomen: 16 * FPS, //     32 – 48 s
   bim: 12 * FPS, //       48 – 60 s
-  others: 12 * FPS, //    60 – 72 s
-  exportZip: 10 * FPS, // 72 – 82 s
-  privacy: 8 * FPS, //    82 – 90 s
-  cta: 4 * FPS, //        90 – 94 s  (gentle hold past 90)
+  exportZip: 12 * FPS, // 60 – 72 s   (legacy export, now with CDE badges)
+  privacy: 8 * FPS, //    72 – 80 s
+  cta: 4 * FPS, //        80 – 84 s
 } as const;
 
 export const TOTAL_FRAMES =
@@ -68,7 +69,6 @@ export const TOTAL_FRAMES =
   SCENE_FRAMES.imports +
   SCENE_FRAMES.nomen +
   SCENE_FRAMES.bim +
-  SCENE_FRAMES.others +
   SCENE_FRAMES.exportZip +
   SCENE_FRAMES.privacy +
   SCENE_FRAMES.cta;
@@ -81,7 +81,6 @@ export function sceneStartFrames(): Record<keyof typeof SCENE_FRAMES, number> {
     'imports',
     'nomen',
     'bim',
-    'others',
     'exportZip',
     'privacy',
     'cta',

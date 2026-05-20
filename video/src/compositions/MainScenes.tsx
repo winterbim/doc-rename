@@ -6,16 +6,19 @@ import { SceneSolution } from '../scenes/SceneSolution';
 import { SceneImport } from '../scenes/SceneImport';
 import { SceneNomenclature } from '../scenes/SceneNomenclature';
 import { SceneBIM } from '../scenes/SceneBIM';
-import { SceneOthers } from '../scenes/SceneOthers';
 import { SceneExport } from '../scenes/SceneExport';
 import { ScenePrivacy } from '../scenes/ScenePrivacy';
 import { SceneCTA } from '../scenes/SceneCTA';
 
 /**
- * The 9-scene visual timeline only — no subtitles, no progress bar.
+ * The 8-scene BIM-only visual timeline — no subtitles, no progress bar.
  * Composed into:
  *   - MainMaster   (16:9 with global subtitles + progress)
  *   - MainVertical (9:16 wrapper, scaled visuals + larger subtitles)
+ *
+ * V1 BIM gate: the legacy "SceneOthers" (Finance/RH/Juridique) is
+ * intentionally absent. The component still ships in src/scenes/ so it
+ * can be reintroduced when the V2 multi-profile pitch is restored.
  */
 export function MainScenes() {
   const starts = sceneStartFrames();
@@ -35,9 +38,6 @@ export function MainScenes() {
       </Sequence>
       <Sequence from={starts.bim} durationInFrames={SCENE_FRAMES.bim} layout="none">
         <SceneBIM />
-      </Sequence>
-      <Sequence from={starts.others} durationInFrames={SCENE_FRAMES.others} layout="none">
-        <SceneOthers />
       </Sequence>
       <Sequence from={starts.exportZip} durationInFrames={SCENE_FRAMES.exportZip} layout="none">
         <SceneExport />

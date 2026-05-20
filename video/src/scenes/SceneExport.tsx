@@ -196,6 +196,54 @@ export function SceneExport() {
             <span style={{ fontSize: 18, fontWeight: 700 }}>{typedName}.zip</span>
             <span style={{ fontSize: 14, color: colors.goldSoft, fontWeight: 600 }}>↓ téléchargé</span>
           </div>
+
+          {/* CDE compatibility badges — appear once the ZIP lands.
+              Makes it obvious the output plugs into the existing CDE
+              ecosystem instead of replacing it. */}
+          <div
+            style={{
+              position: 'absolute',
+              left: 110,
+              bottom: 40,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              opacity: zipOpacity,
+              transform: `translateY(${zipY}px)`,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: fonts.sans,
+                fontSize: 12,
+                color: colors.muted,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                fontWeight: 700,
+              }}
+            >
+              Compatible CDE
+            </span>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {['Autodesk Docs', 'Trimble Connect', 'Kroqi'].map((cde) => (
+                <span
+                  key={cde}
+                  style={{
+                    fontFamily: fonts.sans,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: colors.ink,
+                    background: '#FFFAF0',
+                    border: `1px solid ${colors.lineStrong}`,
+                    borderRadius: 999,
+                    padding: '6px 14px',
+                  }}
+                >
+                  {cde}
+                </span>
+              ))}
+            </div>
+          </div>
         </AbsoluteFill>
       </PaperBackground>
     </AbsoluteFill>
