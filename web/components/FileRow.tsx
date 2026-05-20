@@ -5,21 +5,13 @@ import { saveAs } from 'file-saver';
 import { useAppContext } from '@/lib/app-state';
 import type { BimFile } from '@/lib/bim/types';
 import { NameEditorModal } from './NameEditorModal';
+import { FileTypePill } from './FileTypePill';
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} o`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} Ko`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
 }
-
-const categoryIcons: Record<string, string> = {
-  documents: '📄',
-  cad: '📐',
-  bim: '🏗',
-  images: '🖼',
-  archives: '🗜',
-  other: '📎',
-};
 
 const statusColors: Record<string, string> = {
   ready: 'bg-paper-2 text-ink-mute',
@@ -83,14 +75,8 @@ export function FileRow({ file }: FileRowProps) {
           />
         </label>
 
-        {/* Category icon */}
-        <span
-          className="shrink-0 text-xl"
-          aria-label={`Catégorie: ${file.category}`}
-          title={file.category}
-        >
-          {categoryIcons[file.category] ?? '📎'}
-        </span>
+        {/* Colored extension pill */}
+        <FileTypePill name={file.original} />
 
         {/* Names */}
         <div className="min-w-0 flex-1">
