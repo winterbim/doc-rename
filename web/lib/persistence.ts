@@ -16,7 +16,12 @@ import { STORAGE_KEYS } from '@/lib/bim/config/defaults';
 import type { AppState, PersistedSlices } from '@/lib/app-state';
 import type { CleanerState } from '@/lib/bim/filename-cleaner';
 import type { PrefixRule } from '@/lib/bim/types';
-import { isIndustryProfileId, type ProfileEntitiesById, type ProfileEntity } from '@/lib/profiles';
+import {
+  coercePublicProfileId,
+  isIndustryProfileId,
+  type ProfileEntitiesById,
+  type ProfileEntity,
+} from '@/lib/profiles';
 
 /**
  * Schema version. Bump when ANY persisted slice changes shape in a way that
@@ -172,7 +177,10 @@ export function loadPersistedState(): PersistedSlices {
   // --- profileId ---
   const rawProfileId = storageGet(STORAGE_KEYS.PROFILE_ID);
   if (rawProfileId !== null && isIndustryProfileId(rawProfileId)) {
-    slices.profileId = rawProfileId;
+    // Coerce hidden profiles (Finance, RH, etc.) to BIM when BIM_ONLY V1
+    // gate is on. Keeps users out of unsupported UI states without losing
+    // the rest of their persisted preferences.
+    slices.profileId = coercePublicProfileId(rawProfileId);
   }
 
   // --- profileEntities ---

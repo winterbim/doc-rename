@@ -34,11 +34,36 @@ export { getProfileEntityStorageKey, importEntitiesFromText, mergeProfileEntitie
 
 export const DEFAULT_PROFILE_ID: IndustryProfileId = 'bim-construction';
 
-export const PROFILE_OPTIONS = INDUSTRY_PROFILES.map((profile) => ({
+/**
+ * V1 commercial gate. When `NEXT_PUBLIC_BIM_ONLY` is `'true'` we hide every
+ * non-BIM profile from the public UI (picker, landing copy, OG meta).
+ * The full profile catalog stays in code so a single env flip restores V2.
+ *
+ * Read from `process.env` rather than a constant so Next.js statically
+ * inlines the value at build time on both client and server.
+ */
+export const BIM_ONLY = process.env.NEXT_PUBLIC_BIM_ONLY === 'true';
+
+const ALL_PROFILE_OPTIONS = INDUSTRY_PROFILES.map((profile) => ({
   id: profile.id,
   label: profile.label,
   shortLabel: profile.shortLabel,
 }));
+
+const BIM_ONLY_PROFILE_OPTIONS = ALL_PROFILE_OPTIONS.filter(
+  (option) => option.id === DEFAULT_PROFILE_ID,
+);
+
+export const PROFILE_OPTIONS = BIM_ONLY ? BIM_ONLY_PROFILE_OPTIONS : ALL_PROFILE_OPTIONS;
+
+/**
+ * Coerce any persisted profileId to BIM when the BIM_ONLY gate is active.
+ * Users who selected, say, "finance" in V0 must not see broken UI in V1.
+ */
+export function coercePublicProfileId(value: IndustryProfileId): IndustryProfileId {
+  if (BIM_ONLY && value !== DEFAULT_PROFILE_ID) return DEFAULT_PROFILE_ID;
+  return value;
+}
 
 export function isIndustryProfileId(value: string): value is IndustryProfileId {
   return INDUSTRY_PROFILES.some((profile) => profile.id === value);
