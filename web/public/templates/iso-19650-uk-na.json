@@ -1,0 +1,106 @@
+{
+  "$schema": "https://bimdoc-renamer.vercel.app/schemas/nomenclature.v1.json",
+  "name": "ISO 19650 — UK National Annex",
+  "description": "Convention de nommage informative ISO 19650 (UK NA). Paramétrable champ par champ pour s'adapter à votre BEP / EIR. Séparateur conventionnel : tiret \"-\".",
+  "version": "1.0.0",
+  "locale": "fr-FR",
+  "separator": "-",
+  "case": "UPPER",
+  "fields": [
+    {
+      "code": "Project",
+      "label": "Code projet",
+      "example": "PRJ01",
+      "required": true,
+      "maxLength": 6,
+      "comment": "Identifiant unique du projet selon votre BEP."
+    },
+    {
+      "code": "Originator",
+      "label": "Émetteur",
+      "example": "AGC",
+      "required": true,
+      "maxLength": 6,
+      "comment": "Code de l'entreprise ou de l'agence émettrice."
+    },
+    {
+      "code": "Volume",
+      "label": "Volume / système",
+      "example": "ZZ",
+      "required": true,
+      "maxLength": 2,
+      "comment": "Code à 2 caractères. ZZ = projet entier."
+    },
+    {
+      "code": "Level",
+      "label": "Niveau",
+      "example": "00",
+      "required": true,
+      "maxLength": 2,
+      "comment": "Code à 2 caractères. ZZ = sans niveau, XX = multiple, GF = RdC, B1 = sous-sol 1."
+    },
+    {
+      "code": "Type",
+      "label": "Type de document",
+      "example": "DR",
+      "required": true,
+      "maxLength": 2,
+      "comment": "DR=Drawing, MO=Model, RP=Report, SP=Specification, SH=Schedule, CO=Correspondence."
+    },
+    {
+      "code": "Role",
+      "label": "Rôle / discipline",
+      "example": "A",
+      "required": true,
+      "maxLength": 1,
+      "comment": "A=Architecte, S=Structure, M=MEP, C=Civil, L=Landscape, I=Interior."
+    },
+    {
+      "code": "Number",
+      "label": "Numéro",
+      "example": "0001",
+      "required": true,
+      "maxLength": 4,
+      "comment": "Séquence à 4 chiffres."
+    }
+  ],
+  "suffix": {
+    "code": "Revision",
+    "label": "Révision / statut",
+    "example": "P02",
+    "format": "{Status}{NN}",
+    "comment": "Statut S0–S7 ou P01–P99 selon la phase. Préfixe puis index à 2 chiffres."
+  },
+  "examples": [
+    {
+      "input": "facade etage 1 FINAL v2.pdf",
+      "output": "PRJ01-AGC-ZZ-XX-DR-A-0001-P02.pdf"
+    },
+    {
+      "input": "plan rdc copie.dwg",
+      "output": "PRJ01-AGC-ZZ-GF-DR-A-0010-P01.dwg"
+    },
+    {
+      "input": "rapport synthese v3.docx",
+      "output": "PRJ01-AGC-ZZ-XX-RP-S-0003-P03.docx"
+    },
+    {
+      "input": "DOE structure.zip",
+      "output": "PRJ01-AGC-ZZ-XX-ZZ-S-DOE-P01.zip"
+    }
+  ],
+  "references": [
+    {
+      "label": "ISO 19650-2 — Information delivery cycle",
+      "url": "https://www.iso.org/standard/68080.html"
+    },
+    {
+      "label": "UK BIM Framework — Information Management",
+      "url": "https://www.ukbimframework.org/"
+    },
+    {
+      "label": "BIMSY — ISO 19650 expliquée",
+      "url": "https://bim-synthese.fr/iso-19650-1/"
+    }
+  ]
+}

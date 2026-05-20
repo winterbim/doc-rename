@@ -1,1534 +1,903 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Script from 'next/script';
+
+const siteUrl = 'https://bimdoc-renamer.vercel.app';
 
 export const metadata: Metadata = {
-  title: 'DOC-RENAME — Renommage documentaire par métier',
+  title: 'BimDoc Renamer — Renommer vos livrables BIM avant dépôt CDE',
   description:
-    "Choisissez un profil métier puis appliquez une structure de nommage claire à vos fichiers. Traitement local, sans upload.",
-  metadataBase: new URL('https://bimdoc-renamer.vercel.app'),
+    'Renommez et exportez vos lots BIM à la convention ISO 19650 ou SIA 2051 en moins de 60 secondes, sans envoyer un seul fichier à un serveur. Compatible Autodesk Docs, Trimble Connect, Kroqi.',
+  metadataBase: new URL(siteUrl),
   openGraph: {
     type: 'website',
-    title: 'DOC-RENAME — Renommer vos documents selon votre métier',
+    title: 'BimDoc Renamer — Renommer vos livrables BIM avant dépôt CDE',
     description:
-      'Profils BIM, finance, RH, santé, administratif, juridique, industrie, immobilier ou convention personnalisée. Tout se passe dans le navigateur, sans upload.',
-    url: 'https://bimdoc-renamer.vercel.app',
-    siteName: 'DOC-RENAME',
+      'Outil local-first pour appliquer une convention de nommage ISO 19650 ou SIA à vos lots de plans, IFC, DWG, PDF. Compatible Autodesk Docs, Trimble Connect, Kroqi.',
+    url: siteUrl,
+    siteName: 'BimDoc Renamer',
     locale: 'fr_FR',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DOC-RENAME',
-    description: 'Renommage documentaire local par profils métier, sans compte.',
+    title: 'BimDoc Renamer',
+    description:
+      "Convention ISO 19650 / SIA 2051 appliquée à vos livrables BIM, en local navigateur. Sans compte pour essayer.",
   },
   alternates: {
-    canonical: 'https://bimdoc-renamer.vercel.app',
+    canonical: siteUrl,
     languages: {
-      fr: 'https://bimdoc-renamer.vercel.app',
-      'x-default': 'https://bimdoc-renamer.vercel.app',
+      fr: siteUrl,
+      'x-default': siteUrl,
     },
   },
+  keywords: [
+    'ISO 19650',
+    'convention nommage BIM',
+    'renommage livrable BIM',
+    'SIA 2051',
+    'CDE',
+    'DOE',
+    'BIM Manager',
+    'BIM Coordinator',
+    'Autodesk Docs',
+    'Trimble Connect',
+    'Kroqi',
+    'auto-naming BIM',
+    'bureau études BIM',
+  ],
   other: {
-    'theme-color': '#F4ECDC',
+    'theme-color': '#F7F3EA',
     'color-scheme': 'light',
   },
 };
 
 const LANDING_CSS = `
-  :root{
-    --paper:#F2F4EF;
-    --paper-2:#E7EEE7;
-    --paper-3:#D5DFDA;
-    --ink:#2B2218;
-    --ink-soft:#5A4B3A;
-    --ink-mute:#897965;
-    --brick:#B84A35;
-    --brick-deep:#8C3722;
-    --gold:#B98A32;
-    --gold-soft:#D6AC58;
-    --olive:#5C6B3A;
-    --line:#C9D4CB;
-    --line-2:#AEBFB4;
-    --shadow-soft: 0 1px 2px rgba(43,34,24,.08), 0 20px 50px -28px rgba(43,34,24,.30);
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  :focus-visible{
-    outline:3px solid var(--gold);
-    outline-offset:4px;
-  }
-  body{
-    background:var(--paper);
-    color:var(--ink);
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;
-    font-weight:400;
-    font-size:17px;
-    line-height:1.55;
-    -webkit-font-smoothing:antialiased;
-    text-rendering:optimizeLegibility;
-    overflow-x:hidden;
-    position:relative;
+  :root {
+    --paper: #f7f3ea;
+    --paper-soft: #eee7da;
+    --paper-hard: #fffaf0;
+    --ink: #241f19;
+    --ink-soft: #5b5045;
+    --muted: #817466;
+    --line: #d8cdbb;
+    --line-strong: #b8aa95;
+    --brick: #a54835;
+    --brick-deep: #8c3722;
+    --moss: #4f6948;
+    --blue: #314d63;
+    --gold: #c0913f;
+    --shadow: 0 24px 70px -44px rgba(36, 31, 25, .45);
   }
 
-  /* warm paper texture via SVG noise */
-  body::before{
-    content:"";
-    position:fixed;inset:0;
-    pointer-events:none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .2  0 0 0 0 .15  0 0 0 0 .1  0 0 0 .12 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/></svg>");
-    opacity:.5;
-    mix-blend-mode:multiply;
-    z-index:0;
-  }
-  body::after{
-    /* warm vignette */
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-    background: radial-gradient(ellipse at 50% 20%, transparent 50%, rgba(112,82,46,.10) 100%);
-  }
-
-  .frame{
-    position:relative;z-index:1;
-    max-width:1320px;
-    margin:0 auto;
-    padding:0 clamp(22px,5vw,72px);
-  }
-
-  /* ---------- NAV ---------- */
-  nav.top{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:34px 0 0;
-    position:relative;z-index:5;
-  }
-  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);}
-  .brand .logo-mark{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:32px;height:32px;
-    background:var(--ink);
-    color:var(--paper);
-    border-radius:6px;
-    border:1px solid rgba(43,34,24,.2);
-    flex:none;
-  }
-  .brand .logo-mark svg{width:18px;height:18px}
-  .brand .wm{font-family:'Geist',sans-serif;font-weight:600;letter-spacing:-.01em;font-size:18px}
-  .brand .small{font-family:'Geist',sans-serif;font-style:normal;font-size:13px;color:var(--ink-mute);margin-left:4px;font-weight:400}
-  nav.top .menu{
-    list-style:none;display:flex;gap:30px;margin:0;padding:0;
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;
-    font-size:15px;font-weight:500;
-  }
-  nav.top .menu a{
-    color:var(--ink);text-decoration:none;
-    border-bottom:1px solid transparent;padding-bottom:2px;
-    transition:border-color .2s ease, color .2s ease;
-  }
-  nav.top .menu a:hover{border-color:var(--brick);color:var(--brick)}
-  nav.top .cta-mini{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-weight:600;
-    font-size:14.5px;
-    background:var(--ink);color:var(--paper);
-    padding:11px 18px;border-radius:999px;
-    text-decoration:none;display:inline-flex;align-items:center;gap:8px;
-    transition:transform .2s ease, background .2s ease;
-  }
-  nav.top .cta-mini:hover{background:var(--brick);transform:translateY(-1px)}
-
-  /* ---------- HERO ---------- */
-  header.hero{
-    padding:clamp(70px,12vh,160px) 0 clamp(50px,8vh,100px);
-    position:relative;
-  }
-  .badge-no-account{
-    display:inline-flex;align-items:center;gap:10px;
-    background:var(--paper-2);
-    border:1px solid var(--line);
-    padding:8px 14px 8px 10px;
-    border-radius:999px;
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;
-    font-size:13.5px;font-weight:500;color:var(--ink-soft);
-    margin-bottom:28px;
-  }
-  .badge-no-account .dot{
-    width:8px;height:8px;border-radius:50%;background:var(--olive);
-    box-shadow:0 0 0 4px rgba(92,107,58,.15);
-  }
-  .badge-no-account em{
-    font-style:italic;color:var(--brick);font-weight:500;
-    margin:0 4px;
-  }
-
-  h1.display{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;
-    font-weight:300;
-    font-size:clamp(48px,8vw,118px);
-    line-height:.92;
-    letter-spacing:-.035em;
-    margin:0 0 32px;
-    color:var(--ink);
-    max-width:14ch;
-  }
-  h1.display em{
-    font-family:var(--font-newsreader),serif;
-    font-style:italic;
-    font-weight:400;
-    color:var(--brick);
-    letter-spacing:-.015em;
-  }
-  h1.display .scribble{
-    position:relative;display:inline-block;
-  }
-  h1.display .scribble svg{
-    position:absolute;left:-4%;bottom:-12%;width:108%;height:36%;
-    pointer-events:none;
-  }
-  h1.display .scribble svg path{
-    fill:none;stroke:var(--gold);stroke-width:6;stroke-linecap:round;
-    stroke-dasharray:600;stroke-dashoffset:600;
-    animation:draw 1.4s ease-out 0.6s forwards;
-  }
-  @keyframes draw{to{stroke-dashoffset:0}}
-
-  .lede{
-    max-width:560px;
-    font-size:clamp(18px,1.4vw,21px);
-    line-height:1.5;
-    color:var(--ink-soft);
-    margin:0 0 36px;
-  }
-  .lede strong{color:var(--ink);font-weight:600}
-  .lede .accent{
-    font-style:italic;
-    color:var(--brick);
-    font-weight:500;
-  }
-
-  .hero-cta{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
-  .btn{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;
-    font-weight:500;font-size:15.5px;
-    display:inline-flex;align-items:center;gap:10px;
-    padding:15px 26px;
-    border-radius:999px;
-    text-decoration:none;
-    border:1.5px solid var(--ink);
-    cursor:pointer;background:none;color:var(--ink);
-    transition:transform .25s ease, background .25s ease, color .25s ease, border-color .25s ease;
-  }
-  .btn-primary{background:var(--ink);color:var(--paper)}
-  .btn-primary:hover{background:var(--brick);border-color:var(--brick);transform:translateY(-1px)}
-  .btn-ghost:hover{background:var(--ink);color:var(--paper)}
-  .btn .arrow{transition:transform .25s ease;font-style:italic;font-size:1.1em}
-  .btn:hover .arrow{transform:translateX(4px)}
-
-  .hero-note{
-    margin-top:18px;
-    font-style:italic;font-weight:500;font-size:18px;
-    color:var(--brick);
-    display:inline-flex;align-items:center;gap:10px;
-  }
-  .hero-note svg{width:32px;height:24px;flex:none}
-  .hero-note svg path{fill:none;stroke:var(--brick);stroke-width:2;stroke-linecap:round}
-
-  /* hero decorative mark, top right */
-  .stamp{
-    position:absolute;
-    right:clamp(20px,5vw,72px);top:clamp(120px,16vh,200px);
-    width:clamp(110px,11vw,160px);
-    aspect-ratio:1;
-    border:1.5px solid var(--brick);
-    border-radius:50%;
-    color:var(--brick);
-    display:grid;place-items:center;
-    transform:rotate(-12deg);
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;
-    text-align:center;font-size:11px;letter-spacing:.16em;font-weight:600;
-    line-height:1.6;
-    opacity:.85;
-  }
-  .stamp::before{
-    content:"";position:absolute;inset:6px;border:1px dashed var(--brick);border-radius:50%;
-    opacity:.4;
-  }
-  .stamp em{
-    font-style:italic;display:block;
-    font-size:22px;letter-spacing:0;margin-top:4px;font-weight:400;
-  }
-
-  /* ---------- SECTION COMMON ---------- */
-  section{
-    padding:clamp(70px,10vh,130px) 0;
-    position:relative;
-    content-visibility:auto;
-    contain-intrinsic-size:auto 780px;
-  }
-  .div-rule{
-    width:100%;height:1px;background:var(--line-2);
-    position:relative;
-  }
-  .div-rule::before{
-    content:"";
-    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-    width:14px;height:14px;background:var(--paper);
-    border:1px solid var(--line-2);border-radius:50%;
-  }
-  .div-rule::after{
-    content:"";
-    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-    width:6px;height:6px;background:var(--brick);border-radius:50%;
-  }
-
-  .kicker{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-weight:500;font-size:13px;
-    letter-spacing:.04em;text-transform:uppercase;
-    color:var(--brick);
-    display:inline-block;margin-bottom:14px;
-  }
-  .kicker .num{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-weight:600;
-    font-size:14px;color:var(--ink-mute);letter-spacing:.04em;
-    background:var(--paper-2);padding:3px 8px;border-radius:6px;margin-right:8px;
-    transform:rotate(1deg);display:inline-block;
-  }
-  .section-title{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;
-    font-weight:400;
-    font-size:clamp(36px,5vw,62px);
-    line-height:1.03;letter-spacing:-.028em;
-    margin:0 0 22px;color:var(--ink);
-    max-width:18ch;
-  }
-  .section-title em{
-    font-family:var(--font-newsreader),serif;font-style:italic;font-weight:400;color:var(--brick);
-  }
-  .section-sub{
-    max-width:620px;
-    font-size:18px;line-height:1.55;color:var(--ink-soft);
-    margin:0;
-  }
-  .mt-problem{margin-top:54px}
-  .mt-how{margin-top:60px}
-  .mt-norms,.mt-manifesto{margin-top:50px}
-  .mb-demo-sub{margin-bottom:36px}
-  .mb-feats-sub{margin-bottom:46px}
-
-  /* ---------- PROBLEM ---------- */
-  .problem-wrap{
-    display:grid;grid-template-columns: 1.1fr .9fr;gap:clamp(36px,5vw,80px);
-    align-items:start;
-  }
-  .problem-text p{
-    font-size:19px;line-height:1.65;color:var(--ink-soft);margin:0 0 22px;
-  }
-  .problem-text p strong{color:var(--ink);font-weight:600}
-  .problem-text p em{color:var(--brick);font-style:italic}
-  .problem-text .pull{
-    font-family:var(--font-newsreader),serif;font-style:italic;
-    font-size:26px;line-height:1.35;color:var(--ink);
-    margin:36px 0 0;padding-left:28px;
-    border-left:3px solid var(--brick);
-  }
-
-  .file-mess{
-    background:#fff;
-    border:1px solid var(--line);
-    padding:24px 26px;
-    border-radius:6px;
-    box-shadow:var(--shadow-soft);
-    transform:rotate(1.5deg);
-    position:relative;
-  }
-  .file-mess::before{
-    content:"vu dans la vraie vie ✶";
-    position:absolute;top:-14px;left:18px;
-    background:var(--gold);color:var(--ink);
-    font-style:italic;font-weight:600;font-size:16px;
-    padding:2px 14px 4px;border-radius:4px;
-  }
-  .file-mess ul{
-    list-style:none;margin:18px 0 0;padding:0;
-    display:flex;flex-direction:column;gap:11px;
-  }
-  .file-mess li{
-    font-size:15.5px;
-    color:var(--ink-soft);
-    padding-left:24px;position:relative;
-    line-height:1.45;
-  }
-  .file-mess li::before{
-    content:"☐";position:absolute;left:0;top:0;
-    color:var(--ink-mute);font-size:18px;
-  }
-  .file-mess li.cross{
-    color:var(--ink-mute);
-    text-decoration:line-through;text-decoration-color:var(--brick);
-    text-decoration-thickness:1.5px;
-  }
-  .file-mess li.cross::before{content:"✗";color:var(--brick)}
-  .file-mess .doodle{
-    position:absolute;right:-30px;bottom:-30px;
-    font-style:italic;color:var(--brick);font-size:18px;
-    max-width:170px;text-align:center;
-  }
-  .file-mess .doodle svg{
-    display:block;margin:6px auto -8px;
-  }
-  .file-mess .doodle svg path{fill:none;stroke:var(--brick);stroke-width:2;stroke-linecap:round}
-
-  /* ---------- PLAYGROUND ---------- */
-  .pg-wrap{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:8px;
-    box-shadow:var(--shadow-soft);
-    overflow:hidden;
-    position:relative;
-  }
-  .pg-wrap::before{
-    content:"démo en direct — sans compte";
-    position:absolute;top:14px;right:18px;z-index:3;
-    font-style:italic;font-weight:500;font-size:16px;
-    color:var(--brick);
-  }
-  .pg-head{
-    padding:22px 28px;
-    border-bottom:1px solid var(--line);
-    background:var(--paper);
-    display:flex;flex-wrap:wrap;align-items:center;gap:14px;justify-content:space-between;
-  }
-  .pg-head .label{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;
-    font-weight:600;font-size:14px;color:var(--ink-mute);letter-spacing:.06em;
-    text-transform:uppercase;
-  }
-  .pg-chips{display:flex;flex-wrap:wrap;gap:8px}
-  .pg-chip{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-weight:500;font-size:14px;
-    padding:8px 14px;border-radius:999px;
-    border:1.5px solid var(--line-2);
-    background:transparent;color:var(--ink-soft);cursor:pointer;
-    transition:all .2s ease;
-  }
-  .pg-chip:hover{border-color:var(--ink);color:var(--ink)}
-  .pg-chip.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-  .pg-chip.active:hover{background:var(--brick);border-color:var(--brick)}
-
-  .pg-body{
-    display:grid;grid-template-columns:1fr 1fr;gap:0;
-    min-height:340px;
-  }
-  .pg-col{padding:24px 28px}
-  .pg-col + .pg-col{border-left:1px dashed var(--line)}
-  .pg-col h4{
-    font-style:italic;font-weight:500;
-    font-size:20px;color:var(--ink);margin:0 0 12px;
-  }
-  .pg-field-label{
-    display:block;
-    font-style:italic;
-    font-weight:500;
-    font-size:20px;
-    color:var(--ink);
-    margin:0 0 12px;
-  }
-  .pg-field-label .tag{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;
-    font-style:normal;
-    font-size:11px;
-    letter-spacing:.1em;
-    text-transform:uppercase;
-    background:var(--paper-2);
-    color:var(--ink-mute);
-    padding:3px 7px;
-    border-radius:4px;
-    margin-left:8px;
-    vertical-align:middle;
-    font-weight:600;
-  }
-  .pg-col h4 .tag{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-style:normal;font-size:11px;
-    letter-spacing:.1em;text-transform:uppercase;
-    background:var(--paper-2);color:var(--ink-mute);padding:3px 7px;
-    border-radius:4px;margin-left:8px;vertical-align:middle;font-weight:600;
-  }
-  textarea#pgInput{
-    width:100%;min-height:240px;
-    font-size:15px;line-height:1.55;
-    color:var(--ink);background:var(--paper);
-    border:1px solid var(--line);border-radius:4px;
-    padding:14px;
-    outline:none;resize:vertical;
-  }
-  textarea#pgInput:focus{border-color:var(--brick);background:#fff}
-  #pgOutput{
-    list-style:none;margin:0;padding:0;
-    display:flex;flex-direction:column;gap:8px;
-    max-height:280px;overflow-y:auto;
-  }
-  #pgOutput li{
-    font-size:14.5px;line-height:1.5;color:var(--ink);
-    padding:10px 12px;background:var(--paper);
-    border:1px solid var(--line);border-radius:3px;
-    word-break:break-all;
-  }
-  #pgOutput li.err{
-    background:#FCE9E1;border-color:#E7BCAB;color:var(--brick-deep);
-  }
-  #pgOutput li code{
-    font-style:italic;
-    color:var(--brick);font-weight:500;
-  }
-  #pgOutput .empty{
-    color:var(--ink-mute);font-style:italic;
-    background:transparent;border:1px dashed var(--line-2);
-  }
-  .pg-warning{
-    color:var(--brick-deep);
-    font-style:italic;
-  }
-  .pg-foot{
-    padding:14px 28px;
-    background:var(--paper-2);
-    border-top:1px solid var(--line);
-    display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;align-items:center;
-    font-size:14px;color:var(--ink-soft);
-  }
-  .pg-foot strong{font-weight:600;color:var(--ink)}
-  .pg-foot .reset{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-size:13.5px;
-    color:var(--brick);text-decoration:underline;text-underline-offset:3px;
-    background:none;border:none;cursor:pointer;padding:0;
-  }
-  .pg-foot .reset:hover{color:var(--brick-deep)}
-
-  /* ---------- HOW (NARRATIVE) ---------- */
-  .how-grid{
-    display:grid;grid-template-columns:repeat(3,1fr);
-    gap:clamp(20px,3vw,42px);
-  }
-  .how-step{
-    position:relative;
-    padding-top:30px;
-  }
-  .how-step .big-num{
-    font-style:italic;
-    font-weight:400;font-size:140px;
-    line-height:.8;
-    color:var(--brick);
-    margin-bottom:14px;letter-spacing:-.03em;
-    display:block;
-  }
-  .how-step:nth-child(2) .big-num{color:var(--olive)}
-  .how-step:nth-child(3) .big-num{color:var(--gold)}
-  .how-step h3{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;
-    font-size:24px;line-height:1.15;letter-spacing:-.015em;
-    margin:0 0 10px;color:var(--ink);
-  }
-  .how-step h3 em{
-    font-family:var(--font-newsreader),serif;font-style:italic;font-weight:500;color:var(--brick);
-  }
-  .how-step p{
-    font-size:16px;line-height:1.6;
-    color:var(--ink-soft);margin:0;
-  }
-  .how-step .hand-note{
-    margin-top:14px;
-    font-style:italic;font-size:15px;
-    color:var(--ink-mute);display:inline-block;
-  }
-
-  /* ---------- NORMS ---------- */
-  .norms{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.4vw,30px);
-  }
-  .norm{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:4px;
-    padding:28px 28px 26px;
-    position:relative;
-    box-shadow:var(--shadow-soft);
-    transition:transform .35s ease;
-  }
-  .norm:nth-child(odd){transform:rotate(-.6deg)}
-  .norm:nth-child(even){transform:rotate(.5deg)}
-  .norm:hover{transform:rotate(0deg) translateY(-3px)}
-  .norm .ribbon{
-    position:absolute;top:-12px;left:18px;
-    background:var(--brick);color:var(--paper);
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-weight:600;
-    font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
-    padding:5px 12px;border-radius:3px;
-    transform:rotate(-2deg);
-  }
-  .norm:nth-child(2) .ribbon{background:var(--olive)}
-  .norm:nth-child(3) .ribbon{background:var(--gold);color:var(--ink)}
-  .norm h4{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-weight:500;
-    font-size:30px;letter-spacing:-.02em;
-    margin:18px 0 4px;color:var(--ink);
-  }
-  .norm h4 em{
-    font-family:var(--font-newsreader),serif;font-style:italic;font-weight:500;color:var(--brick);
-  }
-  .norm .sub{
-    font-style:italic;font-size:15px;color:var(--ink-mute);
-    margin-bottom:14px;
-  }
-  .norm p{
-    font-size:15.5px;line-height:1.55;
-    color:var(--ink-soft);margin:0 0 16px;
-  }
-  .norm .ex-label{
-    font-style:italic;font-size:15px;color:var(--brick);
-    margin-bottom:4px;display:inline-block;
-  }
-  .norm .ex{
-    display:block;
-    font-size:14px;
-    background:var(--paper);
-    padding:10px 12px;border-radius:3px;
-    border:1px dashed var(--line-2);
-    color:var(--ink);word-break:break-all;
-  }
-
-  /* ---------- FEATURES (CHIPS GRID) ---------- */
-  .feats{
-    display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
-  }
-  .feat{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:22px 22px 20px;
-    transition:transform .25s ease,box-shadow .25s ease;
-    display:flex;flex-direction:column;gap:8px;
-  }
-  .feat:hover{transform:translateY(-3px);box-shadow:var(--shadow-soft)}
-  .feat .ico{
-    font-style:italic;font-weight:500;font-size:26px;
-    color:var(--brick);line-height:1;margin-bottom:6px;
-  }
-  .feat h5{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-weight:600;
-    font-size:17px;letter-spacing:-.01em;margin:0;color:var(--ink);
-  }
-  .feat p{
-    font-size:14.5px;line-height:1.5;
-    color:var(--ink-soft);margin:0;
-  }
-
-  /* ---------- MANIFESTO ---------- */
-  .manifesto{
-    display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(36px,6vw,80px);
-    align-items:start;
-  }
-  .manifesto ul{list-style:none;margin:0;padding:0}
-  .manifesto li{
-    padding:22px 0;
-    border-bottom:1px solid var(--line);
-    display:grid;grid-template-columns:80px 1fr;gap:18px;
-  }
-  .manifesto li:first-child{border-top:1px solid var(--line)}
-  .manifesto .k{
-    font-style:italic;font-weight:500;
-    font-size:34px;color:var(--brick);line-height:.9;
-  }
-  .manifesto .v strong{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-weight:550;font-size:20px;letter-spacing:-.01em;
-    color:var(--ink);display:block;margin-bottom:4px;
-  }
-  .manifesto .v span{
-    font-size:15.5px;line-height:1.55;color:var(--ink-soft);
-  }
-  .ledger{
-    background:var(--ink);color:var(--paper);
-    padding:36px 32px;border-radius:6px;
-    position:sticky;top:24px;
-    transform:rotate(-.5deg);
-    box-shadow:var(--shadow-soft);
-  }
-  .ledger .openq{
-    font-style:italic;font-weight:300;
-    font-size:80px;line-height:.6;color:var(--gold);margin-bottom:14px;
-    display:block;
-  }
-  .ledger blockquote{
-    margin:0 0 22px;
-    font-family:var(--font-newsreader),serif;font-style:italic;font-weight:400;
-    font-size:23px;line-height:1.35;color:var(--paper);
-  }
-  .ledger blockquote em{color:var(--gold-soft);font-weight:500}
-  .ledger .by{
-    font-style:italic;font-size:16px;color:var(--gold-soft);
-    display:inline-block;
-  }
-
-  /* ---------- FINAL CTA ---------- */
-  .final{
-    margin:60px 0 0;
-    padding:clamp(60px,10vh,110px) clamp(28px,5vw,72px);
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
     background:
-      radial-gradient(circle at 80% 20%, rgba(196,149,69,.22) 0%, transparent 50%),
-      radial-gradient(circle at 20% 90%, rgba(184,74,53,.18) 0%, transparent 50%),
-      var(--ink);
-    color:var(--paper);
-    border-radius:10px;
-    position:relative;overflow:hidden;
-  }
-  .final::before{
-    content:"";position:absolute;inset:0;pointer-events:none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='8' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .12 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/></svg>");
-    mix-blend-mode:overlay;opacity:.6;
-  }
-  .final-inner{position:relative;z-index:1;display:grid;grid-template-columns:1.3fr 1fr;gap:50px;align-items:center}
-  .final .kicker{color:var(--gold-soft)}
-  .final .kicker .num{background:rgba(244,236,220,.1);color:var(--gold-soft)}
-  .final h2{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-weight:300;
-    font-size:clamp(40px,5.5vw,76px);
-    line-height:.98;letter-spacing:-.03em;
-    margin:0 0 22px;color:var(--paper);max-width:13ch;
-  }
-  .final h2 em{font-family:var(--font-newsreader),serif;font-style:italic;font-weight:400;color:var(--gold-soft)}
-  .final p{font-size:18px;line-height:1.55;color:rgba(244,236,220,.82);margin:0 0 28px;max-width:540px}
-  .final .btn-primary{background:var(--gold);color:var(--ink);border-color:var(--gold)}
-  .final .btn-primary:hover{background:var(--paper);border-color:var(--paper);transform:translateY(-1px)}
-  .final .btn-ghost{color:var(--paper);border-color:rgba(244,236,220,.4)}
-  .final .btn-ghost:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
-  .final-side{
-    border:1px dashed rgba(244,236,220,.3);
-    padding:28px 26px;border-radius:6px;
-    background:rgba(244,236,220,.04);
-    transform:rotate(.8deg);
-  }
-  .final-side h6{
-    font-style:italic;font-weight:500;font-size:20px;color:var(--gold-soft);
-    margin:0 0 16px;display:inline-block;
-  }
-  .final-side ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
-  .final-side li{
-    display:flex;align-items:flex-start;gap:12px;
-    font-size:16px;line-height:1.4;color:var(--paper);
-  }
-  .final-side li::before{
-    content:"✓";color:var(--gold);font-weight:700;font-size:17px;flex:none;margin-top:1px;
-  }
-  .bullets{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-  .bullets li{
-    display:flex;align-items:flex-start;gap:10px;
-    font-size:15.5px;line-height:1.4;color:rgba(244,236,220,.9);
-  }
-  .bullets li::before{
-    content:"✓";color:var(--gold-soft);font-weight:700;font-size:16px;flex:none;margin-top:1px;
+      linear-gradient(90deg, rgba(36,31,25,.045) 1px, transparent 1px),
+      linear-gradient(rgba(36,31,25,.035) 1px, transparent 1px),
+      var(--paper);
+    background-size: 44px 44px;
+    color: var(--ink);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* ---------- FOOTER ---------- */
-  footer{
-    padding:54px 0 36px;
-    border-top:1px solid var(--line-2);
-    margin-top:80px;
-  }
-  .foot{
-    display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:36px;
-  }
-  .foot h6{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-weight:600;font-size:13px;letter-spacing:.06em;
-    text-transform:uppercase;color:var(--ink-mute);margin:0 0 14px;
-  }
-  .foot ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
-  .foot a{color:var(--ink);text-decoration:none;font-size:15.5px;
-    border-bottom:1px solid transparent;padding-bottom:1px;transition:border-color .2s ease, color .2s ease}
-  .foot a:hover{color:var(--brick);border-color:var(--brick)}
-  .foot .blurb{
-    font-size:15px;line-height:1.55;color:var(--ink-soft);
-    max-width:34ch;margin:14px 0 0;
-  }
-  .foot-bot{
-    display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;
-    margin-top:42px;padding-top:22px;border-top:1px solid var(--line);
-    font-size:14.5px;color:var(--ink-mute);gap:14px;
-  }
-  .foot-bot .lang{display:flex;gap:14px}
-  .foot-bot .lang a{
-    font-family:'Geist',ui-sans-serif,system-ui,sans-serif;font-size:13.5px;
-    color:var(--ink-mute);text-decoration:none;font-weight:500;
-    padding:3px 10px;border-radius:999px;
-    border:1px solid transparent;
-  }
-  .foot-bot .lang a.on{color:var(--ink);border-color:var(--ink-mute)}
-  .foot-bot .lang a:hover{color:var(--brick)}
-  .foot-bot .signature{
-    font-style:italic;font-size:17px;color:var(--brick);
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+
+  .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; padding: 26px 0;
   }
 
-  /* ---------- RESPONSIVE ---------- */
-  @media (max-width: 980px){
-    nav.top .menu{display:none}
-    .problem-wrap{grid-template-columns:1fr;gap:42px}
-    .file-mess{transform:rotate(0deg);max-width:480px}
-    .pg-body{grid-template-columns:1fr}
-    .pg-col + .pg-col{border-left:none;border-top:1px dashed var(--line)}
-    .how-grid{grid-template-columns:1fr;gap:48px}
-    .how-step .big-num{font-size:110px}
-    .norms{grid-template-columns:1fr;gap:30px}
-    .norm{transform:rotate(0deg) !important}
-    .feats{grid-template-columns:repeat(2,1fr)}
-    .manifesto{grid-template-columns:1fr}
-    .ledger{position:relative;top:0;transform:rotate(0deg)}
-    .final-inner{grid-template-columns:1fr;gap:32px}
-    .final-side{transform:rotate(0deg)}
-    .stamp{display:none}
-    .foot{grid-template-columns:1fr 1fr}
-  }
-  @media (max-width: 560px){
-    .feats{grid-template-columns:1fr}
-    .foot{grid-template-columns:1fr}
-    h1.display{font-size:54px}
-  }
-  @media (prefers-reduced-motion: reduce){
-    html{scroll-behavior:auto}
-    *,*::before,*::after{
-      animation-duration:.01ms !important;
-      animation-iteration-count:1 !important;
-      scroll-behavior:auto !important;
-      transition-duration:.01ms !important;
-    }
-    .r{opacity:1;transform:none}
+  .brand {
+    display: inline-flex; align-items: center; gap: 12px;
+    text-decoration: none; font-weight: 700; letter-spacing: -.02em;
   }
 
-  /* ---------- REVEAL ---------- */
-  .r{opacity:0;transform:translateY(14px);transition:opacity .9s ease, transform .9s ease}
-  .r.in{opacity:1;transform:none}
+  .mark {
+    width: 34px; height: 34px; display: grid; place-items: center;
+    border: 1px solid var(--ink); background: var(--ink); color: var(--paper);
+    border-radius: 7px; font-size: 13px; letter-spacing: -.04em;
+  }
+
+  .brand-name { font-size: 17px; }
+  .brand-sub { font-family: var(--font-newsreader), Georgia, serif; font-style: italic; color: var(--brick); font-weight: 460; margin-left: 4px; }
+
+  .nav {
+    display: flex; align-items: center; gap: 24px;
+    font-size: 14px; color: var(--ink-soft);
+  }
+  .nav a { text-decoration: none; border-bottom: 1px solid transparent; }
+  .nav a:hover { color: var(--ink); border-color: var(--ink); }
+
+  .pill-link {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 42px; padding: 0 18px; border-radius: 999px;
+    background: var(--ink); color: var(--paper); text-decoration: none;
+    font-weight: 650; font-size: 14px;
+    transition: transform .18s ease, background .18s ease;
+  }
+  .pill-link:hover { transform: translateY(-1px); background: var(--brick); }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(320px, .98fr);
+    gap: clamp(38px, 6vw, 74px); align-items: center;
+    padding: clamp(56px, 9vw, 116px) 0 72px;
+  }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px; margin-bottom: 22px;
+    color: var(--ink-soft); font-size: 14px; font-weight: 620;
+  }
+  .eyebrow::before {
+    content: ""; width: 9px; height: 9px; border-radius: 99px;
+    background: var(--moss); box-shadow: 0 0 0 5px rgba(79, 105, 72, .16);
+  }
+
+  h1 {
+    margin: 0; max-width: 14ch;
+    font-size: clamp(48px, 7.8vw, 102px);
+    line-height: .95; letter-spacing: -.05em; font-weight: 520;
+  }
+  h1 em, .serif {
+    font-family: var(--font-newsreader), Georgia, serif;
+    font-style: italic; font-weight: 460; letter-spacing: -.025em;
+  }
+  h1 em { color: var(--brick); }
+
+  .lead {
+    max-width: 620px; margin: 28px 0 0; color: var(--ink-soft);
+    font-size: clamp(18px, 1.45vw, 20px); line-height: 1.55;
+  }
+  .lead strong { color: var(--ink); font-weight: 680; }
+
+  .cta-row {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 32px;
+  }
+
+  .button {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 50px; padding: 0 22px; border-radius: 999px;
+    border: 1px solid var(--ink); text-decoration: none; font-weight: 680;
+    transition: transform .18s ease, background .18s ease, color .18s ease;
+  }
+  .button.primary { background: var(--ink); color: var(--paper); }
+  .button.primary:hover { background: var(--brick); border-color: var(--brick); transform: translateY(-1px); }
+  .button.secondary { background: transparent; color: var(--ink); }
+  .button.secondary:hover { background: var(--ink); color: var(--paper); }
+
+  .small-note {
+    margin-top: 18px; color: var(--muted); font-size: 14px;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .small-note::before {
+    content: ""; width: 7px; height: 7px; border-radius: 99px;
+    background: var(--moss); flex-shrink: 0;
+  }
+
+  .product-shot {
+    border: 1px solid var(--line-strong); border-radius: 8px;
+    background: var(--paper-hard); box-shadow: var(--shadow); overflow: hidden;
+  }
+  .shot-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; border-bottom: 1px solid var(--line); padding: 16px 18px; background: #fbf7ee;
+  }
+  .traffic { display: flex; gap: 7px; }
+  .traffic span { width: 10px; height: 10px; border-radius: 99px; background: var(--line-strong); }
+  .traffic span:nth-child(1) { background: var(--brick); }
+  .traffic span:nth-child(2) { background: var(--gold); }
+  .traffic span:nth-child(3) { background: var(--moss); }
+  .usage { color: var(--blue); font-size: 13px; font-weight: 720; }
+  .shot-body { padding: 24px; }
+
+  .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .tool-panel { border: 1px solid var(--line); border-radius: 6px; background: var(--paper); padding: 16px; }
+  .tool-panel h2 {
+    margin: 0 0 12px; font-size: 13px; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--muted);
+  }
+
+  .file-row {
+    padding: 10px 0; border-top: 1px solid rgba(184, 170, 149, .55);
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 12px; line-height: 1.4;
+  }
+  .file-row:first-of-type { border-top: 0; }
+  .old { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--brick); }
+  .new { color: var(--moss); font-weight: 720; }
+
+  .iso-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .chip {
+    border: 1px solid var(--line-strong); border-radius: 999px;
+    padding: 6px 10px; font-size: 12px; color: var(--ink-soft); background: #fbf7ee;
+  }
+  .chip.brick { border-color: var(--brick); background: rgba(165, 72, 53, .08); color: var(--brick); font-weight: 680; }
+
+  .section { padding: clamp(64px, 9vw, 112px) 0; border-top: 1px solid var(--line-strong); }
+
+  .section-head {
+    display: grid; grid-template-columns: minmax(0, .9fr) minmax(280px, .7fr);
+    gap: 32px; align-items: end; margin-bottom: 34px;
+  }
+  .kicker {
+    display: block; margin-bottom: 12px; color: var(--brick);
+    font-size: 13px; font-weight: 720; letter-spacing: .06em; text-transform: uppercase;
+  }
+  .section h2 {
+    margin: 0; font-size: clamp(34px, 5vw, 60px); line-height: 1;
+    letter-spacing: -.04em; font-weight: 540;
+  }
+  .section-copy { margin: 0; color: var(--ink-soft); font-size: 17px; }
+
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+
+  .card {
+    border: 1px solid var(--line-strong); border-radius: 8px;
+    background: rgba(255, 250, 240, .78); padding: 24px;
+  }
+  .card strong {
+    display: block; margin-bottom: 8px; color: var(--ink);
+    font-size: 19px; letter-spacing: -.02em;
+  }
+  .card p { margin: 0; color: var(--ink-soft); }
+
+  .steps { counter-reset: step; }
+  .step { counter-increment: step; position: relative; padding-top: 54px; }
+  .step::before {
+    content: "0" counter(step); position: absolute; top: 0; left: 0;
+    color: var(--brick); font-family: var(--font-newsreader), Georgia, serif;
+    font-size: 44px; line-height: 1; font-style: italic;
+  }
+
+  .proof-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 28px; }
+  .proof {
+    border-left: 3px solid var(--brick); padding: 8px 14px; background: #fbf7ee;
+    border-radius: 4px;
+  }
+  .proof strong { display: block; font-size: 22px; color: var(--ink); letter-spacing: -.025em; }
+  .proof span { font-size: 13px; color: var(--muted); }
+
+  .compare-table {
+    width: 100%; border-collapse: collapse;
+    background: var(--paper-hard); border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden;
+  }
+  .compare-table th, .compare-table td {
+    padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--line);
+    font-size: 14px; color: var(--ink-soft);
+  }
+  .compare-table th { background: #fbf7ee; font-weight: 700; color: var(--ink); font-size: 13px; }
+  .compare-table thead th { white-space: nowrap; }
+  .compare-table th:first-child, .compare-table td:first-child { color: var(--ink); font-weight: 620; }
+  .compare-table .us { background: rgba(165, 72, 53, .06); }
+  .compare-table .us-cell { color: var(--brick-deep); font-weight: 680; }
+  .ok::before { content: "✓ "; color: var(--moss); font-weight: 800; }
+  .no::before { content: "✗ "; color: var(--brick); font-weight: 800; }
+
+  .security-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .security-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; color: var(--ink-soft); }
+  .security-list li { padding-left: 24px; position: relative; }
+  .security-list li::before { content: "✓"; position: absolute; left: 0; color: var(--moss); font-weight: 800; }
+  .security-list li strong { color: var(--ink); }
+
+  .devtools {
+    border: 1px solid var(--line-strong); border-radius: 8px;
+    background: var(--paper-hard); box-shadow: var(--shadow); overflow: hidden;
+  }
+  .devtools-top {
+    background: #fbf7ee; border-bottom: 1px solid var(--line);
+    padding: 10px 16px; font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 11px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .devtools-body { padding: 18px 22px; font-family: var(--font-mono), ui-monospace, monospace; font-size: 12px; }
+  .devtools-body .req { padding: 6px 0; border-bottom: 1px dashed var(--line); display: flex; justify-content: space-between; gap: 12px; }
+  .devtools-body .req:last-child { border-bottom: 0; }
+  .devtools-body .req .status { color: var(--moss); font-weight: 700; }
+  .devtools-body .filter { color: var(--brick); font-weight: 700; margin-top: 10px; padding-top: 10px; border-top: 2px solid var(--ink); }
+
+  .persona-card {
+    border: 1px solid var(--line-strong); border-radius: 8px;
+    background: var(--paper-hard); padding: 26px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .persona-role { color: var(--brick); font-size: 12px; font-weight: 720; letter-spacing: .08em; text-transform: uppercase; }
+  .persona-quote { margin: 0; font-size: 17px; color: var(--ink); line-height: 1.55; }
+  .persona-quote::before { content: "“"; font-family: var(--font-newsreader), Georgia, serif; font-size: 36px; color: var(--brick); display: block; line-height: .5; }
+  .persona-name { color: var(--muted); font-size: 13px; font-style: italic; }
+
+  .pricing { align-items: stretch; }
+  .plan {
+    display: flex; flex-direction: column; min-height: 100%;
+    border: 1px solid var(--line-strong); border-radius: 8px;
+    background: var(--paper-hard); padding: 28px;
+  }
+  .plan.pro { border-color: var(--ink); background: #252019; color: var(--paper); }
+  .plan.team { border-color: var(--brick); background: #fffaf0; box-shadow: 0 18px 50px -36px rgba(165, 72, 53, .65); }
+  .plan-top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 24px; }
+  .plan h3 { margin: 0; font-size: 26px; letter-spacing: -.03em; }
+  .badge {
+    border: 1px solid currentColor; border-radius: 999px; padding: 5px 10px;
+    color: var(--brick); font-size: 12px; font-weight: 760; white-space: nowrap;
+  }
+  .pro .badge { color: var(--gold); }
+  .team .badge { color: var(--brick); }
+  .price { margin: 0 0 8px; font-size: 46px; line-height: 1; letter-spacing: -.045em; font-weight: 580; }
+  .price small { font-size: 16px; color: var(--muted); letter-spacing: 0; font-weight: 520; }
+  .pro .price small, .pro .muted, .pro li { color: rgba(247, 243, 234, .76); }
+  .muted { color: var(--ink-soft); margin: 0; }
+  .plan ul { margin: 24px 0 28px; padding: 0; list-style: none; display: grid; gap: 10px; }
+  .plan li { color: var(--ink-soft); padding-left: 22px; position: relative; }
+  .plan li::before {
+    content: ""; width: 7px; height: 7px; border-radius: 99px; background: var(--moss);
+    position: absolute; left: 0; top: .65em;
+  }
+  .pro li::before { background: var(--gold); }
+  .plan .button { margin-top: auto; width: fit-content; }
+  .pro .button.primary { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+  .pro .button.primary:hover { background: var(--gold); border-color: var(--gold); }
+  .team .button.primary { background: var(--brick); border-color: var(--brick); color: #fff; }
+  .team .button.primary:hover { background: var(--ink); border-color: var(--ink); }
+
+  .faq { display: grid; gap: 0; border-top: 1px solid var(--line-strong); }
+  details { border-bottom: 1px solid var(--line-strong); padding: 20px 0; }
+  summary { cursor: pointer; font-weight: 720; font-size: 18px; letter-spacing: -.015em; }
+  details p { max-width: 760px; margin: 12px 0 0; color: var(--ink-soft); }
+
+  .final {
+    background: var(--ink); color: var(--paper);
+    padding: clamp(54px, 8vw, 92px); border-radius: 8px; margin-bottom: 44px;
+  }
+  .final h2 { max-width: 13ch; color: var(--paper); }
+  .final .section-copy { color: rgba(247, 243, 234, .78); }
+  .final .button.primary { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+  .final .button.secondary { color: var(--paper); border-color: rgba(247, 243, 234, .42); }
+  .final .button.secondary:hover { background: var(--paper); color: var(--ink); }
+
+  footer {
+    border-top: 1px solid var(--line-strong); padding: 30px 0 42px;
+    color: var(--muted); font-size: 14px;
+  }
+  .foot { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .foot a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid transparent; }
+  .foot a:hover { color: var(--ink); border-color: var(--ink); }
+
+  @media (max-width: 900px) {
+    .nav { display: none; }
+    .hero, .section-head, .grid-3, .grid-2, .security-grid, .proof-row { grid-template-columns: 1fr; }
+    .tool-grid { grid-template-columns: 1fr; }
+    h1 { max-width: 100%; font-size: 48px; }
+    .compare-table { display: block; overflow-x: auto; white-space: nowrap; }
+  }
+
+  @media (max-width: 560px) {
+    .wrap { width: min(100% - 28px, 1180px); }
+    h1 { font-size: 42px; }
+    .shot-body, .card, .plan, .persona-card { padding: 18px; }
+    .price { font-size: 38px; }
+    .final { padding: 34px 20px; }
+  }
 `;
 
-const SOFTWARE_APPLICATION_JSONLD = `{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "DOC-RENAME",
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Any",
-  "description": "Outil local de renommage de documents selon des conventions métier et conventions projet.",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "EUR"
-  }
-}`;
-
-const FAQ_JSONLD = `{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
+const SOFTWARE_APPLICATION_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'BimDoc Renamer',
+  alternateName: 'DOC-RENAME',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Any',
+  description:
+    "Renommage de livrables BIM à la convention ISO 19650 ou SIA 2051, traitement local navigateur, compatible Autodesk Docs, Trimble Connect et Kroqi.",
+  audience: {
+    '@type': 'BusinessAudience',
+    name: 'BIM Managers, BIM Coordinators, bureaux d’études, agences d’architecture',
+  },
+  applicationSubCategory: 'BIM document management',
+  offers: [
     {
-      "@type": "Question",
-      "name": "Faut-il créer un compte ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Non. L'outil est accessible directement, sans inscription et sans carte bleue. Vos préférences (champs actifs, séparateur, thème) sont sauvegardées dans votre navigateur via localStorage."
-      }
+      '@type': 'Offer',
+      name: 'Free',
+      price: '0',
+      priceCurrency: 'CHF',
+      description: '3 lots de renommage par jour, sans compte.',
     },
     {
-      "@type": "Question",
-      "name": "Mes fichiers sont-ils envoyés sur un serveur ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Non. Tout le traitement — extraction ZIP, lecture des fichiers, renommage, visionneuse PDF/DOCX/XLSX — se fait entièrement dans votre navigateur. Aucun fichier, aucun contenu, aucune métadonnée n'est transmis à un serveur externe."
-      }
+      '@type': 'Offer',
+      name: 'Pro',
+      price: '19.99',
+      priceCurrency: 'CHF',
+      description: 'Lots illimités, conventions ISO 19650 / SIA pré-câblées.',
     },
     {
-      "@type": "Question",
-      "name": "Quels profils métier sont supportés ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "L'application propose des profils BIM / Construction, finance, RH, santé, administratif, juridique, industrie, immobilier et convention personnalisée. Les templates BIM sont inspirés de pratiques de nommage, sans certification de conformité."
-      }
+      '@type': 'Offer',
+      name: 'Team',
+      price: '34.90',
+      priceCurrency: 'CHF',
+      description: 'Conventions partagées pour petites équipes BIM.',
     },
-    {
-      "@type": "Question",
-      "name": "Combien de fichiers puis-je traiter ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "L'outil a été testé avec plus de 1 000 fichiers en une seule passe. Vous pouvez déposer des fichiers individuels, un dossier entier, ou une archive ZIP — l'arborescence est préservée dans le ZIP de sortie."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "L'outil est-il payant ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "La version actuelle fonctionne sans compte et sans paiement intégré. Les fonctions cloud, équipe et paiement ne sont pas disponibles dans cette version locale."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Puis-je prévisualiser mes fichiers avant de renommer ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Oui — la visionneuse intégrée affiche PDF (avec zoom et pagination), DOCX (rendu HTML via mammoth.js), XLSX / CSV / ODS (grille avec onglets par feuille), DXF (rendu SVG), images (PNG/JPG/WebP/GIF), et texte brut. Aucun upload — tout est lu en local dans le navigateur."
-      }
-    }
-  ]
-}`;
+  ],
+};
 
-const LANDING_JS = `
-(function() {
-  /* ---------- REVEAL ON SCROLL ---------- */
-  var revealEls = document.querySelectorAll('.r');
-  if('IntersectionObserver' in window){
-    var obs = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); }
-      });
-    },{threshold:.10, rootMargin:'0px 0px -40px 0px'});
-    revealEls.forEach(function(el){ obs.observe(el); });
-  } else {
-    revealEls.forEach(function(el){ el.classList.add('in'); });
-  }
-  // staggered hero
-  document.querySelectorAll('header.hero .r').forEach(function(el,i){
-    setTimeout(function(){ el.classList.add('in'); }, 80 + i*180);
-  });
-
-  /* ---------- LIVE RENAMER DEMO ---------- */
-  var DISCIPLINES = [
-    { code:'ARC', kws:['arc','archi','plan','facade','coupe','etage','niveau','elev'] },
-    { code:'STR', kws:['str','struct','beton','arma','poutre','dalle','fondation','note de calcul','calcul'] },
-    { code:'CVC', kws:['cvc','ventilation','clim','chauf','vmc','synoptique','fluide','heat'] },
-    { code:'ELE', kws:['ele','elec','tableau','electrique','courant','synop','lumi','luminaire'] },
-    { code:'SAN', kws:['san','sanit','plombe','plomberie','evacuation','eu','ev'] },
-    { code:'SEC', kws:['sec','secu','securit','incendie','feu','psc','pv'] },
-    { code:'FAC', kws:['fa\\u00e7','facade','enveloppe','bardage'] },
-    { code:'GEN', kws:[] }
-  ];
-
-  function detectDiscipline(name){
-    var n = name.toLowerCase();
-    for(var i=0;i<DISCIPLINES.length;i++){
-      var d=DISCIPLINES[i];
-      if(d.code === 'GEN') continue;
-      if(new RegExp('\\\\b'+d.code+'\\\\b','i').test(name)) return d.code;
-    }
-    for(var i=0;i<DISCIPLINES.length;i++){
-      var d=DISCIPLINES[i];
-      for(var j=0;j<d.kws.length;j++){
-        if(n.indexOf(d.kws[j])!==-1) return d.code;
-      }
-    }
-    return 'GEN';
-  }
-
-  function detectLevel(name){
-    var m = name.match(/n(\\d{1,2})|niveau\\s*(\\d{1,2})|etage\\s*(\\d{1,2})|n0?(\\d{1,2})/i);
-    if(m){
-      var num = m[1]||m[2]||m[3]||m[4]||'0';
-      return 'N' + String(num).padStart(2,'0');
-    }
-    return 'NXX';
-  }
-  function detectZone(name){
-    var m = name.match(/\\bz(\\d{1,2})\\b/i);
-    if(m) return 'Z' + m[1].padStart(1,'0');
-    return 'ZZ';
-  }
-  function getExt(name){
-    var m = name.match(/\\.([a-z0-9]{2,5})$/i);
-    return m ? '.'+m[1].toLowerCase() : '.pdf';
-  }
-
-  var TEMPLATES = {
-    iso: function(idx, parts){ return 'P001-XX-'+parts.disc+'-DR-'+parts.disc[0]+'R-'+String(idx).padStart(3,'0')+'-S2-P01'+parts.ext; },
-    sia: function(idx, parts){ return 'ABC-PROJ-'+parts.disc+'-DRA-'+parts.zone+'-'+parts.level+'-DR-'+parts.disc[0]+'-'+String(idx).padStart(4,'0')+parts.ext; },
-    frfr: function(idx, parts){ return 'PRJ_'+parts.disc+'_PLN_'+parts.level+'_R01_'+String(idx).padStart(3,'0')+parts.ext; },
-    custom: function(idx, parts){ return '[PROJET]_'+parts.disc+'_'+parts.level+'_'+parts.zone+'_r01_'+String(idx).padStart(3,'0')+parts.ext; }
-  };
-
-  var SAMPLE = 'Plan_etage1_FINAL_def_v2_corrig\\u00e9(JR).pdf\\ncoupe AA - rev_03 - copie.dwg\\nfacade nord ARC OK VALID\\u00c9.pdf\\nnote de calcul structure (STR).pdf\\nsynoptique CVC - phase APD.pdf\\nplan electrique tableau N02.dwg\\nPV reception securite incendie.pdf';
-
-  var $input  = document.getElementById('pgInput');
-  var $output = document.getElementById('pgOutput');
-  var $chips  = document.getElementById('pgChips');
-  var $reset  = document.getElementById('pgReset');
-  var currentTpl = 'iso';
-
-  function render(){
-    if(!$input||!$output) return;
-    var lines = $input.value.split(/\\r?\\n/).map(function(l){return l.trim();}).filter(Boolean);
-    $output.replaceChildren();
-    if(!lines.length){
-      var empty = document.createElement('li');
-      empty.className = 'empty';
-      empty.textContent = '— Collez quelques noms \\u00e0 gauche pour voir la magie.';
-      $output.append(empty);
-      return;
-    }
-    var frag = document.createDocumentFragment();
-    lines.forEach(function(line, i){
-      var parts = {
-        disc: detectDiscipline(line),
-        level: detectLevel(line),
-        zone: detectZone(line),
-        ext: getExt(line)
-      };
-      var renamed = TEMPLATES[currentTpl](i+1, parts);
-      var ok = parts.disc !== 'GEN';
-      var item = document.createElement('li');
-      if(!ok) item.className = 'err';
-
-      var original = document.createElement('code');
-      original.textContent = line;
-      item.append(original, document.createElement('br'), '\\u2192 ' + renamed);
-
-      if(!ok){
-        var warning = document.createElement('em');
-        warning.className = 'pg-warning';
-        warning.textContent = ' \\u2014 discipline non d\\u00e9tect\\u00e9e, code GEN appliqu\\u00e9';
-        item.append(warning);
-      }
-      frag.append(item);
-    });
-    $output.append(frag);
-  }
-
-  if($input) $input.addEventListener('input', render);
-  if($chips) $chips.addEventListener('click', function(e){
-    var btn = e.target.closest('.pg-chip');
-    if(!btn) return;
-    $chips.querySelectorAll('.pg-chip').forEach(function(c){
-      c.classList.remove('active');
-      c.setAttribute('aria-pressed','false');
-    });
-    btn.classList.add('active');
-    btn.setAttribute('aria-pressed','true');
-    currentTpl = btn.dataset.tpl;
-    render();
-  });
-  if($reset) $reset.addEventListener('click', function(){
-    $input.value = SAMPLE;
-    render();
-  });
-  render();
-})();
-`;
+const faqs = [
+  {
+    question: 'BimDoc Renamer remplace-t-il Autodesk Docs ou Plannerly ?',
+    answer:
+      "Non. C’est l’outil qui prépare proprement vos lots de livrables avant dépôt dans votre CDE existant. Il est compatible Autodesk Docs / ACC, Trimble Connect, Kroqi et ProjectWise — il n’essaie pas de les remplacer.",
+  },
+  {
+    question: 'Le template ISO 19650 est-il « certifié » ?',
+    answer:
+      "ISO 19650 n’a pas de certification produit, seulement des certifications organisation. Notre template suit le National Annex UK informatif et reste paramétrable champ par champ pour s’adapter à votre BEP / EIR.",
+  },
+  {
+    question: 'Mes fichiers restent vraiment dans mon navigateur ?',
+    answer:
+      "Oui, et c’est vérifiable. Ouvrez l’onglet Réseau de votre DevTools pendant un renommage : aucune requête sortante ne contient vos fichiers. Voir la page /security pour l’audit complet (CSP, headers HTTP, scans CodeQL / OWASP ZAP).",
+  },
+  {
+    question: 'Peut-on importer notre table d’entreprises et de lots existante ?',
+    answer:
+      "Oui — CSV, Excel, ODS, ou copier-coller depuis un tableur. Vos 84 entreprises et 41 lots par défaut sont des exemples remplaçables.",
+  },
+  {
+    question: 'Et le RVT / DWG / IFC ?',
+    answer:
+      "BimDoc Renamer renomme les fichiers, il ne modifie pas leur contenu interne. Un .rvt ou un .ifc reste valide après renommage. Pour renommer des objets à l’intérieur d’un fichier Revit, il faut Naviate, pyRevit ou Dynamo.",
+  },
+  {
+    question: 'Quelle conformité RGPD ?',
+    answer:
+      "Aucune donnée personnelle traitée tant que vous ne créez pas de compte. Avec un compte Pro : email + préférences uniquement, hébergement EU (Vercel Frankfurt). DPA disponible sur demande pour les contrats Entreprise.",
+  },
+  {
+    question: 'Que se passe-t-il si vous arrêtez le service ?',
+    answer:
+      "Vos conventions sont exportables en JSON ou CSV à tout moment. Vous gardez votre travail, même si le SaaS s’arrête. C’est volontaire — pas de verrou propriétaire.",
+  },
+  {
+    question: 'Vous travaillez avec des grands comptes ?',
+    answer:
+      "Une formule Entreprise est en préparation : SSO SAML/OIDC, déploiement on-premise (Docker), DPA et audit de sécurité, support dédié. Contactez-nous pour parler de votre cas.",
+  },
+];
 
 export default function LandingPage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: LANDING_CSS }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: SOFTWARE_APPLICATION_JSONLD }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: FAQ_JSONLD }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SOFTWARE_APPLICATION_JSONLD) }}
+      />
 
-      <div className="frame">
-
-        {/* ========== NAV ========== */}
-        <nav className="top" aria-label="Navigation principale">
-          <Link href="/" className="brand" aria-label="DOC-RENAME — accueil">
-            <span className="logo-mark" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
-              </svg>
+      <div className="wrap">
+        <header className="topbar">
+          <Link href="/" className="brand" aria-label="BimDoc Renamer — accueil">
+            <span className="mark" aria-hidden="true">DR</span>
+            <span className="brand-name">
+              BimDoc <span className="brand-sub">Renamer</span>
             </span>
-            <span><span className="wm">DOC</span><span className="small"> · RENAME</span></span>
           </Link>
-          <ul className="menu">
-            <li><a href="#probleme">Pourquoi</a></li>
-            <li><a href="#profils">Profils</a></li>
-            <li><a href="#fonctionnalites">Fonctionnalités</a></li>
-            <li><a href="#demo">Démo</a></li>
-            <li><a href="#comment">Comment</a></li>
-          </ul>
-          <a className="cta-mini" href="/app">Essayer le renamer →</a>
-        </nav>
 
-        {/* ========== HERO ========== */}
-        <header className="hero">
-          <div className="stamp r in">
-            <span>SANS COMPTE<br /><em>libre</em><br />SANS UPLOAD</span>
-          </div>
+          <nav className="nav" aria-label="Navigation principale">
+            <a href="#fonctionnement">Comment</a>
+            <a href="#comparatif">Comparatif</a>
+            <a href="#securite">Sécurité</a>
+            <a href="#tarifs">Tarifs</a>
+            <a href="#faq">FAQ</a>
+          </nav>
 
-          <div className="r in">
-            <span className="badge-no-account">
-              <span className="dot"></span>
-              Traitement local. <em>—</em> Aucun upload nécessaire.
-            </span>
-
-            <h1 className="display">
-              Renommez vos<br />
-              documents selon<br />
-              <span className="scribble">les règles
-                <svg viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                  <path d="M5,28 Q60,8 130,22 T290,18" />
-                </svg>
-              </span><br />
-              <em>de votre métier.</em>
-            </h1>
-
-            <p className="lede">
-              Choisissez un profil — <strong>BIM, finance, santé, RH, administratif, juridique, industrie ou immobilier</strong> —
-              puis appliquez une structure de nommage claire à vos fichiers avant transmission, archivage ou dépôt.
-              <span className="accent"> Vos fichiers ne quittent pas votre navigateur.</span>
-            </p>
-
-            <div className="hero-cta">
-              <a className="btn btn-primary" href="/app">Essayer le renamer <span className="arrow">→</span></a>
-              <a className="btn btn-ghost" href="#profils">Voir les profils métier</a>
-            </div>
-
-            <div className="hero-note">
-              <svg viewBox="0 0 40 24" aria-hidden="true" focusable="false">
-                <path d="M2,8 Q12,2 22,12 Q30,18 38,10 M30,14 L38,10 L34,4" />
-              </svg>
-              né du BIM, maintenant structuré par profils métier
-            </div>
-          </div>
+          <a className="pill-link" href="/app">Essayer sans compte</a>
         </header>
 
-        <div className="div-rule"></div>
-
-        {/* ========== PROBLEM ========== */}
-        <section id="probleme" aria-labelledby="titre-probleme">
-          <span className="kicker"><span className="num">01</span>le problème</span>
-          <h2 className="section-title" id="titre-probleme">Une convention documentaire, <em>ça se respecte.</em></h2>
-          <p className="section-sub">
-            DOC-RENAME est né du BIM, mais le problème dépasse la construction : chaque métier a ses codes,
-            ses types de documents, ses entités et ses versions. Le danger commence quand tout est mélangé.
-          </p>
-
-          <div className="problem-wrap mt-problem">
-            <div className="problem-text r">
-              <p>
-                Sur un projet BIM, financier, RH ou juridique, vous manipulez vite <strong>des centaines de fichiers</strong>.
-                Chacun doit porter les bons champs : projet, client, service, type, date, statut, version ou indice.
-                <em>Le vocabulaire doit rester propre à chaque métier.</em>
+        <main>
+          <section className="hero">
+            <div>
+              <span className="eyebrow">Pour BIM Managers · ISO 19650 / SIA · Local-first</span>
+              <h1>
+                Renommez vos livrables BIM <em>avant dépôt CDE.</em>
+              </h1>
+              <p className="lead">
+                Importez un lot de plans, des PDF de notes ou un ZIP de DOE.
+                Composez votre convention <strong>ISO 19650</strong>, <strong>SIA 2051</strong>
+                {' '}ou maison. Exportez un ZIP propre prêt à déposer dans
+                Autodesk Docs, Trimble Connect, Kroqi ou votre CDE interne.
+                Tout reste dans votre navigateur.
               </p>
-              <p>
-                Finance ne doit pas afficher des maquettes IFC. RH ne doit pas afficher des rapports de chantier.
-                BIM ne doit pas proposer des bulletins de paie. Le moteur adapte les champs, types, abréviations,
-                entités et templates au profil choisi.
+
+              <div className="cta-row">
+                <a className="button primary" href="/app">Essayer maintenant — sans compte</a>
+                <a className="button secondary" href="#fonctionnement">Voir la démo 60 s</a>
+              </div>
+              <p className="small-note">
+                Aucun fichier ne quitte votre poste. Vérifiable dans DevTools &gt; Réseau.
               </p>
-              <blockquote className="pull">
-                « Le produit est utile uniquement si la convention affichée correspond vraiment au métier choisi. »
-              </blockquote>
             </div>
 
-            <aside className="file-mess r" aria-label="Exemples de noms de fichiers désordonnés">
-              <ul>
-                <li className="cross">Plan_etage1_FINAL_def_v2_corrigé(JR).pdf</li>
-                <li className="cross">coupe AA - rev_03 - copie.dwg</li>
-                <li className="cross">DOSSIER PRO - VERSION POUR ENVOI.zip</li>
-                <li className="cross">IMG_4523.jpg (un détail STR)</li>
-                <li className="cross">facade nord OK VALIDÉ.pdf</li>
-                <li className="cross">~$nomenclature.xlsx</li>
-              </ul>
-              <div className="doodle">
-                <svg width="60" height="40" viewBox="0 0 60 40" aria-hidden="true" focusable="false">
-                  <path d="M5,30 Q20,5 50,15 M44,8 L50,15 L42,18" />
-                </svg>
-                ça vous parle ?
+            <aside className="product-shot" aria-label="Aperçu produit BimDoc Renamer">
+              <div className="shot-top">
+                <div className="traffic" aria-hidden="true"><span></span><span></span><span></span></div>
+                <span className="usage">Convention active · ISO 19650 UK NA</span>
+              </div>
+              <div className="shot-body">
+                <div className="tool-grid">
+                  <div className="tool-panel">
+                    <h2>Avant</h2>
+                    <div className="file-row old">facade etage 1 FINAL v2.pdf</div>
+                    <div className="file-row old">plan rdc copie.dwg</div>
+                    <div className="file-row old">rapport synthese v3.docx</div>
+                    <div className="file-row old">DOE structure.zip</div>
+                  </div>
+                  <div className="tool-panel">
+                    <h2>Après</h2>
+                    <div className="file-row new">PRJ01-ZZ-XX-DR-A-0001-P02.pdf</div>
+                    <div className="file-row new">PRJ01-ZZ-00-DR-A-0010-P01.dwg</div>
+                    <div className="file-row new">PRJ01-ZZ-XX-RP-S-0003-P03.docx</div>
+                    <div className="file-row new">PRJ01-ZZ-XX-ZZ-S-DOE-P01.zip</div>
+                  </div>
+                </div>
+                <div className="iso-strip" aria-label="Normes supportées">
+                  <span className="chip brick">ISO 19650</span>
+                  <span className="chip">SIA 2051</span>
+                  <span className="chip">BIM France</span>
+                  <span className="chip">Convention maison</span>
+                </div>
               </div>
             </aside>
-          </div>
-        </section>
+          </section>
 
-        <div className="div-rule"></div>
-
-        {/* ========== PLAYGROUND ========== */}
-        <section id="demo" aria-labelledby="titre-demo">
-          <span className="kicker"><span className="num">02</span>essayez tout de suite</span>
-          <h2 className="section-title" id="titre-demo">Collez vos noms, <em>regardez ce que ça donne.</em></h2>
-          <p className="section-sub mb-demo-sub">
-            Aucune inscription. Aucun upload. Tout se passe dans votre navigateur, là, maintenant.
-            Modifiez la liste à gauche, le résultat s&apos;affiche à droite.
-          </p>
-
-          <div className="pg-wrap r">
-            <div className="pg-head">
-              <span className="label">Choisir une norme</span>
-              <div className="pg-chips" id="pgChips" role="group" aria-label="Norme de renommage">
-                <button className="pg-chip active" type="button" data-tpl="iso" aria-pressed="true">ISO 19650</button>
-                <button className="pg-chip" type="button" data-tpl="sia" aria-pressed="false">Norme SIA (CH)</button>
-                <button className="pg-chip" type="button" data-tpl="frfr" aria-pressed="false">BIM France</button>
-                <button className="pg-chip" type="button" data-tpl="custom" aria-pressed="false">Convention maison</button>
+          <section className="section" id="probleme">
+            <div className="section-head">
+              <div>
+                <span className="kicker">Le dernier kilomètre du BIM</span>
+                <h2>30 minutes par livrable, une convention qui dérive à chaque projet.</h2>
               </div>
+              <p className="section-copy">
+                Chaque équipe BIM produit en fin de phase des dizaines de plans,
+                notes, rapports et exports IFC. Avant dépôt CDE, quelqu’un —
+                coordinateur, assistante BIM, BIM Manager — passe sa journée à
+                renommer à la main. Le résultat est rarement 100 % conforme
+                ISO 19650, alors que les marchés publics et les donneurs d’ordre
+                l’exigent.
+              </p>
             </div>
 
-            <div className="pg-body">
-              <div className="pg-col">
-                <label className="pg-field-label" htmlFor="pgInput">Vos fichiers <span className="tag">à gauche</span></label>
-                <textarea id="pgInput" spellCheck={false} defaultValue={`Plan_etage1_FINAL_def_v2_corrigé(JR).pdf\ncoupe AA - rev_03 - copie.dwg\nfacade nord ARC OK VALIDÉ.pdf\nnote de calcul structure (STR).pdf\nsynoptique CVC - phase APD.pdf\nplan electrique tableau N02.dwg\nPV reception securite incendie.pdf`}></textarea>
+            <div className="proof-row">
+              <div className="proof">
+                <strong>73 %</strong>
+                <span>des acteurs construction FR utilisent le BIM (S3D Engineering 2025)</span>
               </div>
+              <div className="proof">
+                <strong>82 %</strong>
+                <span>des bureaux d’études FR ont au moins un projet BIM</span>
+              </div>
+              <div className="proof">
+                <strong>+9 %/an</strong>
+                <span>croissance du marché BIM européen (virtuemarketresearch)</span>
+              </div>
+            </div>
+          </section>
 
-              <div className="pg-col">
-                <h4 id="pg-output-title">Renommé <span className="tag">en direct</span></h4>
-                <div role="status" aria-live="polite" aria-labelledby="pg-output-title">
-                  <ul id="pgOutput"></ul>
+          <section className="section" id="fonctionnement">
+            <div className="section-head">
+              <div>
+                <span className="kicker">Comment ça marche</span>
+                <h2>Trois actions, pas une plateforme à apprendre.</h2>
+              </div>
+              <p className="section-copy">
+                BimDoc Renamer fait une chose : appliquer une convention de
+                nommage propre à un lot de fichiers. Pas de workflow,
+                pas d’approbation, pas de stockage cloud. Vous repartez avec
+                un ZIP prêt à déposer.
+              </p>
+            </div>
+
+            <div className="grid-3 steps">
+              <article className="card step">
+                <strong>Importez</strong>
+                <p>
+                  Glissez votre dossier projet, un ZIP DOE ou des fichiers individuels.
+                  PDF, DOCX, IFC, DWG, DXF, RVT, images, tableurs.
+                  <em className="serif"> Aucun upload</em> — tout est lu dans le navigateur.
+                </p>
+              </article>
+              <article className="card step">
+                <strong>Composez votre convention</strong>
+                <p>
+                  Templates ISO 19650, SIA 2051, BIM France, ou convention maison.
+                  Champs : Projet · Phase · Lot · Zone · Niveau · Type · Discipline ·
+                  Séquence · Révision · Statut. Importez votre table d’entités CSV/Excel.
+                </p>
+              </article>
+              <article className="card step">
+                <strong>Contrôlez et exportez</strong>
+                <p>
+                  Aperçu Avant / Après ligne par ligne, correction manuelle possible.
+                  Téléchargez un ZIP propre avec arborescence intacte, prêt pour Autodesk
+                  Docs, Trimble Connect, Kroqi ou votre CDE interne.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <section className="section" id="comparatif">
+            <div className="section-head">
+              <div>
+                <span className="kicker">Différenciation</span>
+                <h2>Pourquoi BimDoc Renamer plutôt que…</h2>
+              </div>
+              <p className="section-copy">
+                Un outil ciblé fait mieux qu’une plateforme générique sur un job
+                précis. Voici comparé honnêtement aux 3 alternatives que les
+                équipes BIM utilisent aujourd’hui.
+              </p>
+            </div>
+
+            <div style={{ overflowX: 'auto' }}>
+              <table className="compare-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Critère</th>
+                    <th scope="col" className="us-cell">BimDoc Renamer</th>
+                    <th scope="col">Plannerly File Manager</th>
+                    <th scope="col">Autodesk Docs / ACC</th>
+                    <th scope="col">Macro Excel maison</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Compte requis</td><td className="us"><span className="no">Non</span></td><td><span className="ok">Oui</span></td><td><span className="ok">Oui</span></td><td><span className="no">Non</span></td></tr>
+                  <tr><td>Fichiers envoyés en ligne</td><td className="us"><span className="no">Non — navigateur</span></td><td><span className="ok">Oui — AWS</span></td><td><span className="ok">Oui — Autodesk Cloud</span></td><td><span className="no">Non</span></td></tr>
+                  <tr><td>Template ISO 19650</td><td className="us"><span className="ok">Oui, paramétrable</span></td><td><span className="ok">Oui</span></td><td><span className="ok">Oui (depuis 2021)</span></td><td>Selon écriture</td></tr>
+                  <tr><td>Import CSV / Excel d’entités</td><td className="us"><span className="ok">Oui</span></td><td>Limité</td><td>Via API</td><td><span className="ok">Oui mais fragile</span></td></tr>
+                  <tr><td>Profils métier pré-câblés</td><td className="us"><span className="ok">BIM (V1)</span></td><td>Multi</td><td>BIM</td><td><span className="no">Aucun</span></td></tr>
+                  <tr><td>Aperçu Avant / Après</td><td className="us"><span className="ok">Oui</span></td><td><span className="ok">Oui</span></td><td>Partiel</td><td><span className="no">Non</span></td></tr>
+                  <tr><td>Onboarding</td><td className="us"><span className="ok">0 min</span></td><td>60 min + appel</td><td>Plusieurs heures</td><td>N/A</td></tr>
+                  <tr><td>Tarif entrée</td><td className="us us-cell">19,99 CHF / mois</td><td>30 USD+ / mois</td><td>Inclus ACC (~70€+)</td><td>Temps interne</td></tr>
+                  <tr><td>Casse à chaque mise à jour</td><td className="us"><span className="no">Non</span></td><td><span className="no">Non</span></td><td><span className="no">Non</span></td><td><span className="ok">Oui</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section className="section" id="securite">
+            <div className="section-head">
+              <div>
+                <span className="kicker">Confidentialité prouvable</span>
+                <h2>Vérifiez vous-même. Ouvrez l’onglet Réseau.</h2>
+              </div>
+              <p className="section-copy">
+                Le local-first n’est pas un slogan : c’est mesurable. Pendant
+                un renommage, aucune requête sortante ne contient vos fichiers.
+                Voici ce que vous pouvez auditer.
+              </p>
+            </div>
+
+            <div className="security-grid">
+              <ul className="security-list">
+                <li><strong>Traitement 100 % navigateur</strong> — lecture, parsing, renommage et export ZIP côté client.</li>
+                <li><strong>Aucune requête sortante de contenu</strong> — visible en direct dans DevTools &gt; Réseau.</li>
+                <li><strong>Headers HTTP audités</strong> — HSTS preload, X-Frame-Options DENY, CSP stricte, Permissions-Policy verrouillée.</li>
+                <li><strong>CI sécurité automatique</strong> — CodeQL, OWASP ZAP, Lighthouse à chaque commit.</li>
+                <li><strong>Pas de tracking par défaut</strong> — Sentry et PostHog activables, jamais sur le contenu fichier.</li>
+                <li><strong>Export conventions</strong> — JSON / CSV à tout moment, pas de verrou.</li>
+                <li><strong>Hébergement EU</strong> — Vercel Frankfurt par défaut. On-premise possible pour Entreprise.</li>
+              </ul>
+              <div className="devtools" aria-hidden="true">
+                <div className="devtools-top">
+                  <span style={{ color: 'var(--brick)' }}>●</span> DevTools — Network · 12 ressources, 248 KB
+                </div>
+                <div className="devtools-body">
+                  <div className="req"><span>GET /</span><span className="status">200</span></div>
+                  <div className="req"><span>GET /app</span><span className="status">200</span></div>
+                  <div className="req"><span>GET /_next/static/chunks/main.js</span><span className="status">200</span></div>
+                  <div className="req"><span>GET /pdf.worker.min.mjs</span><span className="status">200</span></div>
+                  <div className="filter">▼ filtre : renommage en cours</div>
+                  <div className="req" style={{ color: 'var(--muted)' }}>
+                    <span style={{ fontStyle: 'italic' }}>aucune requête sortante</span>
+                    <span style={{ color: 'var(--moss)' }}>✓</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="pg-foot">
-              <span>Détection auto de la discipline d&apos;après les mots-clés (<strong>ARC</strong>, <strong>STR</strong>, <strong>CVC</strong>, <strong>ELE</strong>, <strong>SEC</strong>…).</span>
-              <button className="reset" id="pgReset" type="button">↻ remettre les exemples</button>
-            </div>
-          </div>
-        </section>
+            <p className="small-note" style={{ marginTop: 28 }}>
+              <a href="/security" style={{ color: 'var(--brick)', fontWeight: 700 }}>
+                Lire l’audit sécurité complet →
+              </a>
+            </p>
+          </section>
 
-        <div className="div-rule"></div>
-
-        {/* ========== HOW ========== */}
-        <section id="comment" aria-labelledby="titre-comment">
-          <span className="kicker"><span className="num">03</span>la manière</span>
-          <h2 className="section-title" id="titre-comment">Trois mouvements. <em>Pas un de plus.</em></h2>
-          <p className="section-sub">
-            Ça tient sur une serviette de café. Mais ça vous fait gagner les jeudis soirs.
-          </p>
-
-          <div className="how-grid mt-how">
-            <div className="how-step r">
-              <span className="big-num">i.</span>
-              <h3>Composez la <em>nomenclature</em>.</h3>
-              <p>Choisissez un template prêt (SIA, ISO 19650, BIM France) ou construisez le vôtre par glisser-déposer. Aperçu en temps réel, sauvegardé par projet.</p>
-              <span className="hand-note">— ou prenez l&apos;ISO 19650 et zou.</span>
-            </div>
-            <div className="how-step r">
-              <span className="big-num">ii.</span>
-              <h3>Déposez vos <em>fichiers</em>.</h3>
-              <p>Un fichier, un dossier, ou une archive ZIP. L&apos;outil extrait, détecte la discipline, applique le template. Vous pouvez corriger ligne par ligne avant validation.</p>
-              <span className="hand-note">— testé jusqu&apos;à 1000 fichiers.</span>
-            </div>
-            <div className="how-step r">
-              <span className="big-num">iii.</span>
-              <h3>Téléchargez le <em>ZIP</em>.</h3>
-              <p>Un clic. Le ZIP renommé arrive dans vos téléchargements, arborescence intacte. Aucun fichier n&apos;a quitté votre machine.</p>
-              <span className="hand-note">— et vous récupérez votre soirée.</span>
-            </div>
-          </div>
-        </section>
-
-        <div className="div-rule"></div>
-
-        {/* ========== PROFILES ========== */}
-        <section id="profils" aria-labelledby="titre-profils">
-          <span className="kicker"><span className="num">04</span>profils métier</span>
-          <h2 className="section-title" id="titre-profils">Un moteur commun. <em>Des conventions séparées.</em></h2>
-          <p className="section-sub">
-            BIM reste le cas d&apos;usage le plus avancé, avec des templates inspirés ISO 19650, SIA et BIM France.
-            Les autres profils disposent de leurs propres types, champs, abréviations, entités et exemples.
-          </p>
-
-          <div className="norms mt-norms">
-            <article className="norm r">
-              <span className="ribbon">Vertical principal</span>
-              <h4>BIM / <em>Construction</em></h4>
-              <div className="sub">Plans, maquettes, rapports, lots, disciplines, CDE</div>
-              <p>Templates BIM inspirés ISO 19650, SIA et BIM France. Ne constitue pas une certification de conformité.</p>
-              <span className="ex-label">exemple →</span>
-              <code className="ex">PROJET_BET_STRUCTURE_DOCTECH_NIV01_REV01.pdf</code>
-            </article>
-
-            <article className="norm r">
-              <span className="ribbon">Back-office</span>
-              <h4>Finance · RH · <em>Admin</em></h4>
-              <div className="sub">Factures, paie, attestations, courriers, dossiers</div>
-              <p>Chaque profil garde ses propres types de documents et entités. Pas de types BIM dans Finance, pas de fiches de paie dans BIM.</p>
-              <span className="ex-label">exemple →</span>
-              <code className="ex">CLIENT_2026_05_RAPFIN_VALIDE_V01.xlsx</code>
-            </article>
-
-            <article className="norm r">
-              <span className="ribbon">Opérations</span>
-              <h4>Santé · Juridique · Industrie · <em>Immobilier</em></h4>
-              <div className="sub">Procédures, contrats, équipements, baux, diagnostics</div>
-              <p>Des conventions de départ contextualisées pour structurer les lots documentaires avant transmission ou archivage.</p>
-              <span className="ex-label">exemple →</span>
-              <code className="ex">SERVICE_QUALITE_PROC_HYGIENE_V03.pdf</code>
-            </article>
-          </div>
-        </section>
-
-        <div className="div-rule"></div>
-
-        {/* ========== FEATURES ========== */}
-        <section id="fonctionnalites" aria-labelledby="titre-fonctionnalites">
-          <span className="kicker"><span className="num">05</span>ce qu&apos;il y a dedans</span>
-          <h2 className="section-title" id="titre-fonctionnalites">Petit, mais <em>complet.</em></h2>
-          <p className="section-sub mb-feats-sub">
-            Pas une suite. Un outil. Qui fait une chose, et qui la fait bien.
-          </p>
-
-          <div className="feats">
-            <div className="feat r"><div className="ico">↓</div><h5>Drag &amp; drop fichiers + archives</h5><p>Fichiers, dossiers ou archives ZIP, RAR, 7z, TAR, GZIP. Extraction automatique, arborescence préservée.</p></div>
-            <div className="feat r"><div className="ico">⌘</div><h5>Profils métier</h5><p>BIM, finance, santé, RH, administratif, juridique, industrie, immobilier et convention personnalisée.</p></div>
-            <div className="feat r"><div className="ico">◎</div><h5>Catégorisation par type</h5><p>Fichiers regroupés à l&apos;arrivée par catégorie — documents, CAO, BIM, images, archives — pour un repérage instantané.</p></div>
-            <div className="feat r"><div className="ico">▤</div><h5>Visionneuse intégrée</h5><p>PDF · DOCX · XLSX · DXF · images · texte — aperçu directement dans l&apos;outil, sans upload.</p></div>
-            <div className="feat r"><div className="ico">∑</div><h5>Renaming en lot</h5><p>1 000+ fichiers renommés en quelques secondes. Sélection partielle ou lot complet.</p></div>
-            <div className="feat r"><div className="ico">⟂</div><h5>Préfixes intelligents</h5><p>Détection automatique des préfixes communs. Suppression, remplacement ou mapping vers les champs.</p></div>
-            <div className="feat r"><div className="ico">⊞</div><h5>Entités par profil</h5><p>Import par copier-coller : entreprises BIM, clients finance, collaborateurs RH, sites industriels ou biens immobiliers.</p></div>
-            <div className="feat r"><div className="ico">¶</div><h5>Normalisation stricte</h5><p>Majuscules, accents supprimés, séparateurs propres, abréviations métier et aperçu avant export ZIP.</p></div>
-          </div>
-        </section>
-
-        <div className="div-rule"></div>
-
-        {/* ========== LIMITS ========== */}
-        <section aria-labelledby="titre-limites">
-          <span className="kicker"><span className="num">06</span>ce que l&apos;outil ne prétend pas faire</span>
-          <h2 className="section-title" id="titre-limites">Un renamer précis. <em>Pas une plateforme métier complète.</em></h2>
-          <p className="section-sub">
-            L&apos;application se concentre sur une mission : structurer et renommer des lots de documents.
-            Elle ne remplace pas une GED, une CDE, un ERP, un SIRH ou une plateforme de validation.
-          </p>
-          <div className="feats" style={{ marginTop: '42px' }}>
-            <div className="feat r"><div className="ico">!</div><h5>Pas de certification</h5><p>Les templates BIM sont inspirés de pratiques de nommage. Ils ne certifient pas une conformité réglementaire.</p></div>
-            <div className="feat r"><div className="ico">!</div><h5>Pas de validation métier</h5><p>L&apos;outil n&apos;approuve pas le contenu d&apos;un fichier et ne remplace pas une revue technique, juridique ou qualité.</p></div>
-            <div className="feat r"><div className="ico">!</div><h5>Pas de cloud équipe</h5><p>La version actuelle ne fournit pas de compte, collaboration, historique cloud, workflow d&apos;approbation ou paiement intégré.</p></div>
-          </div>
-        </section>
-
-        <div className="div-rule"></div>
-
-        {/* ========== MANIFESTO ========== */}
-        <section aria-labelledby="titre-engagements">
-          <span className="kicker"><span className="num">07</span>confidentialité</span>
-          <h2 className="section-title" id="titre-engagements">Vos fichiers <em>ne quittent pas</em> votre machine.</h2>
-          <p className="section-sub">
-            Conçu pour des pros qui manipulent des documents sensibles. Voici les règles que l&apos;outil respecte.
-          </p>
-
-          <div className="manifesto mt-manifesto">
-            <ul>
-              <li>
-                <span className="k">i</span>
-                <span className="v">
-                  <strong>Client-side d&apos;abord.</strong>
-                  <span>Extraction ZIP, lecture des fichiers, renommage : tout se fait dans votre navigateur. Aucun fichier envoyé sur un serveur.</span>
-                </span>
-              </li>
-              <li>
-                <span className="k">ii</span>
-                <span className="v">
-                  <strong>Le local d&apos;abord.</strong>
-                  <span>Vos templates et conventions personnalisées sont stockées dans votre navigateur (localStorage). Pas de cloud, pas de compte requis.</span>
-                </span>
-              </li>
-              <li>
-                <span className="k">iii</span>
-                <span className="v">
-                  <strong>Pas de verrouillage.</strong>
-                  <span>Vos templates s&apos;exportent en JSON. Vous partez quand vous voulez avec vos conventions.</span>
-                </span>
-              </li>
-              <li>
-                <span className="k">iv</span>
-                <span className="v">
-                  <strong>Open by default.</strong>
-                  <span>Le code est ouvert. Vous pouvez auditer exactement ce que l&apos;outil fait à vos fichiers.</span>
-                </span>
-              </li>
-            </ul>
-
-            <aside className="ledger" aria-label="Citation sur le cahier des charges">
-              <span className="openq">&quot;</span>
-              <blockquote>
-                Le traitement local est volontaire : import, aperçu, renommage et export ZIP se font dans le navigateur.
-                L&apos;outil ne nécessite pas d&apos;upload pour accomplir sa mission.
-              </blockquote>
-              <span className="by">— principe de fonctionnement actuel</span>
-            </aside>
-          </div>
-        </section>
-
-        <div className="div-rule"></div>
-
-        {/* ========== TARIFS ========== */}
-        <section id="tarifs" aria-labelledby="titre-tarifs">
-          <span className="kicker"><span className="num">08</span>tarifs</span>
-          <h2 className="section-title" id="titre-tarifs">Version locale, <em>sans paiement intégré.</em></h2>
-          <p className="section-sub">
-            La version actuelle fonctionne sans compte et sans paiement. Les fonctions cloud, équipe,
-            historique partagé ou abonnement ne sont pas disponibles dans cette version locale.
-          </p>
-          <p style={{ marginTop: '24px', fontSize: '15px', color: 'var(--ink-mute)' }}>
-            Pour être tenu au courant : <a href="mailto:contact@bimdoc-renamer.com" style={{ color: 'var(--brick)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>contact@bimdoc-renamer.com</a>
-          </p>
-        </section>
-
-        <div className="div-rule"></div>
-
-        {/* ========== FAQ ========== */}
-        <section id="faq" aria-labelledby="titre-faq">
-          <span className="kicker"><span className="num">09</span>questions fréquentes</span>
-          <h2 className="section-title" id="titre-faq">Tout ce qu&apos;on <em>nous demande.</em></h2>
-
-          <div className="faq-list" style={{ marginTop: '48px', display: 'flex', flexDirection: 'column', gap: '0' }}>
-
-            <details className="faq-item" style={{ borderTop: '1px solid var(--line)', padding: '22px 0' }}>
-              <summary style={{ fontSize: '19px', fontWeight: 600, letterSpacing: '-.01em', color: 'var(--ink)', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
-                Faut-il créer un compte ?
-                <span style={{ fontSize: '22px', color: 'var(--brick)', flex: 'none', fontWeight: 300 }}>+</span>
-              </summary>
-              <p style={{ margin: '14px 0 0', fontSize: '16px', lineHeight: 1.65, color: 'var(--ink-soft)', maxWidth: '680px' }}>
-                Non. L&apos;outil est accessible directement, sans inscription et sans carte bleue.
-                Vos préférences (champs actifs, séparateur, thème) sont sauvegardées dans votre navigateur via localStorage.
-              </p>
-            </details>
-
-            <details className="faq-item" style={{ borderTop: '1px solid var(--line)', padding: '22px 0' }}>
-              <summary style={{ fontSize: '19px', fontWeight: 600, letterSpacing: '-.01em', color: 'var(--ink)', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
-                Mes fichiers sont-ils envoyés sur un serveur ?
-                <span style={{ fontSize: '22px', color: 'var(--brick)', flex: 'none', fontWeight: 300 }}>+</span>
-              </summary>
-              <p style={{ margin: '14px 0 0', fontSize: '16px', lineHeight: 1.65, color: 'var(--ink-soft)', maxWidth: '680px' }}>
-                Non. Tout le traitement — extraction ZIP, lecture des fichiers, renommage, visionneuse PDF/DOCX/XLSX — se fait entièrement dans votre navigateur.
-                Aucun fichier, aucun contenu, aucune métadonnée n&apos;est transmis à un serveur externe.
-              </p>
-            </details>
-
-            <details className="faq-item" style={{ borderTop: '1px solid var(--line)', padding: '22px 0' }}>
-              <summary style={{ fontSize: '19px', fontWeight: 600, letterSpacing: '-.01em', color: 'var(--ink)', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
-                Quels profils métier sont supportés ?
-                <span style={{ fontSize: '22px', color: 'var(--brick)', flex: 'none', fontWeight: 300 }}>+</span>
-              </summary>
-              <p style={{ margin: '14px 0 0', fontSize: '16px', lineHeight: 1.65, color: 'var(--ink-soft)', maxWidth: '680px' }}>
-                L&apos;application propose des profils <strong>BIM / Construction</strong>, finance, santé, RH, administratif, juridique, industrie, immobilier et convention personnalisée.
-                Les templates BIM sont inspirés de pratiques de nommage et ne constituent pas une certification de conformité.
-              </p>
-            </details>
-
-            <details className="faq-item" style={{ borderTop: '1px solid var(--line)', padding: '22px 0' }}>
-              <summary style={{ fontSize: '19px', fontWeight: 600, letterSpacing: '-.01em', color: 'var(--ink)', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
-                Combien de fichiers puis-je traiter ?
-                <span style={{ fontSize: '22px', color: 'var(--brick)', flex: 'none', fontWeight: 300 }}>+</span>
-              </summary>
-              <p style={{ margin: '14px 0 0', fontSize: '16px', lineHeight: 1.65, color: 'var(--ink-soft)', maxWidth: '680px' }}>
-                L&apos;outil a été testé avec plus de 1 000 fichiers en une seule passe. Vous pouvez déposer des fichiers individuels, un dossier entier, ou une archive ZIP — l&apos;arborescence est préservée dans le ZIP de sortie.
-              </p>
-            </details>
-
-            <details className="faq-item" style={{ borderTop: '1px solid var(--line)', padding: '22px 0' }}>
-              <summary style={{ fontSize: '19px', fontWeight: 600, letterSpacing: '-.01em', color: 'var(--ink)', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
-                L&apos;outil est-il payant ?
-                <span style={{ fontSize: '22px', color: 'var(--brick)', flex: 'none', fontWeight: 300 }}>+</span>
-              </summary>
-              <p style={{ margin: '14px 0 0', fontSize: '16px', lineHeight: 1.65, color: 'var(--ink-soft)', maxWidth: '680px' }}>
-                La version actuelle fonctionne sans compte et sans paiement intégré. Les fonctions cloud, équipe, historique partagé et abonnement ne sont pas disponibles dans cette version locale.
-                Écrivez à <a href="mailto:contact@bimdoc-renamer.com" style={{ color: 'var(--brick)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>contact@bimdoc-renamer.com</a> pour être tenu au courant.
-              </p>
-            </details>
-
-            <details className="faq-item" style={{ borderTop: '1px solid var(--line)', padding: '22px 0' }}>
-              <summary style={{ fontSize: '19px', fontWeight: 600, letterSpacing: '-.01em', color: 'var(--ink)', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
-                Est-ce une CDE, une GED ou un outil de conformité ?
-                <span style={{ fontSize: '22px', color: 'var(--brick)', flex: 'none', fontWeight: 300 }}>+</span>
-              </summary>
-              <p style={{ margin: '14px 0 0', fontSize: '16px', lineHeight: 1.65, color: 'var(--ink-soft)', maxWidth: '680px' }}>
-                Non. DOC-RENAME renomme et structure des lots de documents. Il ne remplace pas une CDE, une GED, un ERP, un SIRH, une validation métier ou une certification réglementaire.
-              </p>
-            </details>
-
-            <details className="faq-item" style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)', padding: '22px 0' }}>
-              <summary style={{ fontSize: '19px', fontWeight: 600, letterSpacing: '-.01em', color: 'var(--ink)', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
-                Puis-je prévisualiser mes fichiers avant de renommer ?
-                <span style={{ fontSize: '22px', color: 'var(--brick)', flex: 'none', fontWeight: 300 }}>+</span>
-              </summary>
-              <p style={{ margin: '14px 0 0', fontSize: '16px', lineHeight: 1.65, color: 'var(--ink-soft)', maxWidth: '680px' }}>
-                Oui — la visionneuse intégrée affiche <strong>PDF</strong> (avec zoom et pagination), <strong>DOCX</strong> (rendu HTML via mammoth.js), <strong>XLSX / CSV / ODS</strong> (grille avec onglets par feuille), <strong>DXF</strong> (rendu SVG), images (PNG/JPG/WebP/GIF), et texte brut.
-                Aucun upload — tout est lu en local dans le navigateur.
-              </p>
-            </details>
-
-          </div>
-        </section>
-
-        <div className="div-rule"></div>
-
-        {/* ========== FINAL CTA ========== */}
-        <section className="final" id="essayer" aria-labelledby="titre-essayer">
-          <div className="final-inner">
-            <div className="r">
-              <span className="kicker"><span className="num">10</span>on commence ?</span>
-              <h2 id="titre-essayer">Allez. <em>Trente</em> secondes.</h2>
-              <p>
-                Vous n&apos;avez besoin de rien. Pas d&apos;inscription, pas de carte bleue, pas de tutoriel.
-                Collez vos noms de fichiers dans la démo et regardez. Ou glissez un ZIP — tout se passe dans votre navigateur.
-              </p>
-              <div className="hero-cta">
-                <a className="btn btn-primary" href="/app">Ouvrir l&apos;outil <span className="arrow">→</span></a>
-                <a className="btn btn-ghost" href="#comment">Comprendre d&apos;abord</a>
+          <section className="section" id="personas">
+            <div className="section-head">
+              <div>
+                <span className="kicker">Qui s’en sert</span>
+                <h2>Trois profils, trois usages concrets.</h2>
               </div>
+              <p className="section-copy">
+                Les exemples ci-dessous sont représentatifs des cas d’usage
+                qu’on rencontre. Dès qu’un client beta signe un témoignage public,
+                nous le remplaçons par un vrai nom et un vrai logo.
+              </p>
             </div>
 
-            <aside className="final-side r" aria-label="une question, un retour ?">
-              <h6>une question, un retour ?</h6>
-              <p style={{ fontSize: '15.5px', lineHeight: 1.5, color: 'rgba(244,236,220,.86)', margin: '0 0 18px' }}>
-                Le projet vit grâce aux retours des premiers utilisateurs. Si vous
-                butez sur quelque chose, écrivez : <a href="mailto:contact@bimdoc-renamer.com" style={{ color: 'var(--gold-soft)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>contact@bimdoc-renamer.com</a>.
+            <div className="grid-3">
+              <article className="persona-card">
+                <span className="persona-role">BIM Coordinator · Agence d’architecture</span>
+                <p className="persona-quote">
+                  Nous livrons 80 fichiers à chaque jalon. La convention maison est
+                  dans un Notion. Avant, la coordination passait 4 heures à
+                  renommer avant chaque dépôt. Maintenant : 15 minutes.
+                </p>
+                <span className="persona-name">— Profil type · agence FR 18 personnes</span>
+              </article>
+              <article className="persona-card">
+                <span className="persona-role">Bureau d’études MEP</span>
+                <p className="persona-quote">
+                  Nos donneurs d’ordre exigent ISO 19650. Notre équipe modélise
+                  en Revit mais le dépôt CDE final est manuel. BimDoc applique
+                  la convention en un clic, sans passer par l’usine à gaz Autodesk.
+                </p>
+                <span className="persona-name">— Profil type · BE MEP CH 30 personnes</span>
+              </article>
+              <article className="persona-card">
+                <span className="persona-role">BIM Manager · Entreprise générale</span>
+                <p className="persona-quote">
+                  Nos sous-traitants envoient des ZIP. Avant intégration dans
+                  notre CDE interne, nous devons re-baptiser. BimDoc tourne en
+                  local sur le poste d’un assistant, sans connexion à notre SI.
+                </p>
+                <span className="persona-name">— Profil type · EG FR 200+ personnes</span>
+              </article>
+            </div>
+          </section>
+
+          <section className="section" id="tarifs">
+            <div className="section-head">
+              <div>
+                <span className="kicker">Tarifs</span>
+                <h2>Un prix pour tester, un prix pour produire, un prix pour l’équipe.</h2>
+              </div>
+              <p className="section-copy">
+                Pas de freemium piégé. La version Free reste utilisable pour
+                des lots petits et ponctuels. Pro retire la limite quotidienne.
+                Team partage les conventions.
               </p>
-              <ul className="bullets">
-                <li>Sans inscription pour l&apos;instant</li>
-                <li>Aucun upload de vos fichiers</li>
-                <li>Profils métier séparés</li>
-                <li>Visionneuse PDF / DOCX / XLSX intégrée</li>
-              </ul>
-            </aside>
-          </div>
-        </section>
+            </div>
+
+            <div className="grid-3 pricing">
+              <article className="plan">
+                <div className="plan-top">
+                  <h3>Free</h3>
+                  <span className="badge">Pour tester</span>
+                </div>
+                <p className="price">0 <small>CHF</small></p>
+                <p className="muted">3 lots de renommage par jour. Sans compte.</p>
+                <ul>
+                  <li>Templates ISO 19650 + SIA inclus</li>
+                  <li>Aperçu Avant / Après</li>
+                  <li>Traitement local navigateur</li>
+                  <li>Export ZIP propre</li>
+                </ul>
+                <a className="button secondary" href="/app">Essayer maintenant</a>
+              </article>
+
+              <article className="plan pro">
+                <div className="plan-top">
+                  <h3>Pro</h3>
+                  <span className="badge">Illimité</span>
+                </div>
+                <p className="price">19,99 <small>CHF / mois</small></p>
+                <p className="muted">Pour les lots réguliers et les conventions de projet.</p>
+                <ul>
+                  <li>Lots illimités</li>
+                  <li>Conventions illimitées sauvegardées</li>
+                  <li>Import CSV / Excel d’entités</li>
+                  <li>Export JSON / CSV de conventions</li>
+                  <li>Support email J+1</li>
+                </ul>
+                <a
+                  className="button primary"
+                  href="mailto:contact@bimdoc-renamer.com?subject=Acc%C3%A8s%20Pro%20BimDoc"
+                >
+                  S’abonner
+                </a>
+              </article>
+
+              <article className="plan team">
+                <div className="plan-top">
+                  <h3>Team</h3>
+                  <span className="badge">Recommandé</span>
+                </div>
+                <p className="price">34,90 <small>CHF / mois</small></p>
+                <p className="muted">Pour les petites équipes qui partagent une convention.</p>
+                <ul>
+                  <li>Jusqu’à 3 utilisateurs inclus</li>
+                  <li>Conventions partagées</li>
+                  <li>Onboarding 30 min inclus</li>
+                  <li>Import CSV / Excel d’entités</li>
+                  <li>Support prioritaire léger</li>
+                </ul>
+                <a
+                  className="button primary"
+                  href="mailto:contact@bimdoc-renamer.com?subject=Acc%C3%A8s%20Team%20BimDoc"
+                >
+                  Contacter
+                </a>
+              </article>
+            </div>
+
+            <p className="small-note" style={{ marginTop: 30 }}>
+              Besoin d’un déploiement on-premise, SSO ou DPA Entreprise ?{' '}
+              <a href="mailto:contact@bimdoc-renamer.com?subject=Entreprise" style={{ color: 'var(--brick)', fontWeight: 700 }}>
+                Parlons-en →
+              </a>
+            </p>
+          </section>
+
+          <section className="section" id="faq">
+            <div className="section-head">
+              <div>
+                <span className="kicker">FAQ</span>
+                <h2>Les questions qu’un BIM Manager pose en premier.</h2>
+              </div>
+              <p className="section-copy">
+                Réponses honnêtes. Si une question manque, écrivez-nous —
+                on l’ajoute publiquement ici.
+              </p>
+            </div>
+
+            <div className="faq">
+              {faqs.map((faq) => (
+                <details key={faq.question}>
+                  <summary>{faq.question}</summary>
+                  <p>{faq.answer}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+
+          <section className="final" id="essayer">
+            <div className="section-head">
+              <div>
+                <span className="kicker">Commencer</span>
+                <h2>Du lot brut au ZIP propre, en 60 secondes.</h2>
+              </div>
+              <p className="section-copy">
+                Pas de compte à créer, pas de configuration cloud, pas de carte
+                bancaire pour la version Free.
+              </p>
+            </div>
+            <div className="cta-row">
+              <a className="button primary" href="/app">Essayer sans compte</a>
+              <a
+                className="button secondary"
+                href="mailto:contact@bimdoc-renamer.com?subject=Question%20BimDoc"
+              >
+                Poser une question
+              </a>
+            </div>
+          </section>
+        </main>
       </div>
 
-      {/* ========== FOOTER ========== */}
       <footer>
-        <div className="frame">
-          <div className="foot">
-            <div>
-              <Link href="/" className="brand" aria-label="DOC-RENAME — accueil">
-                <span className="logo-mark" aria-hidden="true">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
-                  </svg>
-                </span>
-                <span><span className="wm">DOC</span><span className="small"> · RENAME</span></span>
-              </Link>
-              <p className="blurb">
-                Outil local de renommage documentaire par profils métier, né du BIM et extensible
-                aux conventions internes.
-              </p>
-            </div>
-            <div>
-              <h6>Produit</h6>
-              <ul>
-                <li><a href="#comment">Comment ça marche</a></li>
-                <li><a href="#profils">Profils métier</a></li>
-                <li><a href="#demo">Démo</a></li>
-                <li><a href="https://github.com/winterbim/bimcheck-rename/blob/main/web/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Changelog</a></li>
-              </ul>
-            </div>
-            <div>
-              <h6>Ressources</h6>
-              <ul>
-                <li><a href="https://github.com/winterbim/bimcheck-rename/blob/main/web/ARCHITECTURE.md" target="_blank" rel="noopener noreferrer">Documentation</a></li>
-                <li><a href="/app">Lancer l&apos;outil</a></li>
-                <li><a href="https://github.com/winterbim/bimcheck-rename" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-              </ul>
-            </div>
-            <div>
-              <h6>Légal</h6>
-              <ul>
-                <li><a href="/privacy">Confidentialité</a></li>
-                <li><a href="/privacy#conditions">Conditions</a></li>
-                <li><a href="/privacy#rgpd">RGPD</a></li>
-                <li><a href="mailto:contact@bimdoc-renamer.com">Contact</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="foot-bot">
-            <div>© 2026 DOC-RENAME · Proprietary License</div>
-            <span className="signature">par Jawani Fernandes —</span>
-          </div>
+        <div className="wrap foot">
+          <span>© 2026 BimDoc Renamer — Renommage de livrables BIM ISO 19650 / SIA</span>
+          <span>
+            <a href="/privacy">Confidentialité</a> ·{' '}
+            <a href="/security">Sécurité</a> ·{' '}
+            <a href="mailto:contact@bimdoc-renamer.com">Contact</a>
+          </span>
         </div>
       </footer>
-
-      <Script id="landing-demo" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: LANDING_JS }} />
     </>
   );
 }
