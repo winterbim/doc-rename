@@ -1,17 +1,44 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
 import { useAppContext } from '@/lib/app-state';
-import { batchGenerate } from '@/lib/bim/nomenclature';
+import { batchGenerate, normalizeOutputName } from '@/lib/bim/nomenclature';
 import { getActiveFieldsForProfile, normalizeFieldValuesForGeneration } from '@/lib/profiles';
-import { writeZip } from '@/lib/bim/zip-io';
+import { normalizeZipArchiveName, writeZip } from '@/lib/bim/zip-io';
+import { useFileIngestion } from '@/lib/hooks/useFileIngestion';
 import { Button } from './ui/Button';
+
+function normalizeZipFolder(folder: string): string {
+  return folder
+    .split('/')
+    .map(normalizeOutputName)
+    .filter((part) => part && part !== '.' && part !== '..')
+    .join('/');
+}
 
 export function ActionBar() {
   const { state, dispatch } = useAppContext();
-  const { files, fields, separator, isRenaming } = state;
+  const { files, fields, separator, isRenaming, isUploading } = state;
   const { selectedIds, applyScope } = state.ui;
+  const [zipName, setZipName] = useState('FICHIERS_RENOMMES');
+  const { processFiles } = useFileIngestion();
+  const addInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleOpenAddPicker = useCallback(() => {
+    addInputRef.current?.click();
+  }, []);
+
+  const handleAddInputChange = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const incoming = Array.from(event.target.files ?? []);
+      if (incoming.length > 0) {
+        await processFiles(incoming);
+      }
+      event.target.value = '';
+    },
+    [processFiles],
+  );
 
   const hasFiles = files.length > 0;
   const hasSelection = selectedIds.length > 0;
@@ -58,7 +85,7 @@ export function ActionBar() {
       const renamed = results.filter((r) => r.errors.length === 0).length;
       dispatch({
         type: 'TOAST_SHOW',
-        msg: `${renamed}/${targetFiles.length} fichier(s) renommé(s)`,
+        msg: `${renamed}/${targetFiles.length} fichier(s) renommé(s).`,
       });
     } catch (err) {
       dispatch({ type: 'RENAME_ALL_COMPLETE', results: [] });
@@ -67,7 +94,15 @@ export function ActionBar() {
         msg: `Erreur lors du renommage: ${err instanceof Error ? err.message : String(err)}`,
       });
     }
-  }, [hasTarget, targetFiles, fields, separator, state.profileId, state.profileEntities, dispatch]);
+  }, [
+    hasTarget,
+    targetFiles,
+    fields,
+    separator,
+    state.profileId,
+    state.profileEntities,
+    dispatch,
+  ]);
 
   // --- Download ZIP ---
 
@@ -82,12 +117,16 @@ export function ActionBar() {
     }
 
     try {
-      const entries = renamedFiles.map((f) => ({
-        path: f.folder ? `${f.folder}/${f.newName!}` : f.newName!,
-        blob: f.blob,
-      }));
+      const entries = renamedFiles.map((f) => {
+        const folder = normalizeZipFolder(f.folder);
+        const filename = normalizeOutputName(f.newName!);
+        return {
+          path: folder ? `${folder}/${filename}` : filename,
+          blob: f.blob,
+        };
+      });
       const zipBlob = await writeZip(entries);
-      saveAs(zipBlob, 'renamed.zip');
+      saveAs(zipBlob, normalizeZipArchiveName(zipName));
       dispatch({ type: 'TOAST_SHOW', msg: 'ZIP téléchargé !' });
     } catch (err) {
       dispatch({
@@ -95,7 +134,7 @@ export function ActionBar() {
         msg: `Erreur ZIP: ${err instanceof Error ? err.message : String(err)}`,
       });
     }
-  }, [targetFiles, dispatch]);
+  }, [targetFiles, zipName, dispatch]);
 
   // --- Reset ---
 
@@ -192,6 +231,42 @@ export function ActionBar() {
         {renameLabel}
       </Button>
 
+      {/* Add more files — shortcut to the upload picker, available even when
+          the dropzone is scrolled out of view. */}
+      <Button
+        variant="secondary"
+        onClick={handleOpenAddPicker}
+        loading={isUploading}
+        aria-label="Ajouter des fichiers à la liste"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 4v6h6M20 20v-6h-6M4 10a8 8 0 0114-5M20 14a8 8 0 01-14 5"
+          />
+        </svg>
+        Ajouter des fichiers
+      </Button>
+      <input
+        ref={addInputRef}
+        type="file"
+        multiple
+        accept=".pdf,.doc,.docx,.xls,.xlsx,.dwg,.dxf,.ifc,.rvt,.nwd,.png,.jpg,.jpeg,.zip,.rar,.7z,.tar,.gz,.tgz,.bz2,.xz"
+        className="sr-only"
+        aria-hidden="true"
+        tabIndex={-1}
+        onChange={handleAddInputChange}
+      />
+
       <Button
         variant="secondary"
         onClick={handleDownloadZip}
@@ -216,6 +291,20 @@ export function ActionBar() {
         </svg>
         {zipLabel}
       </Button>
+
+      {hasFiles && (
+        <label className="flex min-w-0 items-center gap-1.5 text-xs text-ink-mute">
+          <span className="hidden sm:inline">Nom ZIP</span>
+          <input
+            type="text"
+            value={zipName}
+            onChange={(event) => setZipName(event.target.value)}
+            placeholder="FICHIERS_RENOMMES"
+            className="w-36 rounded-md border border-line bg-white px-2 py-1 text-xs text-ink placeholder:text-ink-mute focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick"
+            aria-label="Nom du fichier ZIP"
+          />
+        </label>
+      )}
 
       <Button
         variant="ghost"
