@@ -1,0 +1,36 @@
+{
+  "name": "doc-rename-video",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "description": "DOC-RENAME marketing video — built with Remotion (silent + integrated subtitles, FR).",
+  "scripts": {
+    "start": "remotion studio",
+    "studio": "remotion studio",
+    "build": "remotion render MainMaster out/doc-rename-master-1920x1080.mp4",
+    "build:vertical": "remotion render MainVertical out/doc-rename-vertical-1080x1920.mp4",
+    "build:short": "remotion render MainShort out/doc-rename-short-1920x1080.mp4",
+    "build:short:vertical": "remotion render MainShortVertical out/doc-rename-short-1080x1920.mp4",
+    "build:all": "npm run build && npm run build:vertical && npm run build:short && npm run build:short:vertical",
+    "still:cover": "remotion still MainMaster out/cover.png --frame=60",
+    "upgrade": "remotion upgrade"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.366",
+    "@remotion/fonts": "4.0.366",
+    "@remotion/google-fonts": "4.0.366",
+    "@remotion/shapes": "4.0.366",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.366"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.5.0"
+  }
+}
