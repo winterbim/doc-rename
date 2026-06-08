@@ -43,3 +43,13 @@ next-env.d.ts
 *.tar.gz
 *.7z
 *.rar
+
+# Test artifacts
+web/test-results/
+web/playwright-report/
+
+# Local agent / IDE tooling (not part of the product)
+.agents/
+.agent-skills/
+.cursor/
+skills-lock.json

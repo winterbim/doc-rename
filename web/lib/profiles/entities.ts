@@ -13,11 +13,22 @@ export function importEntitiesFromText(
   const entities: ProfileEntity[] = [];
 
   for (const rawLine of text.split(/\r?\n/)) {
-    const label = rawLine
-      .split(/\t|;/)
+    const cells = rawLine
+      .split(/\t|;|,/)
       .map((part) => part.trim())
-      .find(Boolean);
+      .filter(Boolean);
+    const label = cells[0];
     if (!label) continue;
+
+    const normalizedLabel = normalizeDocumentName(label, {
+      separator: '_',
+      profileId,
+      preserveExtension: false,
+      applyAbbreviations: false,
+    });
+    if (['CODE', 'ID', 'NOM', 'NAME', 'ENTREPRISE', 'COMPANY', 'SOCIETE'].includes(normalizedLabel)) {
+      continue;
+    }
 
     const code = normalizeDocumentName(label, {
       separator: '_',

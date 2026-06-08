@@ -1,5 +1,6 @@
 import type { FieldDefinition } from '@/lib/bim/types';
 import type { FieldsState } from '@/lib/bim/fields';
+import { COMPANIES } from '@/lib/bim/config/companies';
 import { INDUSTRY_PROFILES } from './industry-profiles';
 import { adaptAbbreviationSeparator, normalizeFieldValue } from './normalization';
 import type {
@@ -96,7 +97,23 @@ function optionsForField(
     if (field.id === 'docType') return 'documentTypes';
     if (field.id === 'workLot') return 'workLots';
     if (field.id === 'discipline') return 'disciplines';
-    if (field.id === 'company') return 'companies';
+    if (field.id === 'company') {
+      if (entities.length === 0) return 'companies';
+
+      const options = new Map(
+        COMPANIES.map((company) => [
+          company.code,
+          { code: company.code, name: company.name },
+        ]),
+      );
+      for (const entity of entities) {
+        options.set(entity.code, {
+          code: entity.code,
+          name: `${entity.code} - ${entity.label}`,
+        });
+      }
+      return Array.from(options.values());
+    }
   }
 
   if (field.kind === 'document-type') {

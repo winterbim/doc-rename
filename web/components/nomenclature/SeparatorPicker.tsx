@@ -3,7 +3,7 @@
 import { useAppContext } from '@/lib/app-state';
 
 const SEPARATORS = [
-  { value: '_', label: '_ Underscore' },
+  { value: '_', label: '_ Trait bas' },
   { value: '-', label: '- Tiret' },
   { value: '.', label: '. Point' },
 ];

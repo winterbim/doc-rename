@@ -86,12 +86,10 @@ describe('config: work lots', () => {
 // Companies
 // ---------------------------------------------------------------------------
 describe('config: companies', () => {
-  it('has exactly 84 companies', () => {
-    expect(COMPANIES.length).toBe(84);
-  });
-
-  it('has at least 30 companies', () => {
-    expect(COMPANIES.length).toBeGreaterThanOrEqual(30);
+  it('has a broad French and Swiss company catalog', () => {
+    expect(COMPANIES.length).toBeGreaterThanOrEqual(200);
+    expect(getCompany('BOUYGUES_BATIMENT')?.lots).toContain('BIM');
+    expect(getCompany('IMPLENIA')?.lots).toContain('STR');
   });
 
   it('every company has unique code', () => {
@@ -105,6 +103,11 @@ describe('config: companies', () => {
 
   it('every company has a lots array (may be empty)', () => {
     expect(COMPANIES.every(c => Array.isArray(c.lots))).toBe(true);
+  });
+
+  it('maps companies only to known work lots', () => {
+    const knownLots = new Set(WORK_LOTS.map((lot) => lot.code));
+    expect(COMPANIES.every((company) => company.lots.every((lot) => knownLots.has(lot)))).toBe(true);
   });
 
   it('getCompany returns SIEMENS correctly', () => {

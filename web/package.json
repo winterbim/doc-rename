@@ -10,14 +10,22 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
+    "lhci": "lhci autorun",
+    "audit:prod": "npm audit --omit=dev",
+    "verify": "npx tsc --noEmit && npm run lint && npm test && npm run build",
     "postinstall": "node -e \"const fs=require('fs');const path=require('path');const candidates=['node_modules/react-pdf/node_modules/pdfjs-dist/build/pdf.worker.min.mjs','node_modules/pdfjs-dist/build/pdf.worker.min.mjs'];const src=candidates.find(p=>fs.existsSync(p));if(!src){console.error('pdf.worker.min.mjs not found');process.exit(1);}fs.copyFileSync(src,'public/pdf.worker.min.mjs');console.log('Copied worker from '+src);const laSrc='node_modules/libarchive.js/dist/worker-bundle.js';if(fs.existsSync(laSrc)){fs.copyFileSync(laSrc,'public/libarchive-worker.js');console.log('Copied libarchive worker to public/');}else{console.warn('libarchive worker not found at '+laSrc+', skipping');}const laWasm='node_modules/libarchive.js/dist/libarchive.wasm';if(fs.existsSync(laWasm)){fs.copyFileSync(laWasm,'public/libarchive.wasm');console.log('Copied libarchive.wasm to public/');}else{console.warn('libarchive.wasm not found at '+laWasm+', skipping');}\" && (bash scripts/install-hooks.sh 2>/dev/null || true)"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@sentry/nextjs": "^10.53.1",
+    "@types/dompurify": "^3.0.5",
+    "dompurify": "^3.4.8",
     "dxf-parser": "^1.1.2",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
@@ -25,12 +33,18 @@
     "mammoth": "^1.12.0",
     "next": "16.2.6",
     "pdfjs-dist": "^5.7.284",
+    "posthog-js": "^1.373.5",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-pdf": "^10.4.1",
     "xlsx": "https://cdn.sheetjs.com/xlsx-latest/xlsx-latest.tgz"
   },
+  "overrides": {
+    "postcss": "8.5.15"
+  },
   "devDependencies": {
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

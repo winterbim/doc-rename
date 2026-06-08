@@ -61,7 +61,7 @@ async function expandZip(file: File, onError: (msg: string) => void): Promise<Bi
     }
     return results;
   } catch {
-    onError(`Impossible de lire le ZIP: ${file.name}`);
+    onError(`Impossible de lire l’archive ZIP : ${file.name}`);
     return [];
   }
 }
@@ -74,7 +74,7 @@ async function expandOtherArchive(file: File, onError: (msg: string) => void): P
       if (entry.isDir) continue;
       const blob = await entry.blob();
       if (blob.size > MAX_FILE_SIZE) {
-        onError(`${entry.name}: extrait > ${MAX_FILE_SIZE / 1024 / 1024} Mo, ignoré`);
+        onError(`${entry.name} : fichier extrait trop volumineux (${MAX_FILE_SIZE / 1024 / 1024} Mo maximum), ignoré.`);
         continue;
       }
       results.push(makeBimFile(entry.name, blob, entry.folder, entry.size ?? blob.size));
@@ -83,7 +83,7 @@ async function expandOtherArchive(file: File, onError: (msg: string) => void): P
   } catch (err) {
     const label = archiveLabel(file);
     const msg = err instanceof Error ? err.message : String(err);
-    onError(`Erreur lecture ${label} ${file.name}: ${msg}`);
+    onError(`Erreur de lecture ${label} ${file.name} : ${msg}`);
     return [];
   }
 }
@@ -102,6 +102,10 @@ function prefetchUniqueExtensions(files: BimFile[]): void {
       prefetchForExtension(f.extension);
     }
   }
+}
+
+function formatAddedFiles(count: number): string {
+  return count === 1 ? '1 fichier ajouté' : `${count} fichiers ajoutés`;
 }
 
 export interface UseFileIngestionReturn {
@@ -147,7 +151,7 @@ export function useFileIngestion(): UseFileIngestionReturn {
 
       const batch = checkBatchSize(totalBytes);
       if (!batch.ok) {
-        dispatch({ type: 'TOAST_SHOW', msg: batch.reason ?? 'Lot trop grand' });
+        dispatch({ type: 'TOAST_SHOW', msg: batch.reason ?? 'Lot trop volumineux.' });
         dispatch({ type: 'UPLOAD_END' });
         return;
       }
@@ -162,7 +166,7 @@ export function useFileIngestion(): UseFileIngestionReturn {
         dispatch({ type: 'FILES_ADD', files: bimFiles });
         dispatch({
           type: 'TOAST_SHOW',
-          msg: `${bimFiles.length} fichier(s) ajouté(s)`,
+          msg: formatAddedFiles(bimFiles.length),
         });
         prefetchUniqueExtensions(bimFiles);
       }

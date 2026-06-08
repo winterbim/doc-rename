@@ -59,6 +59,26 @@ describe('industry profiles', () => {
     expect(getProfileFieldDefinitions('finance').some((field) => field.id === 'workLot')).toBe(false);
   });
 
+  it('merges imported BIM companies with the built-in company catalog', () => {
+    const fields = getProfileFieldDefinitions('bim-construction', [
+      {
+        id: 'bim-construction:ACME_BIM',
+        code: 'ACME_BIM',
+        label: 'Acme BIM Conseil',
+      },
+    ]);
+    const companyOptions = fields.find((field) => field.id === 'company')?.options;
+
+    expect(Array.isArray(companyOptions)).toBe(true);
+    if (!Array.isArray(companyOptions)) return;
+    expect(companyOptions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ code: 'BOUYGUES_BATIMENT' }),
+        expect.objectContaining({ code: 'ACME_BIM', name: 'ACME_BIM - Acme BIM Conseil' }),
+      ]),
+    );
+  });
+
   it('adapts generated field values to the selected separator', () => {
     const values = normalizeFieldValuesForGeneration(
       { entity: 'service qualite', docType: 'RAP_QUAL', version: 'v01' },
@@ -78,6 +98,17 @@ describe('industry profiles', () => {
       expect(profile.templates.length, profile.id).toBeGreaterThan(0);
       expect(profile.documentTypes.length, profile.id).toBeGreaterThan(0);
       expect(profile.fields.length, profile.id).toBeGreaterThan(0);
+    }
+  });
+
+  it('keeps every template field backed by an available field definition', () => {
+    for (const profile of INDUSTRY_PROFILES) {
+      const available = new Set(getProfileFieldDefinitions(profile.id).map((field) => field.id));
+      for (const template of profile.templates) {
+        for (const fieldId of template.fields) {
+          expect(available.has(fieldId), `${profile.id}/${template.id}/${fieldId}`).toBe(true);
+        }
+      }
     }
   });
 });

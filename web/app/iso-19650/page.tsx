@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { CONTACT_EMAIL } from '@/lib/contact';
 
 export const metadata: Metadata = {
-  title: 'Convention de nommage ISO 19650 — guide + template prêt à importer',
+  title: 'Convention de nommage ISO 19650 — guide + modèle prêt à importer',
   description:
-    "Guide pratique de la convention de nommage ISO 19650 (UK National Annex). Champs, exemples, FAQ. Template JSON prêt à importer dans BimDoc Renamer.",
+    "Guide pratique de la convention de nommage ISO 19650 (UK National Annex). Champs, exemples, FAQ. Modèle JSON prêt à importer dans BimDoc Renamer.",
   alternates: {
     canonical: '/iso-19650',
   },
@@ -39,7 +40,7 @@ const faq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Que faire si mon BEP impose un autre ordre de champs ?',
-    a: "Le template ci-dessous est un point de départ. Dans BimDoc Renamer, vous pouvez réorganiser, ajouter ou supprimer des champs librement — la convention résultante reste exportable en JSON pour archivage.",
+    a: "Le modèle ci-dessous est un point de départ. Dans BimDoc Renamer, vous pouvez réorganiser, ajouter ou supprimer des champs librement — la convention résultante reste exportable en JSON pour archivage.",
   },
   {
     q: 'Quelle différence entre P02 et S2 ?',
@@ -47,11 +48,11 @@ const faq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Est-ce compatible avec Autodesk Docs / ACC ?',
-    a: "Oui. Depuis 2021, Autodesk Docs supporte les naming templates ISO 19650 nativement. Vous pouvez préparer vos lots dans BimDoc Renamer puis les déposer dans ACC sans retouche.",
+    a: "Oui. Depuis 2021, Autodesk Docs supporte les modèles de nommage ISO 19650 nativement. Vous pouvez préparer vos lots dans BimDoc Renamer puis les déposer dans ACC sans retouche.",
   },
   {
     q: 'Quid de la Suisse ?',
-    a: "Pour les projets SIA, la convention SIA 2051 prévaut. Elle est plus souple que la 19650 et nécessite un autre template — disponible aussi dans BimDoc Renamer.",
+    a: "Pour les projets SIA, la convention SIA 2051 prévaut. Elle est plus souple que la 19650 et nécessite un autre modèle — disponible aussi dans BimDoc Renamer.",
   },
 ];
 
@@ -79,7 +80,7 @@ export default function Iso19650Page() {
             documentaires sur les projets BIM. Sa partie la plus visible —
             la convention de nommage des fichiers — devient progressivement
             incontournable en marché public.
-            Voici l’essentiel, plus un template prêt à importer.
+            Voici l’essentiel, plus un modèle prêt à importer.
           </p>
           <p className="mt-5 text-sm font-sans text-ink-mute">
             Dernière mise à jour : 2026-05-20.
@@ -118,7 +119,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
                   <tr key={f.code} className="border-b border-line">
                     <td className="px-4 py-3 font-mono text-xs text-brick">{f.code}</td>
                     <td className="px-4 py-3 text-sm text-ink">{f.label}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-moss font-semibold">{f.sample}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-olive font-semibold">{f.sample}</td>
                     <td className="px-4 py-3 text-sm text-ink-soft">{f.comment}</td>
                   </tr>
                 ))}
@@ -129,10 +130,10 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
 
         <section className="border-b border-line py-12">
           <h2 className="font-sans text-3xl font-semibold tracking-tight text-ink">
-            Template JSON prêt à importer
+            Modèle JSON prêt à importer
           </h2>
           <p className="mt-4 max-w-3xl text-base text-ink-soft">
-            Téléchargez le template ci-dessous et importez-le dans BimDoc
+            Téléchargez le modèle ci-dessous et importez-le dans BimDoc
             Renamer (bouton « ↑ Fichier » du panneau Nomenclature). Vous
             pouvez ensuite réorganiser les champs ou ajuster les exemples
             pour coller à votre BEP.
@@ -144,7 +145,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
               download="iso-19650-uk-na.json"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition-colors hover:bg-brick"
             >
-              ↓ Télécharger le template JSON
+              ↓ Télécharger le modèle JSON
             </a>
             <Link
               href="/app"
@@ -155,7 +156,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
           </div>
 
           <div className="mt-8 rounded-lg border border-line bg-ink p-6">
-            <p className="mb-3 text-xs font-mono uppercase tracking-wide text-goldSoft" style={{ color: '#E0B96B' }}>
+            <p className="mb-3 text-xs font-mono uppercase tracking-wide text-gold-soft" style={{ color: '#E0B96B' }}>
               iso-19650-uk-na.json — aperçu
             </p>
             <pre className="overflow-x-auto text-xs leading-relaxed text-paper">
@@ -194,11 +195,36 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
               ['DOE structure.zip', 'PRJ01-AGC-ZZ-XX-ZZ-S-DOE-P01.zip'],
             ].map(([before, after]) => (
               <div key={before} className="grid gap-2 rounded-lg border border-line bg-white p-4 sm:grid-cols-2 sm:gap-6">
-                <code className="font-mono text-xs text-muted line-through decoration-brick">{before}</code>
-                <code className="font-mono text-xs font-semibold text-moss">{after}</code>
+                <code className="font-mono text-xs text-ink-mute line-through decoration-brick">{before}</code>
+                <code className="font-mono text-xs font-semibold text-olive">{after}</code>
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="border-b border-line py-12">
+          <h2 className="font-sans text-3xl font-semibold tracking-tight text-ink">
+            Checklist avant dépôt CDE
+          </h2>
+          <p className="mt-4 max-w-3xl text-base text-ink-soft">
+            Avant de pousser un lot dans Autodesk Docs, Trimble Connect, Kroqi ou votre CDE interne,
+            vérifiez les points qui créent le plus souvent des rejets ou des retours de coordination.
+          </p>
+          <ul className="mt-6 grid gap-3 text-sm leading-6 text-ink-soft sm:grid-cols-2">
+            {[
+              'Convention confirmée dans le BEP ou la convention donneur d’ordre.',
+              'Codes émetteur, discipline, zone, niveau et type validés.',
+              'Statut et révision séparés de la séquence documentaire.',
+              'Aperçu Avant / Après relu sur les fichiers sensibles du jalon.',
+              'ZIP final exporté avec l’arborescence attendue.',
+              'Aucun contenu fichier envoyé à un service externe pendant le renommage.',
+            ].map((item) => (
+              <li key={item} className="flex gap-2 rounded-lg border border-line bg-white p-3">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-olive" aria-hidden="true" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section className="border-b border-line py-12">
@@ -217,7 +243,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
 
         <section className="py-12">
           <div className="rounded-lg bg-ink p-8 text-paper sm:p-12">
-            <p className="text-xs font-mono uppercase tracking-wide text-goldSoft" style={{ color: '#E0B96B' }}>
+            <p className="text-xs font-mono uppercase tracking-wide text-gold-soft" style={{ color: '#E0B96B' }}>
               Étape suivante
             </p>
             <h2 className="mt-2 max-w-2xl font-sans text-3xl font-semibold leading-tight">
@@ -232,10 +258,10 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
                 Ouvrir BimDoc Renamer →
               </Link>
               <Link
-                href="/security"
+                href="/pilot"
                 className="inline-flex items-center gap-2 rounded-full border border-paper/40 px-6 py-3 text-sm font-semibold text-paper transition-colors hover:bg-paper hover:text-ink"
               >
-                Voir l’audit sécurité
+                Demander un pilote
               </Link>
             </div>
           </div>
@@ -244,8 +270,8 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
         <footer className="mt-8 border-t border-line py-8 text-sm text-ink-mute">
           <p>
             BimDoc Renamer — guide ISO 19650 ·{' '}
-            <a href="mailto:contact@bimdoc-renamer.com" className="text-brick font-semibold underline underline-offset-2">
-              contact@bimdoc-renamer.com
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-brick font-semibold underline underline-offset-2">
+              {CONTACT_EMAIL}
             </a>
           </p>
         </footer>

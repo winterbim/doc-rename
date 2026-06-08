@@ -1,5 +1,6 @@
 'use client';
 
+import { useId } from 'react';
 import { useAppContext } from '@/lib/app-state';
 import type { FieldDefinition } from '@/lib/bim/types';
 import { WORK_LOTS } from '@/lib/bim/config/workLots';
@@ -39,6 +40,7 @@ interface FieldInputProps {
 
 export function FieldInput({ field }: FieldInputProps) {
   const { state, dispatch } = useAppContext();
+  const uniqueId = useId().replace(/:/g, '');
   const value = state.fields.values[field.id] ?? '';
 
   const handleChange = (v: string) => {
@@ -50,10 +52,42 @@ export function FieldInput({ field }: FieldInputProps) {
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick ' +
     'placeholder:text-ink-mute';
 
-  const labelId = `field-label-${field.id}`;
-  const inputId = `field-input-${field.id}`;
+  const labelId = `field-label-${field.id}-${uniqueId}`;
+  const inputId = `field-input-${field.id}-${uniqueId}`;
   const options = resolveOptions(field.options);
   const dataListId = `${inputId}-options`;
+
+  // Large catalogs remain fast to use by code or company name.
+  if (field.inputType === 'select' && field.searchable) {
+    return (
+      <div className="flex flex-col gap-1">
+        <label id={labelId} htmlFor={inputId} className="text-xs font-sans text-ink-soft">
+          {field.name}
+          {field.required && <span className="ml-0.5 text-red-500" aria-hidden="true">*</span>}
+        </label>
+        <input
+          id={inputId}
+          aria-labelledby={labelId}
+          type="text"
+          required={field.required}
+          value={value}
+          onChange={(e) => handleChange(e.target.value)}
+          placeholder={field.placeholder ?? 'Rechercher ou saisir un code…'}
+          maxLength={field.maxLength}
+          list={dataListId}
+          autoComplete="off"
+          className={baseClass}
+        />
+        <datalist id={dataListId}>
+          {options.map((option, index) => (
+            <option key={`${option.code}-${index}-${option.name}`} value={option.code}>
+              {option.name}
+            </option>
+          ))}
+        </datalist>
+      </div>
+    );
+  }
 
   // Select inputs
   if (field.inputType === 'select') {
@@ -62,11 +96,12 @@ export function FieldInput({ field }: FieldInputProps) {
       <div className="flex flex-col gap-1">
         <label id={labelId} htmlFor={inputId} className="text-xs font-sans text-ink-soft">
           {field.name}
-          {field.required && <span className="ml-0.5 text-red-500" aria-label="requis">*</span>}
+          {field.required && <span className="ml-0.5 text-red-500" aria-hidden="true">*</span>}
         </label>
         <select
           id={inputId}
           aria-labelledby={labelId}
+          required={field.required}
           value={value}
           onChange={(e) => handleChange(e.target.value)}
           className={baseClass}
@@ -94,6 +129,7 @@ export function FieldInput({ field }: FieldInputProps) {
           id={inputId}
           aria-labelledby={labelId}
           type="date"
+          required={field.required}
           value={value}
           onChange={(e) => {
             // Convert YYYY-MM-DD to YYYYMMDD for BIM standard
@@ -117,6 +153,7 @@ export function FieldInput({ field }: FieldInputProps) {
           id={inputId}
           aria-labelledby={labelId}
           type="number"
+          required={field.required}
           value={value}
           min={0}
           onChange={(e) => handleChange(e.target.value)}
@@ -132,12 +169,13 @@ export function FieldInput({ field }: FieldInputProps) {
     <div className="flex flex-col gap-1">
       <label id={labelId} htmlFor={inputId} className="text-xs text-gray-600">
         {field.name}
-        {field.required && <span className="ml-0.5 text-red-500" aria-label="requis">*</span>}
+        {field.required && <span className="ml-0.5 text-red-500" aria-hidden="true">*</span>}
       </label>
       <input
         id={inputId}
         aria-labelledby={labelId}
         type="text"
+        required={field.required}
         value={value}
         onChange={(e) => handleChange(e.target.value)}
         placeholder={field.placeholder}

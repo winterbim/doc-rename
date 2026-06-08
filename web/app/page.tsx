@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { CONTACT_EMAIL } from '@/lib/contact';
 
-const siteUrl = 'https://bimdoc-renamer.vercel.app';
+const siteUrl = 'https://doc-rename-saas.vercel.app';
 
 export const metadata: Metadata = {
   title: 'BimDoc Renamer — Renommer vos livrables BIM avant dépôt CDE',
@@ -391,7 +392,7 @@ const SOFTWARE_APPLICATION_JSONLD = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'BimDoc Renamer',
-  alternateName: 'DOC-RENAME',
+  alternateName: 'BimDoc',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Any',
   description:
@@ -433,9 +434,9 @@ const faqs = [
       "Non. C’est l’outil qui prépare proprement vos lots de livrables avant dépôt dans votre CDE existant. Il est compatible Autodesk Docs / ACC, Trimble Connect, Kroqi et ProjectWise — il n’essaie pas de les remplacer.",
   },
   {
-    question: 'Le template ISO 19650 est-il « certifié » ?',
+    question: 'Le modèle ISO 19650 est-il « certifié » ?',
     answer:
-      "ISO 19650 n’a pas de certification produit, seulement des certifications organisation. Notre template suit le National Annex UK informatif et reste paramétrable champ par champ pour s’adapter à votre BEP / EIR.",
+      "ISO 19650 n’a pas de certification produit, seulement des certifications organisation. Notre modèle suit le National Annex UK informatif et reste paramétrable champ par champ pour s’adapter à votre BEP / EIR.",
   },
   {
     question: 'Mes fichiers restent vraiment dans mon navigateur ?',
@@ -445,7 +446,7 @@ const faqs = [
   {
     question: 'Peut-on importer notre table d’entreprises et de lots existante ?',
     answer:
-      "Oui — CSV, Excel, ODS, ou copier-coller depuis un tableur. Vos 84 entreprises et 41 lots par défaut sont des exemples remplaçables.",
+      "Oui — CSV, Excel, ODS, ou copier-coller depuis un tableur. 201 entreprises françaises et suisses ainsi que 41 lots sont fournis par défaut, puis restent personnalisables.",
   },
   {
     question: 'Et le RVT / DWG / IFC ?',
@@ -481,7 +482,7 @@ export default function LandingPage() {
       <div className="wrap">
         <header className="topbar">
           <Link href="/" className="brand" aria-label="BimDoc Renamer — accueil">
-            <span className="mark" aria-hidden="true">DR</span>
+            <span className="mark" aria-hidden="true">BD</span>
             <span className="brand-name">
               BimDoc <span className="brand-sub">Renamer</span>
             </span>
@@ -492,6 +493,7 @@ export default function LandingPage() {
             <a href="#comparatif">Comparatif</a>
             <a href="#securite">Sécurité</a>
             <a href="#tarifs">Tarifs</a>
+            <a href="/pilot">Pilote</a>
             <a href="#faq">FAQ</a>
           </nav>
 
@@ -515,7 +517,7 @@ export default function LandingPage() {
 
               <div className="cta-row">
                 <a className="button primary" href="/app">Essayer maintenant — sans compte</a>
-                <a className="button secondary" href="#fonctionnement">Voir la démo 60 s</a>
+                <a className="button secondary" href="/pilot">Demander un pilote</a>
               </div>
               <p className="small-note">
                 Aucun fichier ne quitte votre poste. Vérifiable dans DevTools &gt; Réseau.
@@ -612,7 +614,7 @@ export default function LandingPage() {
               <article className="card step">
                 <strong>Composez votre convention</strong>
                 <p>
-                  Templates ISO 19650, SIA 2051, BIM France, ou convention maison.
+                  Modèles ISO 19650, SIA 2051, BIM France, ou convention maison.
                   Champs : Projet · Phase · Lot · Zone · Niveau · Type · Discipline ·
                   Séquence · Révision · Statut. Importez votre table d’entités CSV/Excel.
                 </p>
@@ -655,7 +657,7 @@ export default function LandingPage() {
                 <tbody>
                   <tr><td>Compte requis</td><td className="us"><span className="no">Non</span></td><td><span className="ok">Oui</span></td><td><span className="ok">Oui</span></td><td><span className="no">Non</span></td></tr>
                   <tr><td>Fichiers envoyés en ligne</td><td className="us"><span className="no">Non — navigateur</span></td><td><span className="ok">Oui — AWS</span></td><td><span className="ok">Oui — Autodesk Cloud</span></td><td><span className="no">Non</span></td></tr>
-                  <tr><td>Template ISO 19650</td><td className="us"><span className="ok">Oui, paramétrable</span></td><td><span className="ok">Oui</span></td><td><span className="ok">Oui (depuis 2021)</span></td><td>Selon écriture</td></tr>
+                  <tr><td>Modèle ISO 19650</td><td className="us"><span className="ok">Oui, paramétrable</span></td><td><span className="ok">Oui</span></td><td><span className="ok">Oui (depuis 2021)</span></td><td>Selon écriture</td></tr>
                   <tr><td>Import CSV / Excel d’entités</td><td className="us"><span className="ok">Oui</span></td><td>Limité</td><td>Via API</td><td><span className="ok">Oui mais fragile</span></td></tr>
                   <tr><td>Profils métier pré-câblés</td><td className="us"><span className="ok">BIM (V1)</span></td><td>Multi</td><td>BIM</td><td><span className="no">Aucun</span></td></tr>
                   <tr><td>Aperçu Avant / Après</td><td className="us"><span className="ok">Oui</span></td><td><span className="ok">Oui</span></td><td>Partiel</td><td><span className="no">Non</span></td></tr>
@@ -781,7 +783,7 @@ export default function LandingPage() {
                 <p className="price">0 <small>CHF</small></p>
                 <p className="muted">3 lots de renommage par jour. Sans compte.</p>
                 <ul>
-                  <li>Templates ISO 19650 + SIA inclus</li>
+                  <li>Modèles ISO 19650 + SIA inclus</li>
                   <li>Aperçu Avant / Après</li>
                   <li>Traitement local navigateur</li>
                   <li>Export ZIP propre</li>
@@ -803,12 +805,7 @@ export default function LandingPage() {
                   <li>Export JSON / CSV de conventions</li>
                   <li>Support email J+1</li>
                 </ul>
-                <a
-                  className="button primary"
-                  href="mailto:contact@bimdoc-renamer.com?subject=Acc%C3%A8s%20Pro%20BimDoc"
-                >
-                  S’abonner
-                </a>
+                <a className="button primary" href="/pilot">Demander le pilote Pro</a>
               </article>
 
               <article className="plan team">
@@ -825,18 +822,13 @@ export default function LandingPage() {
                   <li>Import CSV / Excel d’entités</li>
                   <li>Support prioritaire léger</li>
                 </ul>
-                <a
-                  className="button primary"
-                  href="mailto:contact@bimdoc-renamer.com?subject=Acc%C3%A8s%20Team%20BimDoc"
-                >
-                  Contacter
-                </a>
+                <a className="button primary" href="/pilot">Planifier Team</a>
               </article>
             </div>
 
             <p className="small-note" style={{ marginTop: 30 }}>
               Besoin d’un déploiement on-premise, SSO ou DPA Entreprise ?{' '}
-              <a href="mailto:contact@bimdoc-renamer.com?subject=Entreprise" style={{ color: 'var(--brick)', fontWeight: 700 }}>
+              <a href="/pilot" style={{ color: 'var(--brick)', fontWeight: 700 }}>
                 Parlons-en →
               </a>
             </p>
@@ -877,12 +869,7 @@ export default function LandingPage() {
             </div>
             <div className="cta-row">
               <a className="button primary" href="/app">Essayer sans compte</a>
-              <a
-                className="button secondary"
-                href="mailto:contact@bimdoc-renamer.com?subject=Question%20BimDoc"
-              >
-                Poser une question
-              </a>
+              <a className="button secondary" href="/pilot">Demander un pilote</a>
             </div>
           </section>
         </main>
@@ -894,7 +881,8 @@ export default function LandingPage() {
           <span>
             <a href="/privacy">Confidentialité</a> ·{' '}
             <a href="/security">Sécurité</a> ·{' '}
-            <a href="mailto:contact@bimdoc-renamer.com">Contact</a>
+            <a href="/pilot">Pilote</a> ·{' '}
+            <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
           </span>
         </div>
       </footer>

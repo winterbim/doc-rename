@@ -22,7 +22,7 @@ function AppLoadingState() {
             aria-hidden="true"
             className="flex h-8 w-8 items-center justify-center rounded-md border border-ink bg-ink font-sans text-[13px] font-bold tracking-[-0.04em] text-paper"
           >
-            DR
+            BD
           </span>
           <div>
             <h1 className="text-base font-sans font-semibold leading-none tracking-[-0.01em] text-ink">

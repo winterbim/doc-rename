@@ -8,6 +8,26 @@ interface UploadZoneProps {
   readonly compact?: boolean;
 }
 
+function createDemoFiles(): File[] {
+  return [
+    new File(['%PDF-1.4\n% BimDoc demo fixture\n'], 'facade etage 1 FINAL v2.pdf', {
+      type: 'application/pdf',
+    }),
+    new File(['0\nSECTION\n2\nENTITIES\n0\nENDSEC\n0\nEOF\n'], 'plan rdc copie.dwg', {
+      type: 'application/acad',
+    }),
+    new File(['BimDoc demo document\n'], 'rapport synthese v3.docx', {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    }),
+    new File(['ISO-10303-21;\nHEADER;\nENDSEC;\nEND-ISO-10303-21;\n'], 'maquette structure ifc export.ifc', {
+      type: 'application/octet-stream',
+    }),
+    new File(['Lot;Emetteur;Discipline\nARC;AGC;A\nSTR;BET;S\n'], 'bordereau diffusion revA.csv', {
+      type: 'text/csv',
+    }),
+  ];
+}
+
 export function UploadZone({ compact = false }: UploadZoneProps) {
   const { processFiles } = useFileIngestion();
 
@@ -37,6 +57,10 @@ export function UploadZone({ compact = false }: UploadZoneProps) {
       }}
     />
   );
+
+  const handleLoadDemo = () => {
+    void processFiles(createDemoFiles());
+  };
 
   /* ── Compact bar (shown when files are already loaded) ── */
   if (compact) {
@@ -77,54 +101,64 @@ export function UploadZone({ compact = false }: UploadZoneProps) {
 
   /* ── Full drop zone (shown when no files loaded yet) ── */
   return (
-    <div
-      {...sharedDragProps}
-      onClick={openFilePicker}
-      role="button"
-      tabIndex={0}
-      aria-label="Zone de dépôt de fichiers. Cliquez ou glissez vos fichiers ici"
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') openFilePicker();
-      }}
-      className={[
-        'relative flex max-h-[200px] min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-colors duration-150',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick',
-        isDragging
-          ? 'border-brick bg-brick/5'
-          : 'border-line bg-paper-2/40 hover:border-brick/50 hover:bg-paper-2/70',
-      ].join(' ')}
-    >
-      {/* Upload icon */}
-      <svg
-        className={`mb-3 h-10 w-10 transition-colors ${isDragging ? 'text-brick' : 'text-ink-mute'}`}
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={1.5}
-        aria-hidden="true"
+    <div className="flex flex-col gap-3">
+      <div
+        {...sharedDragProps}
+        onClick={openFilePicker}
+        role="button"
+        tabIndex={0}
+        aria-label="Zone de dépôt de fichiers. Cliquez ou glissez vos fichiers ici"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') openFilePicker();
+        }}
+        className={[
+          'relative flex max-h-[200px] min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-colors duration-150',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick',
+          isDragging
+            ? 'border-brick bg-brick/5'
+            : 'border-line bg-paper-2/40 hover:border-brick/50 hover:bg-paper-2/70',
+        ].join(' ')}
       >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-        />
-      </svg>
+        {/* Upload icon */}
+        <svg
+          className={`mb-3 h-10 w-10 transition-colors ${isDragging ? 'text-brick' : 'text-ink-mute'}`}
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+          />
+        </svg>
 
-      <p className="text-sm font-sans font-medium text-ink">
-        {isDragging ? 'Relâchez pour ajouter' : 'Glissez vos fichiers / un ZIP ici'}
-      </p>
-      <p className="mt-1 text-xs font-sans text-ink-soft">
-        ou{' '}
-        <span className="font-medium text-brick underline underline-offset-2">
-          cliquez pour parcourir
-        </span>
-      </p>
-      <p className="mt-2 text-xs text-ink-mute">
-        PDF, DWG, IFC, RVT, images — ou ZIP / RAR / 7z / TAR / GZIP
-      </p>
+        <p className="text-sm font-sans font-medium text-ink">
+          {isDragging ? 'Relâchez pour ajouter' : 'Glissez vos fichiers / un ZIP ici'}
+        </p>
+        <p className="mt-1 text-xs font-sans text-ink-soft">
+          ou{' '}
+          <span className="font-medium text-brick underline underline-offset-2">
+            cliquez pour parcourir
+          </span>
+        </p>
+        <p className="mt-2 text-xs text-ink-mute">
+          PDF, DWG, IFC, RVT, images — ou ZIP / RAR / 7z / TAR / GZIP
+        </p>
 
-      {hiddenInput}
+        {hiddenInput}
+      </div>
+
+      <button
+        type="button"
+        onClick={handleLoadDemo}
+        className="inline-flex min-h-9 items-center justify-center self-center rounded-full border border-line bg-white px-4 text-xs font-sans font-semibold text-ink-soft transition-colors hover:border-brick hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
+      >
+        Charger un lot exemple
+      </button>
     </div>
   );
 }

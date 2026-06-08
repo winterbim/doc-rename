@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { CONTACT_EMAIL, buildContactMailto } from '@/lib/contact';
 
 export const metadata: Metadata = {
   title: 'Sécurité — BimDoc Renamer',
@@ -83,7 +84,7 @@ const ciChecks: Array<{ name: string; what: string; when: string }> = [
 ];
 
 const auditSteps: string[] = [
-  "Ouvrez https://bimdoc-renamer.vercel.app/app dans un onglet vierge.",
+  "Ouvrez https://doc-rename-saas.vercel.app/app dans un onglet vierge.",
   'Ouvrez les DevTools du navigateur (F12 ou ⌘⌥I).',
   "Allez dans l’onglet Réseau (Network), filtre « Fetch / XHR ».",
   'Glissez 10 fichiers PDF/DWG/IFC sur la zone de dépôt.',
@@ -308,8 +309,8 @@ upgrade-insecure-requests;`}
           </ol>
           <p className="mt-5 text-sm">
             Pour signaler une faille de manière confidentielle :{' '}
-            <a href="mailto:security@bimdoc-renamer.com" className="text-brick font-semibold underline underline-offset-2">
-              security@bimdoc-renamer.com
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-brick font-semibold underline underline-offset-2">
+              {CONTACT_EMAIL}
             </a>
             . Réponse sous 48 h ouvrées.
           </p>
@@ -350,13 +351,13 @@ upgrade-insecure-requests;`}
           </div>
           <p className="mt-6 text-sm">
             Documents Entreprise disponibles sur demande sous NDA :
-            <span className="text-ink-soft"> Security Whitepaper (10 p.), DPA template, architecture de référence, pricing matrix.</span>
+            <span className="text-ink-soft"> livre blanc sécurité (10 p.), modèle DPA, architecture de référence, matrice tarifaire.</span>
           </p>
           <a
-            href="mailto:contact@bimdoc-renamer.com?subject=Entreprise%20-%20%C3%A9valuation%20s%C3%A9curit%C3%A9"
+            href={buildContactMailto('Entreprise - évaluation sécurité')}
             className="mt-5 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-brick"
           >
-            Demander le Security Whitepaper →
+            Demander le livre blanc sécurité →
           </a>
         </section>
 
@@ -396,8 +397,8 @@ upgrade-insecure-requests;`}
         <footer className="mt-16 border-t border-line py-8 text-sm text-ink-mute">
           <p>
             BimDoc Renamer — sécurité contact :{' '}
-            <a href="mailto:security@bimdoc-renamer.com" className="text-brick font-semibold underline underline-offset-2">
-              security@bimdoc-renamer.com
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-brick font-semibold underline underline-offset-2">
+              {CONTACT_EMAIL}
             </a>
             . PGP key sur demande.
           </p>

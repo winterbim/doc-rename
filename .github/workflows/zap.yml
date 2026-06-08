@@ -1,0 +1,21 @@
+name: OWASP ZAP Baseline
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 2'
+
+jobs:
+  zap:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: 'https://bimdoc-renamer.vercel.app'
+          fail_action: false
+          artifact_name: zap-baseline-report

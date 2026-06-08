@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 import JSZip from 'jszip';
-import { readZip, writeZip, isZip } from '../zip-io';
+import { readZip, writeZip, isZip, normalizeZipArchiveName } from '../zip-io';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -50,6 +50,16 @@ describe('isZip', () => {
   it('returns false for empty name', () => {
     const file = new File([], '');
     expect(isZip(file)).toBe(false);
+  });
+});
+
+describe('normalizeZipArchiveName', () => {
+  it('uppercases, strips accents and appends .ZIP', () => {
+    expect(normalizeZipArchiveName('livrables été')).toBe('LIVRABLES ETE.ZIP');
+  });
+
+  it('does not duplicate the zip extension', () => {
+    expect(normalizeZipArchiveName('plans.zip')).toBe('PLANS.ZIP');
   });
 });
 

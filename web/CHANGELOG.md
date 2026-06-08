@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the DOC-RENAME web app are documented here.
+All notable changes to the BimDoc Renamer web app are documented here.
 
 Format: [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning 2.0](https://semver.org/spec/v2.0.0.html).
@@ -11,10 +11,32 @@ Versioning: [Semantic Versioning 2.0](https://semver.org/spec/v2.0.0.html).
 
 - `ARCHITECTURE.md` documenting layout, state, persistence, security, viewers, tests, CI, deploy, versioning.
 - `CHANGELOG.md` (this file).
+- `/pilot` commercial pilot page for 14-day BIM trials, with a mailto-only request form and no backend storage.
+- In-app BIM demo lot loader so prospects can test the renaming flow without preparing customer files.
+- ISO 19650 checklist before CDE deposit on `/iso-19650`.
+- French and Swiss BIM company catalog expanded to 201 organizations.
+- End-to-end user journey covering demo loading, convention entry, renaming, and ZIP download.
+
+### Changed
+
+- Public wording aligned on **BimDoc Renamer** instead of the old DOC-RENAME label on visible pages and access screens.
+- BIM V1 microcopy polished: French labels, upload/import errors, model/template wording, separators, and profile names.
+- Nomenclature import now reports errors through the app toast system instead of a browser `alert()`.
+- E2E tests updated for the current BimDoc Renamer branding and deterministic upload input selection.
+- Product marketing context recentered on a BIM-only V1 offer and pilot-based conversion path.
+- `/privacy` updated for the SaaS migration: Free / Pro / Team terms, RGPD/CNIL transparency, account/billing/support data categories, local-first file processing, optional telemetry, security limits, and user responsibilities.
+- `ARCHITECTURE.md` privacy/security section updated to reflect optional Sentry/PostHog observability while preserving the no-file-content telemetry rule.
+- Searchable company and document-type fields replace impractical long native selects.
+- Imported BIM companies are merged into the built-in catalog and become immediately selectable.
+- All public contact and security links now use `bimcheck-consulting@proton.me`.
+
+### Security
+
+- Production dependency audit fixed by overriding Next's transitive `postcss` to `8.5.15` without using `npm audit fix --force`.
 
 ## [0.1.0] — 2026-05-14
 
-Initial public deployment at <https://bimdoc-renamer.vercel.app>.
+Initial public deployment at <https://doc-rename-saas.vercel.app>.
 
 ### Added
 
@@ -43,7 +65,7 @@ Initial public deployment at <https://bimdoc-renamer.vercel.app>.
 
 ### Quality
 
-- **GitHub Actions CI**: tsc + tests + build on every push and PR.
+- **Remote CI**: tsc + tests + build on every push and PR.
 - **Pre-commit hook**: `npx tsc --noEmit` before every commit (`web/scripts/install-hooks.sh`).
 - **Property-based fuzz tests** (`fast-check`) covering 8 public BIM functions: `normalizeBIM` (total + idempotent + uppercase-invariant), `validateFilename`, `parseFilename` (reconstruction invariant), `clean` (idempotent), 4 detection helpers — ~8 000 random inputs per CI run, all proven total (zero throws).
 - **Vitest coverage** with v8 provider, thresholds floor-set at current actual values (regression gate, not fiction).

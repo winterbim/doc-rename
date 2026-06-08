@@ -1,5 +1,5 @@
 {
-  "$schema": "https://bimdoc-renamer.vercel.app/schemas/nomenclature.v1.json",
+  "$schema": "https://doc-rename-saas.vercel.app/schemas/nomenclature.v1.json",
   "name": "ISO 19650 — UK National Annex",
   "description": "Convention de nommage informative ISO 19650 (UK NA). Paramétrable champ par champ pour s'adapter à votre BEP / EIR. Séparateur conventionnel : tiret \"-\".",
   "version": "1.0.0",

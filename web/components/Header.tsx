@@ -15,7 +15,7 @@ export function Header() {
           aria-hidden="true"
           className="flex h-8 w-8 items-center justify-center rounded-md border border-ink bg-ink font-sans text-[13px] font-bold tracking-[-0.04em] text-paper"
         >
-          DR
+          BD
         </span>
         <div>
           <h1 className="text-base font-sans font-semibold leading-none tracking-[-0.01em] text-ink">
@@ -29,6 +29,13 @@ export function Header() {
 
       {/* Right: version + theme toggle */}
       <div className="flex items-center gap-3">
+        <Link
+          href="/pilot"
+          className="hidden md:inline-flex items-center gap-1 text-xs text-ink-mute hover:text-brick transition-colors"
+          aria-label="Demander un pilote BimDoc Renamer"
+        >
+          Pilote
+        </Link>
         <Link
           href="/"
           className="hidden md:inline-flex items-center gap-1 text-xs text-ink-mute hover:text-brick transition-colors"

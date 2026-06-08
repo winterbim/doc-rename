@@ -51,7 +51,7 @@ export function TemplatePicker() {
 
       {selectedTemplate?.example && (
         <p className="text-[10px] text-ink-mute font-mono truncate" title={selectedTemplate.example}>
-          ex: {selectedTemplate.example}
+          Ex. : {selectedTemplate.example}
         </p>
       )}
       {selectedTemplate?.disclaimer && (

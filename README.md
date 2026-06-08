@@ -1,54 +1,43 @@
-# DOC-RENAME
+# BimDoc Renamer
 
-DOC-RENAME est une application web de renommage documentaire par profils metier.
+BimDoc Renamer est une application web pour préparer des lots de livrables BIM
+avant dépôt CDE. Elle applique une convention de nommage ISO 19650, SIA 2051 ou
+BEP projet, affiche un aperçu Avant / Après, puis exporte un ZIP propre.
 
-Le produit est concu pour structurer et renommer des lots de fichiers avant transmission, archivage ou depot dans un outil metier. Il fonctionne localement dans le navigateur pour le traitement des fichiers: aucun upload serveur n'est necessaire pour renommer.
+Le flux de renommage est local-first: les fichiers sont traités dans le
+navigateur et ne sont pas envoyés à un serveur pour être renommés.
 
 ## Statut
 
 - Application principale: `web/`
+- URL production: `https://doc-rename-saas.vercel.app`
 - Framework: Next.js 16, React 19, TypeScript
-- Tests: Vitest
-- Licence: proprietaire, tous droits reserves
+- Tests: Vitest + Playwright
+- Licence: propriétaire, tous droits réservés
 
-## Fonctionnalites principales
+## Offre V1
 
-- Import de fichiers et archives.
-- Renommage en lot.
-- Profils metier strictement separes:
-  - BIM / Construction
-  - Finance
-  - RH
-  - Sante
-  - Administratif / Secretariat
-  - Juridique
-  - Industrie
-  - Immobilier
-  - Convention personnalisee
-- Champs, types de documents, abreviations, entites et templates adaptes au profil actif.
-- Normalisation des noms: majuscules, suppression des accents, nettoyage des caracteres dangereux, choix du separateur `_`, `-` ou `.`.
-- Import d'entites par profil.
-- Apercu avant export.
-- Export ZIP.
-- Import/export JSON.
-- Apercu multi-format selon les capacites navigateur.
+- Cible: BIM Managers, BIM Coordinators, agences d’architecture, bureaux d’études et petites équipes construction.
+- Cas d’usage: renommer PDF, DWG, IFC, RVT, DOCX, images et tableurs avant dépôt dans Autodesk Docs / ACC, Trimble Connect, Kroqi, ProjectWise ou CDE interne.
+- Conversion: pilote BIM 14 jours sur convention réelle via `/pilot`.
+- Prix beta: Pro 19,99 CHF / mois, Team 34,90 CHF / mois.
 
-## Structure du depot
+## Fonctionnalités principales
 
-```text
-DOC-RENAME/
-├── web/                 # Application SaaS Next.js
-├── .github/workflows/   # CI
-├── README.md            # Vue d'ensemble du depot
-├── LICENSE              # Licence proprietaire
-├── PRIVACY_POLICY.md    # Politique de confidentialite
-├── CONTRIBUTING.md      # Guide de contribution interne
-└── package.json         # Scripts racine
-```
+- Import de fichiers individuels et archives.
+- Lot exemple intégré pour tester sans fichier client.
+- Modèles BIM: ISO 19650, SIA 2051, BIM France, convention maison.
+- Champs paramétrables: projet, phase, lot, zone, niveau, type, discipline, séquence, révision, statut.
+- Import d’entités par CSV, Excel, ODS ou copier-coller tableur.
+- Normalisation des noms: majuscules, suppression des accents, nettoyage des caractères dangereux, séparateur `_`, `-` ou `.`.
+- Aperçu Avant / Après et correction manuelle.
+- Export ZIP avec arborescence conservée.
+- Export/import de conventions en JSON/CSV.
+- Aperçu multi-format selon les capacités du navigateur.
 
 ## Commandes
 
-Depuis la racine du depot:
+Depuis la racine du dépôt:
 
 ```bash
 npm run install:web
@@ -58,7 +47,7 @@ npm run test
 npm run build
 ```
 
-Equivalent depuis `web/`:
+Depuis `web/`:
 
 ```bash
 npm ci
@@ -66,25 +55,26 @@ npm run dev
 npm run lint
 npm test
 npm run build
+npm run test:e2e
+npm run audit:prod
 ```
 
-## Deploiement
+## Déploiement
 
-Le dossier a deployer est `web/`.
+Le dossier à déployer est `web/`.
 
-Variables serveur requises: aucune pour la version locale actuelle.
+Production Vercel: `doc-rename-saas`, racine `web/`, framework Next.js.
 
-Points importants avant production:
+Variables optionnelles:
 
-- verifier `web/app/privacy/page.tsx`;
-- verifier le nom legal de l'editeur;
-- remplacer les emails de contact temporaires si necessaire;
-- definir le domaine final;
-- brancher analytics et paiement seulement quand ces fonctions existent vraiment.
+- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_POSTHOG_KEY`
+- `NEXT_PUBLIC_TELEMETRY_ENABLED`
+- Sentry DSN/env si l’observabilité est activée
 
-## Proprietaire
+## Propriétaire
 
 Copyright (c) 2026 Jawani Fernandes.
-Tous droits reserves.
+Tous droits réservés.
 
-Ce depot contient du code proprietaire. Aucune licence open source n'est accordee.
+Ce dépôt contient du code propriétaire. Aucune licence open source n’est accordée.

@@ -91,6 +91,15 @@ export function normalizeBIM(str: string): string {
   );
 }
 
+/**
+ * Normalize any final output filename shown to the user or written to disk.
+ * This is intentionally conservative: it preserves the user's separators and
+ * extension while enforcing the DOC-RENAME invariant: uppercase, no accents.
+ */
+export function normalizeOutputName(name: string): string {
+  return normalizeBIM(name);
+}
+
 // ---------------------------------------------------------------------------
 // applyCaseTransform (internal + exported for tests/UI)
 // ---------------------------------------------------------------------------
@@ -288,8 +297,11 @@ export function generate(
     if (field.id === 'sequence' && field.autoIncrement) {
       value = getNextSequence(counters, file.folder || 'default');
     } else if (field.id === 'company') {
-      // Company is ALWAYS per-file — global selector is only a "pen"
-      value = file.mappedFields?.company ?? '';
+      // Prefer per-file company mappings, but keep the global company field
+      // functional when the user activates it from "Champs disponibles".
+      value = file.mappedFields?.company
+        ? file.mappedFields.company
+        : (ctx.fieldValues.company ?? '');
     } else {
       // Prefer per-file mapped value; fall back to global field value
       value = file.mappedFields?.[field.id]

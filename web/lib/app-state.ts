@@ -12,6 +12,7 @@ import {
   setActiveFields,
   type FieldsState,
 } from '@/lib/bim/fields';
+import { normalizeOutputName } from '@/lib/bim/nomenclature';
 import {
   createDefaultState as createDefaultCleanerState,
   type CleanerState,
@@ -20,11 +21,12 @@ import {
   DEFAULT_PROFILE_ID,
   applyProfileTemplate,
   createDefaultFieldsForProfile,
+  getIndustryProfile,
+  getProfileFieldDefinitions,
   getProfileTemplate,
   isIndustryProfileId,
   mergeProfileEntities,
   normalizeFieldValue,
-  sanitizeFieldValuesForProfile,
   type IndustryProfileId,
   type ProfileEntitiesById,
   type ProfileEntity,
@@ -195,6 +197,23 @@ export function appReducer(state: AppState, action: Action): AppState {
       };
 
     case 'FIELDS_SET_ACTIVE':
+      if (isIndustryProfileId(state.profileId)) {
+        const validProfileFieldIds = new Set(
+          getProfileFieldDefinitions(
+            state.profileId,
+            state.profileEntities[state.profileId] ?? [],
+          ).map((field) => field.id),
+        );
+        return {
+          ...state,
+          fields: {
+            ...state.fields,
+            activeFieldIds: action.fieldIds.filter((fieldId) =>
+              validProfileFieldIds.has(fieldId),
+            ),
+          },
+        };
+      }
       return {
         ...state,
         fields: setActiveFields(state.fields, action.fieldIds),
@@ -222,14 +241,20 @@ export function appReducer(state: AppState, action: Action): AppState {
     }
 
     case 'PROFILE_CHANGE': {
-      const fields = createDefaultFieldsForProfile(action.profileId);
+      if (action.profileId === state.profileId) return state;
+      const profile = getIndustryProfile(action.profileId);
       return {
         ...state,
         profileId: action.profileId,
-        fields: {
-          ...fields,
-          values: sanitizeFieldValuesForProfile(state.fields.values, action.profileId),
-        },
+        fields: createDefaultFieldsForProfile(action.profileId),
+        separator: profile.defaultSeparator,
+        preview: '',
+        files: state.files.map((file) => ({
+          ...file,
+          newName: undefined,
+          mappedFields: {},
+          status: 'ready' as const,
+        })),
       };
     }
 
@@ -268,7 +293,7 @@ export function appReducer(state: AppState, action: Action): AppState {
         if (!res) return f;
         return {
           ...f,
-          newName: res.newName,
+          newName: normalizeOutputName(res.newName),
           status: res.errors.length > 0 ? ('error' as const) : ('renamed' as const),
         };
       });
@@ -295,7 +320,7 @@ export function appReducer(state: AppState, action: Action): AppState {
         ...state,
         files: state.files.map((f) =>
           f.id === action.fileId
-            ? { ...f, newName: action.newName, status: 'renamed' as const }
+            ? { ...f, newName: normalizeOutputName(action.newName), status: 'renamed' as const }
             : f
         ),
       };
@@ -364,7 +389,7 @@ export function appReducer(state: AppState, action: Action): AppState {
           return f;
         }
         if (result === source) return f;
-        return { ...f, newName: result, status: 'renamed' as const };
+        return { ...f, newName: normalizeOutputName(result), status: 'renamed' as const };
       });
       return { ...state, files: updatedFiles };
     }
@@ -387,7 +412,7 @@ export function appReducer(state: AppState, action: Action): AppState {
             ? { mappedFields: upd.mappedFields }
             : {}),
           ...(upd.newName !== undefined
-            ? { newName: upd.newName, status: 'renamed' as const }
+            ? { newName: normalizeOutputName(upd.newName), status: 'renamed' as const }
             : {}),
         };
       });

@@ -21,7 +21,9 @@ import {
   validateFields,
   parseFilenameParts,
   exportFieldsState,
+  exportFieldsStateCsv,
   importFieldsState,
+  importFieldsStateFromTable,
 } from '../fields';
 import type { FieldDefinition } from '../types';
 import type { FieldsState } from '../fields';
@@ -535,5 +537,65 @@ describe('exportFieldsState / importFieldsState', () => {
 
   it('importFieldsState throws SyntaxError on bad JSON', () => {
     expect(() => importFieldsState('not-json')).toThrow(SyntaxError);
+  });
+});
+
+describe('exportFieldsStateCsv / importFieldsStateFromTable', () => {
+  it('exports active fields and values in a spreadsheet-friendly format', () => {
+    const state: FieldsState = {
+      activeFieldIds: ['project', 'docType'],
+      values: { project: 'PRJ01', docType: 'PLAN' },
+      workLotPart: null,
+    };
+
+    const csv = exportFieldsStateCsv(state);
+
+    expect(csv).toContain('ordre;id;code;champ;valeur;actif');
+    expect(csv).toContain('project;PRJ;Code Projet;PRJ01;oui');
+    expect(csv).toContain('docType;DOC;Type Document;PLAN;oui');
+  });
+
+  it('round-trips the exported CSV including active order', () => {
+    const state: FieldsState = {
+      activeFieldIds: ['project', 'building', 'docType'],
+      values: { project: 'PRJ01', building: 'BAT-A', docType: 'PLA' },
+      workLotPart: null,
+    };
+
+    const restored = importFieldsStateFromTable(exportFieldsStateCsv(state), createDefaultFieldsState());
+
+    expect(restored.activeFieldIds).toEqual(state.activeFieldIds);
+    expect(restored.values.project).toBe('PRJ01');
+    expect(restored.values.building).toBe('BAT-A');
+    expect(restored.values.docType).toBe('PLA');
+  });
+
+  it('imports a two-column table pasted from Excel', () => {
+    const table = 'Code Projet\talpha\nRévision\tb\nSéquence\t7';
+    const state = importFieldsStateFromTable(table, {
+      activeFieldIds: ['docType'],
+      values: {},
+      workLotPart: null,
+    });
+
+    expect(state.activeFieldIds).toEqual(['docType', 'project', 'revision', 'sequence']);
+    expect(state.values.project).toBe('ALPHA');
+    expect(state.values.revision).toBe('B');
+    expect(state.values.sequence).toBe('007');
+  });
+
+  it('imports semicolon CSV with field codes and values', () => {
+    const csv = 'code;valeur\nPRJ;demo\nDOC;rapport\nREV;c';
+    const state = importFieldsStateFromTable(csv);
+
+    expect(state.values.project).toBe('DEMO');
+    expect(state.values.docType).toBe('rapport');
+    expect(state.values.revision).toBe('C');
+  });
+
+  it('preserves the base state when no known fields are found', () => {
+    const base = createDefaultFieldsState();
+    const state = importFieldsStateFromTable('unknown;value', base);
+    expect(state).toBe(base);
   });
 });

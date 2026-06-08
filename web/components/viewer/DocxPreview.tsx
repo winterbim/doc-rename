@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { getDocxCache, setDocxCache } from '@/lib/viewer-cache';
+import { sanitizeDocumentHtml } from '@/lib/sanitize-html';
 import type { BimFile } from '@/lib/bim/types';
 
 interface Props { readonly file: BimFile }
@@ -33,10 +34,12 @@ export function DocxPreview({ file }: Props) {
         const mammoth = await import('mammoth');
         const result = await mammoth.convertToHtml({ arrayBuffer: buf });
         if (cancelled) return;
+        const safe = await sanitizeDocumentHtml(result.value);
+        if (cancelled) return;
         const warn = result.messages.filter((m) => m.type === 'warning').map((m) => m.message);
-        setHtml(result.value);
+        setHtml(safe);
         setWarnings(warn);
-        setDocxCache(file.id, { html: result.value, warnings: warn });
+        setDocxCache(file.id, { html: safe, warnings: warn });
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
       } finally {

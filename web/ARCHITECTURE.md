@@ -1,4 +1,4 @@
-# DOC-RENAME — Architecture
+# BimDoc Renamer — Architecture
 
 This document is the contract: how the app is laid out, what the guarantees
 are, and where to look when something breaks. It must stay accurate. If a
@@ -10,10 +10,11 @@ commit changes any of these properties, the commit must update this file.
 |---|---|---|
 | `/` | Server Component | Marketing landing (vanilla HTML/CSS ported to JSX) |
 | `/app` | Client Component (`'use client'`, `dynamic ssr:false`) | The renamer |
+| `/pilot` | Server Component + client mailto form | Commercial pilot request page; no backend storage |
 | `/privacy` | Server Component | Privacy policy |
 | `/manifest.webmanifest` | static | PWA manifest |
 
-Single Vercel project `bimdoc-renamer`, `rootDirectory=web`, `framework=nextjs`,
+Single Vercel project `doc-rename-saas`, `rootDirectory=web`, `framework=nextjs`,
 auto-deploy on push to `main`.
 
 ## 2. State model
@@ -49,7 +50,7 @@ floor is significantly higher — those thresholds are the regression gate.
 Modules:
 
 - `logger.ts` — severity-leveled console wrapper
-- `config/{workLots, companies, documentTypes, extensions, phases, defaults, detectionPatterns}` — pure data (41 lots, 84 companies, 232 doc types, 14 groups)
+- `config/{workLots, companies, documentTypes, extensions, phases, defaults, detectionPatterns}` — pure data (41 lots, 201 companies, 232 doc types, 14 groups)
 - `prefixes.ts` — `detectPrefixes()`, `applyPrefixAction()`, batch variants
 - `nomenclature.ts` — `generate()`, `normalizeBIM()`, `validateFilename()`, `parseFilename()`, `batchGenerate()`, `NomenclatureCache`
 - `filename-cleaner.ts` — `createDefaultState()`, `clean()`, `cleanAll()`, immutable rule manipulators, `exportState()` / `importState()`
@@ -79,14 +80,14 @@ Modules:
 - `X-Frame-Options: DENY`
 - `Referrer-Policy: strict-origin-when-cross-origin`
 - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
-- `Content-Security-Policy`: same-origin-only baseline. Allows `unsafe-inline` style (Tailwind), `unsafe-eval` script (Next runtime + react-pdf), `worker-src blob:` (PDF.js), `img-src https: data: blob:` (object URLs). `frame-ancestors 'none'`. `connect-src 'self'`.
+- `Content-Security-Policy`: same-origin baseline with explicit exceptions for local blob processing, Next/font, Sentry and PostHog endpoints. Allows `unsafe-inline` style (Tailwind), `unsafe-eval` script (Next runtime + react-pdf), `worker-src blob:` (PDF.js), `img-src https: data: blob:` (object URLs), `connect-src 'self' blob:` plus configured observability hosts. `frame-ancestors 'none'`.
 - `Cache-Control: immutable` on `/pdf.worker.min.mjs`.
 
 ### Upload boundary (`web/lib/upload-guard.ts`)
 
 Every file passes through:
 - `checkFilename`: control chars (< 0x20 except whitespace), `..` traversal, ≤255 chars
-- `checkSize`: 100 MiB per file
+- `checkSize`: 500 MiB per file
 - `checkBatchSize`: 1 GiB total per drop
 - `checkZipMagic`: `PK\x03\x04`, `\x05\x06`, or `\x07\x08`
 
@@ -95,15 +96,30 @@ Every file passes through:
 ### React layer (`web/components/ErrorBoundary.tsx`)
 
 Catches React render errors + `window.onerror` + `unhandledrejection`. Stores
-the last 50 entries in `localStorage` (key `bimdoc_error_log`). **No external
-transmission.** Fallback UI offers "Recharger" + "Télécharger le journal" so
-the user can send it manually.
+the last 50 entries in `localStorage` (key `bimdoc_error_log`). Fallback UI
+offers "Recharger" + "Télécharger le journal" so the user can send it manually.
+If Sentry env vars are configured, framework-level errors may also be reported
+to Sentry with `sendDefaultPii: false`; file contents and binary buffers must
+not be captured.
 
 ### Privacy
 
-Files never leave the browser. All processing — extraction, parsing,
-rendering, ZIP composition — happens in JS / Wasm in the user's tab. No
-analytics, no fetch beyond same-origin assets.
+Files should not leave the browser for the renaming workflow. Processing —
+extraction, parsing, rendering, ZIP composition — happens in JS / Wasm in the
+user's tab. The SaaS migration may process account, billing, team, support,
+telemetry and error metadata, but file contents and binary buffers remain out
+of analytics, monitoring and payment flows.
+
+Telemetry (`web/components/TelemetryProvider.tsx`) is disabled unless
+`NEXT_PUBLIC_POSTHOG_KEY` is set and `NEXT_PUBLIC_TELEMETRY_ENABLED` is not
+`false`. When enabled: no autocapture, no pageleave, no session recording by
+default, text and element attributes masked, Do Not Track respected, and only
+manual pageview events are emitted.
+
+The `/pilot` request form is deliberately mailto-only for beta validation. It
+opens the user's email client with contact details and project context, but the
+app does not store that form submission or accept confidential files from that
+route.
 
 ## 6. Viewer caches (`web/lib/viewer-cache.ts`)
 
@@ -153,7 +169,7 @@ Run: `npm test`, `npm run test:coverage`.
 
 ## 9. CI
 
-GitHub Actions at `.github/workflows/ci.yml`. Triggers: push to any branch, PR to main.
+Remote CI workflow. Triggers: push to any branch, PR to main.
 Job: checkout → setup-node 20 (npm cache on `web/package-lock.json`) → `cd web && npm ci && npx tsc --noEmit && npm test && npm run build`. Concurrency group cancels stale runs on the same ref. Timeout 10 min.
 
 Pre-commit hook (`web/scripts/install-hooks.sh` writes `.git/hooks/pre-commit`)
@@ -161,14 +177,14 @@ runs `cd web && npx tsc --noEmit` before every commit on the developer's machine
 
 ## 10. Deploy
 
-`vercel.com/wintfernandes-7029s-projects/bimdoc-renamer`:
+`vercel.com/wintfernandes-7029s-projects/doc-rename-saas`:
 
 - `rootDirectory`: `web`
 - `framework`: `nextjs`
 - `productionBranch`: `main`
 - Deployment Protection: disabled (public app)
 - Auto-deploy on push to `main`
-- Aliases: `bimdoc-renamer.vercel.app` (production)
+- Aliases: `doc-rename-saas.vercel.app` (production)
 
 ## 11. Versioning
 

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CONTACT_EMAIL } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Confidentialité, sécurité et conditions",
   description:
-    "Politique de confidentialité DOC-RENAME: traitement local des fichiers, migration SaaS, RGPD, CNIL, sécurité, cookies et conditions d'utilisation.",
+    "Politique de confidentialité BimDoc Renamer : traitement local des fichiers, migration SaaS, RGPD, CNIL, sécurité, cookies et conditions d'utilisation.",
   alternates: {
     canonical: "/privacy",
   },
@@ -27,7 +28,7 @@ export default function PrivacyPage() {
           href="/"
           className="mb-10 inline-flex w-fit text-sm font-sans font-semibold text-ink hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
         >
-          ← Retour à DOC-RENAME
+          ← Retour à BimDoc Renamer
         </Link>
 
         <header className="border-b border-line pb-10">
@@ -35,13 +36,13 @@ export default function PrivacyPage() {
             Confidentialité · Sécurité · Conditions
           </p>
           <h1 className="max-w-3xl font-sans text-5xl font-semibold leading-tight tracking-tight text-ink sm:text-6xl">
-            Un SaaS local-first pour des documents sensibles.
+            BimDoc Renamer garde vos fichiers dans le navigateur.
           </h1>
           <p className="mt-5 max-w-3xl font-sans text-xl leading-8 text-ink-soft">
-            DOC-RENAME devient un service freemium / Pro / Team, mais le principe central ne
-            change pas: le renommage, la prévisualisation et l’export ZIP se font dans votre
+            BimDoc Renamer devient un service Free / Pro / Team, mais le principe central ne
+            change pas : le renommage, la prévisualisation et l’export ZIP se font dans votre
             navigateur lorsque la fonctionnalité le permet. Le contenu de vos fichiers n’est pas
-            envoyé à DOC-RENAME pour être renommé.
+            envoyé à BimDoc Renamer pour être renommé.
           </p>
           <p className="mt-5 text-sm font-sans text-ink-mute">
             Dernière mise à jour: 17 mai 2026.
@@ -140,7 +141,7 @@ export default function PrivacyPage() {
             </div>
 
             <p className="mt-4 max-w-3xl text-ink-soft">
-              DOC-RENAME ne doit pas recevoir vos fichiers pour renommer un lot. Si vous envoyez
+              BimDoc Renamer ne doit pas recevoir vos fichiers pour renommer un lot. Si vous envoyez
               volontairement un fichier au support, il sera traité uniquement pour résoudre votre
               demande.
             </p>
@@ -187,7 +188,7 @@ export default function PrivacyPage() {
               <div className="rounded-lg border border-line bg-white p-4">
                 <h3 className="font-sans text-lg font-semibold text-ink">Responsable du traitement</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
-                  DOC-RENAME, représenté par Jawani Fernandes, détermine les finalités et moyens des
+                  BimDoc Renamer, représenté par Jawani Fernandes, détermine les finalités et moyens des
                   traitements nécessaires au service SaaS. Pour les documents que vous traitez
                   localement, vous restez responsable de leur contenu et des personnes concernées
                   dans vos propres fichiers.
@@ -284,7 +285,7 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="font-sans text-lg font-semibold text-ink">Usage interdit</h3>
                 <p className="mt-2 max-w-3xl text-ink-soft">
-                  Il est interdit d’utiliser DOC-RENAME pour contourner des obligations légales,
+                  Il est interdit d’utiliser BimDoc Renamer pour contourner des obligations légales,
                   masquer l’origine de documents, diffuser des fichiers illicites ou traiter des
                   données sans base légale dans votre propre organisation.
                 </p>
@@ -312,10 +313,10 @@ export default function PrivacyPage() {
               Pour toute question relative à la confidentialité, à la sécurité, au RGPD ou aux
               conditions d’utilisation:{" "}
               <a
-                href="mailto:contact@bimdoc-renamer.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="text-brick underline underline-offset-4 hover:text-brick-deep"
               >
-                contact@bimdoc-renamer.com
+                {CONTACT_EMAIL}
               </a>
               .
             </p>

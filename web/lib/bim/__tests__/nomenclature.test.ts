@@ -6,6 +6,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   normalizeBIM,
+  normalizeOutputName,
   applyCaseTransform,
   parseFilename,
   cleanFilename,
@@ -136,6 +137,14 @@ describe('normalizeBIM', () => {
 
   it('handles mixed accented and plain characters', () => {
     expect(normalizeBIM('étage_1')).toBe('ETAGE_1');
+  });
+});
+
+describe('normalizeOutputName', () => {
+  it('uppercases and strips accents in a full filename', () => {
+    expect(normalizeOutputName('plan façade révision é.pdf')).toBe(
+      'PLAN FACADE REVISION E.PDF',
+    );
   });
 });
 
@@ -436,7 +445,7 @@ describe('generate', () => {
     expect(generate(file, ctx)).toBe('STR_FILE.PDF');
   });
 
-  it('company field always uses per-file mappedFields (never global)', () => {
+  it('company field prefers per-file mappedFields over global values', () => {
     const ctx = makeCtx({
       activeFields: [makeField({ id: 'company' })],
       fieldValues: { company: 'GLOBAL_CO' },
@@ -446,11 +455,10 @@ describe('generate', () => {
       extension: '.pdf',
       mappedFields: { company: 'PER_FILE_CO' },
     });
-    // Per-file company should be used
     expect(generate(file, ctx)).toBe('PER_FILE_CO_FILE.PDF');
   });
 
-  it('company field with no per-file mappedFields yields empty (skipped)', () => {
+  it('company field falls back to the global value when no per-file mapping exists', () => {
     const ctx = makeCtx({
       activeFields: [makeField({ id: 'company' }), makeField({ id: 'project' })],
       fieldValues: { company: 'GLOBAL_CO', project: 'P1' },
@@ -460,7 +468,7 @@ describe('generate', () => {
       extension: '.pdf',
       mappedFields: {}, // no company mapped
     });
-    expect(generate(file, ctx)).toBe('P1_FILE.PDF');
+    expect(generate(file, ctx)).toBe('GLOBAL_CO_P1_FILE.PDF');
   });
 
   it('sequence field with autoIncrement uses getNextSequence', () => {

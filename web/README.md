@@ -1,16 +1,18 @@
-# DOC-RENAME Web
+# BimDoc Renamer Web
 
-Application Next.js de renommage documentaire par profils metier.
+Application Next.js de renommage de livrables BIM avant dépôt CDE.
 
 ## Stack
 
 - Next.js 16
 - React 19
 - TypeScript
+- Tailwind CSS 4
 - Vitest
+- Playwright
 - ESLint
 
-## Demarrage
+## Démarrage
 
 ```bash
 npm ci
@@ -26,30 +28,37 @@ npm run dev
 npm run lint
 npm test
 npm run build
+npm run test:e2e
+npm run audit:prod
 npm run start
 ```
 
-## Architecture metier
+## Surfaces
 
-Les conventions par metier sont centralisees dans `lib/profiles/`.
+- `/` : landing commerciale BimDoc Renamer.
+- `/app` : atelier de renommage local-first.
+- `/pilot` : demande de pilote BIM 14 jours, formulaire mailto sans stockage backend.
+- `/iso-19650` : guide et modèle JSON prêt à importer.
+- `/security` : audit sécurité et preuves local-first.
+- `/privacy` : politique de confidentialité.
 
-Chaque profil controle ses propres:
+## Architecture métier
 
-- champs;
-- types de documents;
-- abreviations;
-- entites;
-- statuts;
-- templates;
-- exemples;
-- regles de normalisation.
+La V1 commerciale est centrée BIM / Construction. Les conventions, champs,
+référentiels et templates sont maintenus dans `lib/bim/` et les panneaux UI
+associés.
 
-Le profil BIM / Construction conserve les conventions BIM existantes tout en
-s'inscrivant dans le nouveau moteur multi-profils.
+Le flux fichier passe par `lib/hooks/useFileIngestion.ts`:
 
-## Deploiement
+1. validation du nom, de la taille et de l’archive;
+2. expansion ZIP/RAR/7z/TAR si nécessaire;
+3. création des entrées `BimFile`;
+4. ajout au state React;
+5. préchargement des viewers utiles.
 
-Ce dossier est l'application a deployer.
+## Déploiement
 
-Pour Vercel ou une plateforme equivalente, definir `web/` comme racine du
-projet si le depot complet est importe.
+Ce dossier est l’application à déployer. Pour Vercel, définir `web/` comme
+racine du projet.
+
+Production actuelle: `https://doc-rename-saas.vercel.app`.

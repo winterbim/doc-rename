@@ -19,8 +19,15 @@ import {
 import { useState } from 'react';
 
 import { useAppContext } from '@/lib/app-state';
-import { exportFieldsState, importFieldsState } from '@/lib/bim/fields';
+import {
+  exportFieldsState,
+  exportFieldsStateCsv,
+  importFieldsState,
+  importFieldsStateFromTable,
+  type FieldsState,
+} from '@/lib/bim/fields';
 import { getActiveFieldsForProfile, getInactiveFieldsForProfile } from '@/lib/profiles';
+import { checkFilename, checkSize } from '@/lib/upload-guard';
 
 import { TemplatePicker } from './TemplatePicker';
 import { SeparatorPicker } from './SeparatorPicker';
@@ -67,6 +74,8 @@ export function NomenclatureBuilder() {
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overZone, setOverZone] = useState<'active' | 'available' | null>(null);
+  const [showTableImport, setShowTableImport] = useState(false);
+  const [tableImportText, setTableImportText] = useState('');
 
   const allFields = [...activeFields, ...inactiveFields];
   const draggingField = activeId ? allFields.find((f) => f.id === activeId) ?? null : null;
@@ -76,6 +85,75 @@ export function NomenclatureBuilder() {
       activationConstraint: { distance: 8 },
     })
   );
+
+  function applyImportedFields(next: FieldsState, message: string) {
+    dispatch({
+      type: 'STATE_HYDRATE',
+      slices: { fields: { activeFieldIds: next.activeFieldIds, values: next.values } },
+    });
+    dispatch({ type: 'TOAST_SHOW', msg: message });
+  }
+
+  function downloadTextFile(content: string, filename: string, type: string) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
+  async function importFieldsFile(file: File) {
+    const filenameCheck = checkFilename(file.name);
+    if (!filenameCheck.ok) throw new Error(filenameCheck.reason);
+
+    const sizeCheck = checkSize(file.size);
+    if (!sizeCheck.ok) throw new Error(sizeCheck.reason);
+
+    const lowerName = file.name.toLowerCase();
+    if (lowerName.endsWith('.json')) {
+      applyImportedFields(importFieldsState(await file.text()), 'Modèle de nomenclature JSON importé.');
+      return;
+    }
+
+    if (lowerName.endsWith('.xlsx') || lowerName.endsWith('.xls') || lowerName.endsWith('.ods')) {
+      const xlsx = await import('xlsx');
+      const workbook = xlsx.read(await file.arrayBuffer(), { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      if (!firstSheetName) throw new Error('Le fichier Excel ne contient aucune feuille.');
+      const tableText = xlsx.utils.sheet_to_csv(workbook.Sheets[firstSheetName], {
+        FS: '\t',
+        blankrows: false,
+      });
+      applyImportedFields(
+        importFieldsStateFromTable(tableText, state.fields),
+        'Modèle de nomenclature Excel importé.',
+      );
+      return;
+    }
+
+    applyImportedFields(
+      importFieldsStateFromTable(await file.text(), state.fields),
+      'Modèle de nomenclature CSV importé.',
+    );
+  }
+
+  function importPastedTable() {
+    try {
+      applyImportedFields(
+        importFieldsStateFromTable(tableImportText, state.fields),
+        'Nomenclature collée importée.',
+      );
+      setTableImportText('');
+      setShowTableImport(false);
+    } catch (error) {
+      dispatch({
+        type: 'TOAST_SHOW',
+        msg: error instanceof Error ? error.message : 'Collage invalide.',
+      });
+    }
+  }
 
   function handleDragStart(event: DragStartEvent) {
     setActiveId(String(event.active.id));
@@ -150,58 +228,123 @@ export function NomenclatureBuilder() {
       onDragEnd={handleDragEnd}
     >
       <div className="flex flex-col gap-3">
-        {/* Import / Export JSON row */}
-        <div className="flex items-center justify-end gap-1.5">
+        {/* Import / Export row */}
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
           <button
             type="button"
             onClick={() => {
-              const json = exportFieldsState(state.fields);
-              const blob = new Blob([json], { type: 'application/json' });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = 'bimdoc-template.json';
-              a.click();
-              setTimeout(() => URL.revokeObjectURL(url), 0);
+              downloadTextFile(
+                exportFieldsState(state.fields),
+                'bimdoc-renamer-nomenclature.json',
+                'application/json',
+              );
             }}
             className="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors"
             aria-label="Exporter le modèle en JSON"
             title="Télécharger la configuration de nomenclature au format JSON"
           >
-            ↓ Exporter
+            ↓ JSON
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              downloadTextFile(
+                exportFieldsStateCsv(state.fields),
+                'bimdoc-renamer-nomenclature.csv',
+                'text/csv;charset=utf-8',
+              );
+            }}
+            className="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors"
+            aria-label="Exporter le modèle en CSV"
+            title="Télécharger la configuration de nomenclature au format CSV"
+          >
+            ↓ CSV
           </button>
           <label
             className="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors cursor-pointer"
-            title="Importer une configuration de nomenclature au format JSON"
+            title="Importer une configuration JSON, CSV, Excel ou ODS"
           >
-            ↑ Importer
+            ↑ Fichier
             <input
               type="file"
-              accept="application/json,.json"
+              accept="application/json,text/csv,.json,.csv,.tsv,.txt,.xlsx,.xls,.ods"
               className="sr-only"
               onChange={async (e) => {
                 const f = e.target.files?.[0];
                 if (!f) return;
                 try {
-                  const text = await f.text();
-                  const next = importFieldsState(text);
+                  await importFieldsFile(f);
+                } catch (error) {
                   dispatch({
-                    type: 'STATE_HYDRATE',
-                    slices: { fields: { activeFieldIds: next.activeFieldIds, values: next.values } },
+                    type: 'TOAST_SHOW',
+                    msg: error instanceof Error ? error.message : 'Fichier invalide.',
                   });
-                } catch {
-                  alert("Fichier JSON invalide.");
                 }
                 e.target.value = '';
               }}
             />
           </label>
+          <button
+            type="button"
+            onClick={() => setShowTableImport((value) => !value)}
+            className="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors"
+            aria-expanded={showTableImport}
+            aria-controls="table-import-panel"
+            title="Coller des colonnes depuis Excel, Numbers, LibreOffice ou un CSV"
+          >
+            Coller
+          </button>
         </div>
+
+        {showTableImport && (
+          <div
+            id="table-import-panel"
+            className="rounded-md border border-line bg-white p-3 dark:bg-paper-2"
+          >
+            <label
+              htmlFor="table-import-text"
+              className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-ink-mute"
+            >
+              Import CSV / Excel par copier-coller
+            </label>
+            <textarea
+              id="table-import-text"
+              value={tableImportText}
+              onChange={(event) => setTableImportText(event.target.value)}
+              placeholder={'champ\tvaleur\nCode Projet\tPRJ01\nType Document\tPLA\nRévision\tA'}
+              rows={5}
+              className="w-full resize-y rounded-md border border-line bg-white px-2.5 py-1.5 font-mono text-xs text-ink placeholder:text-ink-mute focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick dark:bg-paper-2"
+            />
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[10px] text-ink-mute">
+                Formats acceptés : colonnes champ/valeur, code/valeur ou export CSV BimDoc Renamer.
+              </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setTableImportText('')}
+                  disabled={!tableImportText}
+                  className="rounded-md border border-line bg-white px-2 py-1 text-[11px] text-ink-soft transition-colors hover:border-brick hover:text-brick disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Effacer
+                </button>
+                <button
+                  type="button"
+                  onClick={importPastedTable}
+                  disabled={!tableImportText.trim()}
+                  className="rounded-md border border-brick bg-brick px-2 py-1 text-[11px] text-white transition-colors hover:bg-brick-deep disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Importer le collage
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <ProfilePicker />
         <EntityImportPanel />
 
-        {/* Section: Template + Separator on one row when both fit */}
+        {/* Section: model + separator on one row when both fit */}
         <div className="flex flex-col gap-3">
           <section aria-labelledby="section-template">
             <h2 id="section-template" className="sr-only">

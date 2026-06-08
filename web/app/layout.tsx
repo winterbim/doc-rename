@@ -21,7 +21,7 @@ const newsreader = Newsreader({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bimdoc-renamer.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://doc-rename-saas.vercel.app";
 const appTitle = "BimDoc Renamer — Renommer vos livrables BIM avant dépôt CDE";
 const appDescription =
   "Outil local-first pour appliquer une convention de nommage ISO 19650 ou SIA 2051 à vos lots de plans, IFC, DWG, PDF. Aucun upload : tout reste dans votre navigateur. Compatible Autodesk Docs, Trimble Connect, Kroqi.";

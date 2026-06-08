@@ -47,7 +47,7 @@ interface TokenSpan {
  * Examples (separator characters: `_`, `-`, `.`, whitespace):
  *   "H3_ARC_Plan_001"      → [{token:"H3",end:2},{token:"ARC",end:6},{token:"Plan",end:11},{token:"001",end:15}]
  *   "1.2-Mitigeur sur plage" → [{token:"1",end:1},{token:"2",end:3},{token:"Mitigeur",end:12},...]
- *   "SE-HUBLOT H3-RDC-INDICE" → [{token:"SE",end:2},{token:"HUBLOT",end:9},{token:"H3",end:12},...]
+ *   "ZONE-PLAN H3-RDC-INDICE" → [{token:"ZONE",end:4},{token:"PLAN",end:9},{token:"H3",end:12},...]
  */
 function tokenizeWithSpans(base: string): TokenSpan[] {
   const regex = /[^_\s.\-]+/g;

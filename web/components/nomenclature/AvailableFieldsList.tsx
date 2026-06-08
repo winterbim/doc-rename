@@ -15,7 +15,13 @@ import type { FieldDefinition } from '@/lib/bim/types';
 // DraggableAvailableItem
 // ---------------------------------------------------------------------------
 
-function DraggableAvailableItem({ field }: { field: FieldDefinition }) {
+function DraggableAvailableItem({
+  field,
+  onActivate,
+}: {
+  field: FieldDefinition;
+  onActivate: (fieldId: string) => void;
+}) {
   const {
     attributes,
     listeners,
@@ -31,15 +37,26 @@ function DraggableAvailableItem({ field }: { field: FieldDefinition }) {
     opacity: isDragging ? 0.4 : 1,
   };
 
+  const handleActivate = () => {
+    if (!isDragging) onActivate(field.id);
+  };
+
   return (
     <li
       ref={setNodeRef}
       style={style}
       className="inline-flex items-center gap-1 rounded border border-line bg-paper-2/50 px-2 py-1 text-[11px] text-ink cursor-grab active:cursor-grabbing hover:border-brick/40 hover:bg-paper-2 hover:text-brick-deep transition-colors select-none"
-      title={field.name}
-      aria-label={`Champ disponible: ${field.name}. Glisser pour activer.`}
+      title={`${field.name} - cliquer ou glisser pour activer`}
+      aria-label={`Champ disponible: ${field.name}. Cliquer ou glisser pour activer.`}
       {...attributes}
       {...listeners}
+      onClick={handleActivate}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          handleActivate();
+        }
+      }}
     >
       <span className="font-mono text-[10px] text-ink-mute shrink-0">{field.code}</span>
     </li>
@@ -55,7 +72,7 @@ interface AvailableFieldsListProps {
 }
 
 export function AvailableFieldsList({ isOver }: AvailableFieldsListProps) {
-  const { state } = useAppContext();
+  const { state, dispatch } = useAppContext();
   const inactiveFields = getInactiveFieldsForProfile(
     state.fields,
     state.profileId,
@@ -63,6 +80,13 @@ export function AvailableFieldsList({ isOver }: AvailableFieldsListProps) {
   );
 
   const { setNodeRef } = useDroppable({ id: 'available-fields-zone' });
+  const activateField = (fieldId: string) => {
+    if (state.fields.activeFieldIds.includes(fieldId)) return;
+    dispatch({
+      type: 'FIELDS_SET_ACTIVE',
+      fieldIds: [...state.fields.activeFieldIds, fieldId],
+    });
+  };
 
   if (inactiveFields.length === 0) {
     return (
@@ -92,7 +116,11 @@ export function AvailableFieldsList({ isOver }: AvailableFieldsListProps) {
       >
         <ul className="flex flex-wrap gap-1.5 p-1" aria-label="Champs disponibles">
           {inactiveFields.map((field) => (
-            <DraggableAvailableItem key={field.id} field={field} />
+            <DraggableAvailableItem
+              key={field.id}
+              field={field}
+              onActivate={activateField}
+            />
           ))}
         </ul>
       </SortableContext>

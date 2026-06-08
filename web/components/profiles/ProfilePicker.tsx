@@ -31,14 +31,14 @@ export function ProfilePicker() {
         <div className="flex items-center justify-between gap-2">
           {showStatic ? (
             <span className="text-[11px] font-medium text-ink-mute uppercase tracking-wide">
-              Profil metier
+              Profil métier
             </span>
           ) : (
             <label
               htmlFor="industry-profile"
               className="text-[11px] font-medium text-ink-mute uppercase tracking-wide"
             >
-              Profil metier
+              Profil métier
             </label>
           )}
           <span className="rounded-full border border-olive/30 bg-olive/10 px-2 py-0.5 text-[10px] font-medium text-olive">

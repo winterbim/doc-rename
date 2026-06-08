@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { getSpreadsheetCache, setSpreadsheetCache } from '@/lib/viewer-cache';
+import { sanitizeDocumentHtml } from '@/lib/sanitize-html';
 import type { BimFile } from '@/lib/bim/types';
 
 interface Props { readonly file: BimFile }
@@ -8,6 +9,13 @@ interface Props { readonly file: BimFile }
 interface SheetData {
   name: string;
   html: string;
+}
+
+/** Collect the sheets rendered so far into the cache payload shape. */
+function collectSheets(names: string[], htmlMap: Record<string, string>): SheetData[] {
+  return names
+    .filter((n) => htmlMap[n] !== undefined)
+    .map((n) => ({ name: n, html: htmlMap[n] }));
 }
 
 interface XlsxModule {
@@ -63,7 +71,9 @@ export function SpreadsheetPreview({ file }: Props) {
         wbRef.current = { sheets: wb.Sheets, xlsx };
         // Render only the FIRST sheet up front; lazy-render others on tab click
         const firstName = wb.SheetNames[0];
-        const firstHtml = xlsx.utils.sheet_to_html(wb.Sheets[firstName], { id: `sheet-${firstName}` });
+        const rawHtml = xlsx.utils.sheet_to_html(wb.Sheets[firstName], { id: `sheet-${firstName}` });
+        const firstHtml = await sanitizeDocumentHtml(rawHtml);
+        if (cancelled) return;
         setSheetNames(wb.SheetNames);
         setSheetHtml({ [firstName]: firstHtml });
         setActiveIdx(0);
@@ -83,16 +93,19 @@ export function SpreadsheetPreview({ file }: Props) {
     if (sheetHtml[name] !== undefined) return;
     const wb = wbRef.current;
     if (!wb) return;
-    const html = wb.xlsx.utils.sheet_to_html(wb.sheets[name], { id: `sheet-${name}` });
-    setSheetHtml((prev) => {
-      const next = { ...prev, [name]: html };
-      // Update cache with the full set rendered so far
-      const allSheets: SheetData[] = sheetNames
-        .filter((n) => next[n] !== undefined)
-        .map((n) => ({ name: n, html: next[n] }));
-      setSpreadsheetCache(file.id, { sheets: allSheets });
-      return next;
-    });
+    let cancelled = false;
+    (async () => {
+      const rawHtml = wb.xlsx.utils.sheet_to_html(wb.sheets[name], { id: `sheet-${name}` });
+      const html = await sanitizeDocumentHtml(rawHtml);
+      if (cancelled) return;
+      setSheetHtml((prev) => {
+        const next = { ...prev, [name]: html };
+        // Update cache with the full set rendered so far
+        setSpreadsheetCache(file.id, { sheets: collectSheets(sheetNames, next) });
+        return next;
+      });
+    })();
+    return () => { cancelled = true; };
   }, [activeIdx, sheetNames, sheetHtml, file.id]);
 
   if (loading) {

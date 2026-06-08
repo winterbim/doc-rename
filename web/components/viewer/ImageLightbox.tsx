@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useCallback, useState } from 'react';
+import { useFocusTrap } from '@/lib/hooks/useFocusTrap';
 
 const ZOOM_STEPS = [25, 50, 75, 100, 125, 150, 200] as const;
 type ZoomStep = (typeof ZOOM_STEPS)[number];
@@ -19,7 +20,7 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Focus trap + Esc
+  // Move focus into the dialog on mount + close on Esc
   useEffect(() => {
     closeButtonRef.current?.focus();
 
@@ -31,6 +32,9 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
+
+  // Confine Tab within the lightbox
+  useFocusTrap(dialogRef);
 
   const zoomIn = useCallback(() => {
     setZoom((z) => {

@@ -20,13 +20,15 @@ import { CSS } from '@dnd-kit/utilities';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { BimFile } from '@/lib/bim/types';
 import { useEscapeKey } from '@/lib/hooks/useEscapeKey';
+import { useFocusTrap } from '@/lib/hooks/useFocusTrap';
+import { normalizeOutputName } from '@/lib/bim/nomenclature';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 const SEPARATOR_OPTIONS = [
-  { value: '_', label: '_ Underscore' },
+  { value: '_', label: '_ Trait bas' },
   { value: '-', label: '- Tiret' },
   { value: '.', label: '. Point' },
 ];
@@ -232,7 +234,7 @@ export function NameEditorModal({
     setSegments(parts.map((text) => ({ id: makeSegId(), text })));
   }
 
-  const preview = segments.map((s) => s.text).join(separator) + extension;
+  const preview = normalizeOutputName(segments.map((s) => s.text).join(separator) + extension);
 
   // DnD
   const sensors = useSensors(
@@ -287,10 +289,11 @@ export function NameEditorModal({
   // Esc to close
   useEscapeKey(useCallback(() => onClose(), [onClose]));
 
-  // Trap focus inside dialog on mount
+  // Move focus into the dialog on mount, then confine Tab within it
   useEffect(() => {
     closeBtnRef.current?.focus();
   }, []);
+  useFocusTrap(dialogRef);
 
   // Backdrop click
   function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -379,7 +382,7 @@ export function NameEditorModal({
                   />
                   <span className="font-mono font-bold">{opt.value}</span>
                   <span className="hidden sm:inline text-xs text-ink-mute">
-                    {opt.value === '_' ? 'Underscore' : opt.value === '-' ? 'Tiret' : 'Point'}
+                    {opt.value === '_' ? 'Trait bas' : opt.value === '-' ? 'Tiret' : 'Point'}
                   </span>
                 </label>
               ))}

@@ -10,7 +10,9 @@
     "start": "npm --prefix web run start",
     "lint": "npm --prefix web run lint",
     "test": "npm --prefix web run test",
-    "test:coverage": "npm --prefix web run test:coverage"
+    "test:coverage": "npm --prefix web run test:coverage",
+    "test:e2e": "npm --prefix web run test:e2e",
+    "verify": "npm --prefix web run verify"
   },
   "engines": {
     "node": ">=20"

@@ -69,6 +69,26 @@ describe('profile entities', () => {
     ]);
   });
 
+  it('imports spreadsheet-like company lists and skips common headers', () => {
+    const entities = importEntitiesFromText(
+      'Entreprise\tCode\nEntreprise generale;ignored\nBureau controle,ignored',
+      'bim-construction',
+    );
+
+    expect(entities).toEqual([
+      {
+        id: 'bim-construction:ENTREPRISE_GENERALE',
+        code: 'ENTREPRISE_GENERALE',
+        label: 'Entreprise generale',
+      },
+      {
+        id: 'bim-construction:BUREAU_CTRL',
+        code: 'BUREAU_CTRL',
+        label: 'Bureau controle',
+      },
+    ]);
+  });
+
   it('uses profile-scoped storage keys', () => {
     expect(getProfileEntityStorageKey('bim-construction')).toBe('entities:bim-construction');
     expect(getProfileEntityStorageKey('finance')).toBe('entities:finance');

@@ -9,11 +9,14 @@ import { loadPersistedState, persistState, flushPersist, SCHEMA_VERSION } from '
 import { STORAGE_KEYS } from '../bim/config/defaults';
 import { createDefaultFieldsState } from '../bim/fields';
 import { createDefaultState as createDefaultCleaner } from '../bim/filename-cleaner';
+import { DEFAULT_PROFILE_ID } from '../profiles';
 import type { AppState } from '../app-state';
 
 function freshAppState(): AppState {
   return {
     files: [],
+    profileId: DEFAULT_PROFILE_ID,
+    profileEntities: {},
     fields: createDefaultFieldsState(),
     separator: '-',
     cleaner: createDefaultCleaner(),

@@ -511,6 +511,223 @@ export function exportFieldsState(state: FieldsState): string {
   });
 }
 
+function escapeCsvCell(value: unknown): string {
+  const str = String(value ?? '');
+  return /[";\n\r]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+}
+
+/**
+ * Export a spreadsheet-friendly representation of the nomenclature.
+ * This format is intentionally simple so it can round-trip through Excel,
+ * LibreOffice, Numbers, or a pasted table.
+ */
+export function exportFieldsStateCsv(state: FieldsState): string {
+  const activeOrder = new Map(state.activeFieldIds.map((id, index) => [id, index + 1]));
+  const rows = FIELD_DEFINITIONS.map((field) => ({
+    order: activeOrder.get(field.id) ?? '',
+    id: field.id,
+    code: field.code,
+    name: field.name,
+    value: state.values[field.id] ?? '',
+    active: activeOrder.has(field.id) ? 'oui' : 'non',
+  })).sort((a, b) => {
+    if (a.order === '' && b.order === '') return a.name.localeCompare(b.name);
+    if (a.order === '') return 1;
+    if (b.order === '') return -1;
+    return Number(a.order) - Number(b.order);
+  });
+
+  return [
+    ['ordre', 'id', 'code', 'champ', 'valeur', 'actif'].join(';'),
+    ...rows.map((row) => [
+      row.order,
+      row.id,
+      row.code,
+      row.name,
+      row.value,
+      row.active,
+    ].map(escapeCsvCell).join(';')),
+  ].join('\n');
+}
+
+function parseDelimitedRows(text: string): string[][] {
+  const src = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const firstLine = src.split('\n').find((line) => line.trim()) ?? '';
+  const candidates = ['\t', ';', ','];
+  const delimiter = candidates
+    .map((candidate) => ({
+      candidate,
+      count: firstLine.split(candidate).length,
+    }))
+    .sort((a, b) => b.count - a.count)[0]?.candidate ?? ';';
+
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let cell = '';
+  let quoted = false;
+
+  for (let i = 0; i < src.length; i += 1) {
+    const char = src[i];
+    const next = src[i + 1];
+
+    if (char === '"') {
+      if (quoted && next === '"') {
+        cell += '"';
+        i += 1;
+      } else {
+        quoted = !quoted;
+      }
+      continue;
+    }
+
+    if (!quoted && char === delimiter) {
+      row.push(cell.trim());
+      cell = '';
+      continue;
+    }
+
+    if (!quoted && char === '\n') {
+      row.push(cell.trim());
+      if (row.some(Boolean)) rows.push(row);
+      row = [];
+      cell = '';
+      continue;
+    }
+
+    cell += char;
+  }
+
+  row.push(cell.trim());
+  if (row.some(Boolean)) rows.push(row);
+  return rows;
+}
+
+function normalizeImportKey(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+const FIELD_ALIASES = new Map<string, string>(
+  FIELD_DEFINITIONS.flatMap((field) => [
+    [normalizeImportKey(field.id), field.id],
+    [normalizeImportKey(field.code), field.id],
+    [normalizeImportKey(field.name), field.id],
+  ]),
+);
+
+function findFieldId(value: string): string | null {
+  return FIELD_ALIASES.get(normalizeImportKey(value)) ?? null;
+}
+
+function findColumn(headers: string[], names: string[]): number {
+  const normalized = headers.map(normalizeImportKey);
+  return normalized.findIndex((header) => names.some((name) => header === normalizeImportKey(name)));
+}
+
+function looksLikeHeader(row: string[]): boolean {
+  const normalized = row.map(normalizeImportKey);
+  return normalized.some((cell) =>
+    ['id', 'code', 'champ', 'field', 'nomduchamp', 'valeur', 'value', 'actif', 'active', 'ordre', 'order'].includes(cell),
+  );
+}
+
+function isTruthyCell(value: string): boolean {
+  return ['1', 'true', 'yes', 'y', 'oui', 'o', 'x', 'actif', 'active'].includes(
+    normalizeImportKey(value),
+  );
+}
+
+/**
+ * Import values from CSV, TSV, or pasted spreadsheet data.
+ *
+ * Accepted shapes:
+ * - exported DOC-RENAME CSV: ordre;id;code;champ;valeur;actif
+ * - simple two-column paste: champ<TAB>valeur
+ * - header variants: field/value, code/value, champ/valeur
+ */
+export function importFieldsStateFromTable(
+  text: string,
+  baseState: FieldsState = createDefaultFieldsState(),
+): FieldsState {
+  const rows = parseDelimitedRows(text);
+  if (rows.length === 0) return baseState;
+
+  const hasHeader = looksLikeHeader(rows[0]);
+  const headers = hasHeader ? rows[0] : [];
+  const bodyRows = hasHeader ? rows.slice(1) : rows;
+  const fieldIdx = hasHeader
+    ? Math.max(
+      findColumn(headers, ['id', 'field', 'champ', 'nom du champ']),
+      findColumn(headers, ['code']),
+    )
+    : 0;
+  const valueIdx = hasHeader ? findColumn(headers, ['valeur', 'value']) : 1;
+  const activeIdx = hasHeader ? findColumn(headers, ['actif', 'active', 'enabled']) : -1;
+  const orderIdx = hasHeader ? findColumn(headers, ['ordre', 'order', 'rang']) : -1;
+  const codeIdx = hasHeader ? findColumn(headers, ['code']) : -1;
+
+  const imported: Array<{
+    fieldId: string;
+    value: string;
+    active: boolean | null;
+    order: number | null;
+    index: number;
+  }> = [];
+
+  for (const [index, row] of bodyRows.entries()) {
+    const rawField = row[fieldIdx] || (codeIdx >= 0 ? row[codeIdx] : '');
+    const fieldId = findFieldId(rawField);
+    if (!fieldId) continue;
+
+    imported.push({
+      fieldId,
+      value: valueIdx >= 0 ? (row[valueIdx] ?? '') : '',
+      active: activeIdx >= 0 ? isTruthyCell(row[activeIdx] ?? '') : null,
+      order: orderIdx >= 0 && row[orderIdx] ? Number(row[orderIdx]) : null,
+      index,
+    });
+  }
+
+  if (imported.length === 0) return baseState;
+
+  const values = { ...baseState.values };
+  for (const item of imported) {
+    if (valueIdx < 0) continue;
+    const field = _fieldMap.get(item.fieldId);
+    if (!field) continue;
+    const value = transformValue(item.value, field);
+    if (value) {
+      values[item.fieldId] = value;
+    } else {
+      delete values[item.fieldId];
+    }
+  }
+
+  let activeFieldIds = baseState.activeFieldIds;
+  const explicitActive = imported.filter((item) => item.active === true);
+  if (activeIdx >= 0 && explicitActive.length > 0) {
+    activeFieldIds = explicitActive
+      .sort((a, b) => (a.order ?? a.index + 1) - (b.order ?? b.index + 1))
+      .map((item) => item.fieldId)
+      .filter((fieldId, index, all) => all.indexOf(fieldId) === index);
+  } else if (activeIdx < 0) {
+    const next = [...activeFieldIds];
+    for (const item of imported) {
+      if (!next.includes(item.fieldId)) next.push(item.fieldId);
+    }
+    activeFieldIds = next;
+  }
+
+  return {
+    activeFieldIds: activeFieldIds.filter((id) => _fieldMap.has(id)),
+    values,
+    workLotPart: baseState.workLotPart,
+  };
+}
+
 /**
  * Deserialize state from a JSON string.
  * Unknown field IDs are filtered out; missing keys get safe defaults.

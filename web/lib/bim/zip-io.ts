@@ -13,6 +13,7 @@
  */
 
 import JSZip from 'jszip';
+import { normalizeOutputName } from './nomenclature';
 
 // ---------------------------------------------------------------------------
 // ZipEntry
@@ -108,6 +109,12 @@ export async function writeZip(
     compression: 'DEFLATE',
     compressionOptions: { level: 9 },
   });
+}
+
+export function normalizeZipArchiveName(name: string): string {
+  const fallback = 'FICHIERS_RENOMMES';
+  const withoutExtension = name.replace(/\.zip$/i, '').trim() || fallback;
+  return `${normalizeOutputName(withoutExtension)}.ZIP`;
 }
 
 // ---------------------------------------------------------------------------
