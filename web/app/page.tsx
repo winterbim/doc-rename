@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CONTACT_EMAIL } from '@/lib/contact';
+import { proCta, teamCta } from '@/lib/pricing';
 
 const siteUrl = 'https://doc-rename-saas.vercel.app';
 
@@ -805,7 +806,13 @@ export default function LandingPage() {
                   <li>Export JSON / CSV de conventions</li>
                   <li>Support email J+1</li>
                 </ul>
-                <a className="button primary" href="/pilot">Demander le pilote Pro</a>
+                <a
+                  className="button primary"
+                  href={proCta.href}
+                  {...(proCta.checkout ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  {proCta.label}
+                </a>
               </article>
 
               <article className="plan team">
@@ -822,7 +829,13 @@ export default function LandingPage() {
                   <li>Import CSV / Excel d’entités</li>
                   <li>Support prioritaire léger</li>
                 </ul>
-                <a className="button primary" href="/pilot">Planifier Team</a>
+                <a
+                  className="button primary"
+                  href={teamCta.href}
+                  {...(teamCta.checkout ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  {teamCta.label}
+                </a>
               </article>
             </div>
 
