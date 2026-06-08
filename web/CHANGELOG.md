@@ -7,6 +7,8 @@ Versioning: [Semantic Versioning 2.0](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-06-08
+
 ### Added
 
 - `ARCHITECTURE.md` documenting layout, state, persistence, security, viewers, tests, CI, deploy, versioning.
@@ -33,6 +35,15 @@ Versioning: [Semantic Versioning 2.0](https://semver.org/spec/v2.0.0.html).
 ### Security
 
 - Production dependency audit fixed by overriding Next's transitive `postcss` to `8.5.15` without using `npm audit fix --force`.
+- Untrusted `.docx` (mammoth) and `.xlsx` (SheetJS) HTML is now sanitized with DOMPurify before rendering, closing two stored-XSS vectors in the document viewers (`lib/sanitize-html.ts`).
+
+### Fixed
+
+- Real keyboard focus trap in the name-editor and image-lightbox dialogs: `Tab` / `Shift+Tab` are now confined inside the modal instead of only setting initial focus (`lib/hooks/useFocusTrap.ts`).
+
+### Removed
+
+- Dead duplicate `usePrefetchViewers` hook (superseded by `lib/viewer-prefetch.ts`).
 
 ## [0.1.0] — 2026-05-14
 

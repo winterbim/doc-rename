@@ -44,7 +44,7 @@ export function Header() {
           À propos
         </Link>
         <span className="hidden md:inline-flex text-[10px] uppercase tracking-wider font-sans font-medium text-ink-mute">
-          v3.0.0
+          v0.2.0
         </span>
         {/* Theme toggle */}
         <ThemeToggle />

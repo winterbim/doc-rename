@@ -1,11 +1,11 @@
 # Changelog
 
-## 2.1.1 — 2026-04-24
+The product is the **BimDoc Renamer** web app under [`web/`](web/).
+Its release history is maintained in **[`web/CHANGELOG.md`](web/CHANGELOG.md)**
+(Keep a Changelog 1.1.0 / Semantic Versioning 2.0).
 
-### Performance
-- Nomenclature generation is memoized per file; filter and search no longer re-compute names (Task 1, 2).
-- Files list now renders lazily via IntersectionObserver: only visible rows are populated, keeping 1000-file lists fluid (Task 4).
-- Row button clicks use event delegation on `#filesList`; listener count drops from ~4000 to a handful regardless of file count (Task 5).
-- Search and extension-filter inputs are debounced (150 ms); keystrokes stay smooth even at 1000 files (Task 3).
+Current version: **0.2.0** (2026-06-08).
 
-No UI, workflow, or feature changes. All v2.1 functionality preserved.
+> Historical note: versions `2.x` in earlier history referred to the legacy
+> DOC-RENAME Chrome extension, not this SaaS. The web app versioning restarted
+> at `0.1.0` for the first public deployment (2026-05-14).
