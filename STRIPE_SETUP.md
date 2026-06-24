@@ -20,7 +20,7 @@ Tant qu'une variable n'est pas remplie, le bouton **retombe automatiquement sur 
    |---|---|---|
    | BimDoc Renamer — Pro | 19,99 CHF | mensuel (recurring) |
    | BimDoc Renamer — Team | 34,90 CHF | mensuel (recurring) |
-   | BimDoc Renamer — Pilote 14 j | montant à définir | paiement unique (one-time) |
+   | BimDoc Renamer — Pilote BIM 14 j | 149 CHF | paiement unique (one-time) |
 3. **Créer un Payment Link par prix** (Paiements → Payment Links → Nouveau). Pour chacun :
    - activer la collecte de l'email et de l'adresse de facturation ;
    - (Team) limiter la quantité si besoin ;
@@ -31,6 +31,7 @@ Tant qu'une variable n'est pas remplie, le bouton **retombe automatiquement sur 
    NEXT_PUBLIC_STRIPE_LINK_PRO=https://buy.stripe.com/xxxxPRO
    NEXT_PUBLIC_STRIPE_LINK_TEAM=https://buy.stripe.com/xxxxTEAM
    NEXT_PUBLIC_STRIPE_LINK_PILOT=https://buy.stripe.com/xxxxPILOT
+   NEXT_PUBLIC_DOC_RENAME_PLAN=free
    ```
    > Ces variables sont `NEXT_PUBLIC_` → **inlinées au build**. Il faut **redéployer** pour qu'elles prennent effet : `cd web && vercel --prod`.
 6. **Vérifier** : sur la prod, les boutons Pro/Team affichent « S'abonner » et ouvrent le checkout Stripe.
@@ -40,8 +41,21 @@ Tant qu'une variable n'est pas remplie, le bouton **retombe automatiquement sur 
 L'app a déjà un gate d'accès ([`web/proxy.ts`](web/proxy.ts) + `/access`) piloté par `DOC_RENAME_ACCESS_PASSWORD`. Flux V1 :
 
 1. Stripe t'envoie l'email de paiement.
-2. Tu communiques au client le mot de passe d'accès (ou un lien `/access`).
-3. (Optionnel) un mot de passe par client si tu veux pouvoir révoquer.
+2. Tu provisionnes un accès Pro/Team en redéployant une instance ou une preview protégée avec :
+   ```
+   DOC_RENAME_ACCESS_PASSWORD=mot-de-passe-client
+   NEXT_PUBLIC_DOC_RENAME_PLAN=pro
+   ```
+   ou `NEXT_PUBLIC_DOC_RENAME_PLAN=team` pour l'offre Team.
+3. Tu communiques au client le mot de passe d'accès (ou un lien `/access`).
+4. (Optionnel) un mot de passe par client si tu veux pouvoir révoquer.
+
+Le plan `free` garde la limite visible dans l'app : **3 lots de renommage par jour**. Les plans `pro` et `team` affichent "lots illimités" et ne bloquent pas le bouton de renommage.
+
+Sans Payment Link configuré, `/pilot` reste vendable : le formulaire prépare une
+réservation du pilote à **149 CHF** et demande un lien de paiement ou une facture.
+Tu peux donc encaisser manuellement aujourd'hui, puis remplacer ce flux par Stripe
+en ajoutant `NEXT_PUBLIC_STRIPE_LINK_PILOT`.
 
 ## Quand passer au "vrai" SaaS (plus tard)
 

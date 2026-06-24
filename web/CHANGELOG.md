@@ -7,6 +7,18 @@ Versioning: [Semantic Versioning 2.0](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- In-app Free quota badge and Pro upgrade CTA in the renaming toolbar.
+- Landing ROI section showing the economic case for Pro/Team from one BIM delivery lot.
+- Paid 149 CHF pilot offer on the landing page, `/pilot`, and pilot mailto flow.
+
+### Changed
+
+- Free plan now enforces the documented 3 rename lots/day limit in the public app.
+- No-backend monetization docs now include `NEXT_PUBLIC_DOC_RENAME_PLAN` for manually provisioned Pro/Team access.
+- Pilot conversion path now supports manual same-day payment when Stripe Payment Links are not configured.
+
 ## [0.2.0] — 2026-06-08
 
 ### Added

@@ -1,8 +1,11 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   FREE_DAILY_RENAME_LIMIT,
   clearDailyRenameUsage,
+  getAccessPlanLabel,
+  getConfiguredAccessPlan,
   getRemainingFreeRenames,
+  isUsageLimitEnabled,
   readDailyRenameUsage,
   recordFreeRenames,
 } from './usage-limits';
@@ -10,6 +13,10 @@ import {
 describe('usage-limits', () => {
   beforeEach(() => {
     clearDailyRenameUsage();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it('starts with the full free quota', () => {
@@ -30,5 +37,21 @@ describe('usage-limits', () => {
     recordFreeRenames(3, new Date('2026-05-17T10:00:00'));
 
     expect(getRemainingFreeRenames(new Date('2026-05-18T10:00:00'))).toBe(FREE_DAILY_RENAME_LIMIT);
+  });
+
+  it('defaults to Free and enables the usage limit', () => {
+    vi.stubEnv('NEXT_PUBLIC_DOC_RENAME_PLAN', '');
+
+    expect(getConfiguredAccessPlan()).toBe('free');
+    expect(getAccessPlanLabel()).toBe('Free');
+    expect(isUsageLimitEnabled()).toBe(true);
+  });
+
+  it('disables the free usage limit for configured paid plans', () => {
+    vi.stubEnv('NEXT_PUBLIC_DOC_RENAME_PLAN', 'team');
+
+    expect(getConfiguredAccessPlan()).toBe('team');
+    expect(getAccessPlanLabel()).toBe('Team');
+    expect(isUsageLimitEnabled()).toBe(false);
   });
 });

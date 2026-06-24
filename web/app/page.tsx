@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CONTACT_EMAIL } from '@/lib/contact';
-import { proCta, teamCta } from '@/lib/pricing';
+import { PAID_PILOT_PRICE_LABEL, pilotCta, proCta, teamCta } from '@/lib/pricing';
 
 const siteUrl = 'https://doc-rename-saas.vercel.app';
 
@@ -269,6 +269,42 @@ const LANDING_CSS = `
   .proof strong { display: block; font-size: 22px; color: var(--ink); letter-spacing: -.025em; }
   .proof span { font-size: 13px; color: var(--muted); }
 
+  .roi-grid {
+    display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(300px, .95fr);
+    gap: 18px; align-items: stretch;
+  }
+  .roi-card {
+    border: 1px solid var(--line-strong); border-radius: 8px;
+    background: var(--paper-hard); padding: 28px;
+  }
+  .roi-card.dark {
+    background: var(--ink); color: var(--paper); border-color: var(--ink);
+  }
+  .roi-label {
+    display: block; margin-bottom: 10px; color: var(--brick);
+    font-size: 12px; font-weight: 760; text-transform: uppercase;
+  }
+  .dark .roi-label { color: var(--gold); }
+  .roi-number {
+    margin: 0; font-size: clamp(38px, 5vw, 62px);
+    line-height: 1; font-weight: 590;
+  }
+  .roi-card p { margin: 14px 0 0; color: var(--ink-soft); }
+  .roi-card.dark p { color: rgba(247, 243, 234, .76); }
+  .ledger {
+    margin-top: 24px; border-top: 1px solid rgba(184, 170, 149, .7);
+    display: grid;
+  }
+  .ledger-row {
+    display: flex; justify-content: space-between; gap: 18px;
+    border-bottom: 1px solid rgba(184, 170, 149, .7);
+    padding: 12px 0; color: var(--ink-soft); font-size: 14px;
+  }
+  .ledger-row strong { color: var(--ink); }
+  .dark .ledger { border-color: rgba(247, 243, 234, .22); }
+  .dark .ledger-row { border-color: rgba(247, 243, 234, .22); color: rgba(247, 243, 234, .74); }
+  .dark .ledger-row strong { color: var(--paper); }
+
   .compare-table {
     width: 100%; border-collapse: collapse;
     background: var(--paper-hard); border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden;
@@ -348,6 +384,15 @@ const LANDING_CSS = `
   .pro .button.primary:hover { background: var(--gold); border-color: var(--gold); }
   .team .button.primary { background: var(--brick); border-color: var(--brick); color: #fff; }
   .team .button.primary:hover { background: var(--ink); border-color: var(--ink); }
+  .paid-pilot {
+    margin-top: 18px; border: 1px solid var(--ink); border-radius: 8px;
+    background: var(--ink); color: var(--paper); padding: 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .paid-pilot strong { display: block; font-size: 24px; letter-spacing: -.025em; }
+  .paid-pilot p { margin: 6px 0 0; color: rgba(247, 243, 234, .76); }
+  .paid-pilot .button.primary { background: var(--gold); color: var(--ink); border-color: var(--gold); flex-shrink: 0; }
+  .paid-pilot .button.primary:hover { background: var(--paper); border-color: var(--paper); }
 
   .faq { display: grid; gap: 0; border-top: 1px solid var(--line-strong); }
   details { border-bottom: 1px solid var(--line-strong); padding: 20px 0; }
@@ -374,7 +419,8 @@ const LANDING_CSS = `
 
   @media (max-width: 900px) {
     .nav { display: none; }
-    .hero, .section-head, .grid-3, .grid-2, .security-grid, .proof-row { grid-template-columns: 1fr; }
+    .hero, .section-head, .grid-3, .grid-2, .security-grid, .proof-row, .roi-grid { grid-template-columns: 1fr; }
+    .paid-pilot { align-items: flex-start; flex-direction: column; }
     .tool-grid { grid-template-columns: 1fr; }
     h1 { max-width: 100%; font-size: 48px; }
     .compare-table { display: block; overflow-x: auto; white-space: nowrap; }
@@ -493,6 +539,7 @@ export default function LandingPage() {
             <a href="#fonctionnement">Comment</a>
             <a href="#comparatif">Comparatif</a>
             <a href="#securite">Sécurité</a>
+            <a href="#rentabilite">ROI</a>
             <a href="#tarifs">Tarifs</a>
             <a href="/pilot">Pilote</a>
             <a href="#faq">FAQ</a>
@@ -518,7 +565,7 @@ export default function LandingPage() {
 
               <div className="cta-row">
                 <a className="button primary" href="/app">Essayer maintenant — sans compte</a>
-                <a className="button secondary" href="/pilot">Demander un pilote</a>
+                <a className="button secondary" href="/pilot">Réserver un pilote payant</a>
               </div>
               <p className="small-note">
                 Aucun fichier ne quitte votre poste. Vérifiable dans DevTools &gt; Réseau.
@@ -561,15 +608,14 @@ export default function LandingPage() {
             <div className="section-head">
               <div>
                 <span className="kicker">Le dernier kilomètre du BIM</span>
-                <h2>30 minutes par livrable, une convention qui dérive à chaque projet.</h2>
+                <h2>Des minutes par livrable, une convention qui dérive à chaque projet.</h2>
               </div>
               <p className="section-copy">
                 Chaque équipe BIM produit en fin de phase des dizaines de plans,
                 notes, rapports et exports IFC. Avant dépôt CDE, quelqu’un —
                 coordinateur, assistante BIM, BIM Manager — passe sa journée à
                 renommer à la main. Le résultat est rarement 100 % conforme
-                ISO 19650, alors que les marchés publics et les donneurs d’ordre
-                l’exigent.
+                ISO 19650, alors que les donneurs d’ordre peuvent l’exiger.
               </p>
             </div>
 
@@ -586,6 +632,51 @@ export default function LandingPage() {
                 <strong>+9 %/an</strong>
                 <span>croissance du marché BIM européen (virtuemarketresearch)</span>
               </div>
+            </div>
+          </section>
+
+          <section className="section" id="rentabilite">
+            <div className="section-head">
+              <div>
+                <span className="kicker">Rentabilité</span>
+                <h2>Le prix se justifie dès le premier lot sérieux.</h2>
+              </div>
+              <p className="section-copy">
+                BimDoc Renamer ne vend pas un simple renommage. Il vend le
+                temps récupéré avant jalon, moins de rejets CDE et une
+                convention que l’équipe peut répéter sans improviser.
+              </p>
+            </div>
+
+            <div className="roi-grid">
+              <article className="roi-card dark">
+                <span className="roi-label">Exemple conservateur</span>
+                <p className="roi-number">80 fichiers</p>
+                <p>
+                  À 2 minutes de contrôle et renommage manuel par fichier, un lot
+                  absorbe environ 2 h 40. À 80 CHF / h chargé, cela représente
+                  213 CHF de temps interne avant même le risque de rejet.
+                </p>
+                <div className="ledger">
+                  <div className="ledger-row"><span>Temps manuel estimé</span><strong>2 h 40</strong></div>
+                  <div className="ledger-row"><span>Coût interne du lot</span><strong>~213 CHF</strong></div>
+                  <div className="ledger-row"><span>Prix Pro mensuel</span><strong>19,99 CHF</strong></div>
+                </div>
+              </article>
+
+              <article className="roi-card">
+                <span className="roi-label">Pourquoi ça convertit</span>
+                <p className="roi-number">10x</p>
+                <p>
+                  Un seul lot mensuel qui évite deux heures de reprise couvre
+                  largement l’abonnement Pro. Team devient évident dès que
+                  plusieurs personnes appliquent la même convention.
+                </p>
+                <div className="cta-row">
+                  <a className="button primary" href="/app">Tester sur un lot exemple</a>
+                  <a className="button secondary" href="/pilot">Réserver le pilote {PAID_PILOT_PRICE_LABEL}</a>
+                </div>
+              </article>
             </div>
           </section>
 
@@ -845,6 +936,23 @@ export default function LandingPage() {
                 Parlons-en →
               </a>
             </p>
+
+            <div className="paid-pilot">
+              <div>
+                <strong>Pilote BIM 14 jours — {PAID_PILOT_PRICE_LABEL}</strong>
+                <p>
+                  Onboarding 30 min, convention reproduite, test sur lot non confidentiel
+                  et décision Pro/Team. Paiement manuel aujourd’hui, Stripe Payment Link dès qu’il est configuré.
+                </p>
+              </div>
+              <a
+                className="button primary"
+                href={pilotCta.href}
+                {...(pilotCta.checkout ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              >
+                {pilotCta.label}
+              </a>
+            </div>
           </section>
 
           <section className="section" id="faq">
@@ -882,7 +990,7 @@ export default function LandingPage() {
             </div>
             <div className="cta-row">
               <a className="button primary" href="/app">Essayer sans compte</a>
-              <a className="button secondary" href="/pilot">Demander un pilote</a>
+              <a className="button secondary" href="/pilot">Réserver le pilote {PAID_PILOT_PRICE_LABEL}</a>
             </div>
           </section>
         </main>

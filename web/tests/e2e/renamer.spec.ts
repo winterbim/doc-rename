@@ -10,6 +10,7 @@ test('loads the marketing and privacy pages', async ({ page }) => {
 
   await page.goto('/pilot');
   await expect(page.getByRole('heading', { name: /Pilote BIM 14 jours/i })).toBeVisible();
+  await expect(page.getByText(/149 CHF/i).first()).toBeVisible();
   await expect(page.getByLabel(/Email pro/i)).toBeVisible();
 });
 
@@ -42,6 +43,28 @@ test('loads a BIM demo lot without customer files', async ({ page }) => {
   await expect(page.getByText('facade etage 1 FINAL v2.pdf', { exact: true })).toBeVisible();
   await expect(page.getByText('plan rdc copie.dwg', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: /Renommer tout/i })).toBeEnabled();
+});
+
+test('enforces the Free quota and exposes the Pro upgrade path', async ({ page }) => {
+  await page.goto('/app');
+
+  await expect(page.getByText(/3 lot\(s\) restant\(s\)/i)).toBeVisible();
+  await page.getByRole('button', { name: /Charger un lot exemple/i }).click();
+
+  const renameButton = page.getByRole('button', {
+    name: /Renommer tout selon la nomenclature active/i,
+  });
+
+  await renameButton.click();
+  await expect(page.getByText(/2 lot\(s\) restant\(s\)/i)).toBeVisible();
+
+  await renameButton.click();
+  await expect(page.getByText(/1 lot\(s\) restant\(s\)/i)).toBeVisible();
+
+  await renameButton.click();
+  await expect(page.getByText(/0 lot\(s\) restant\(s\)/i)).toBeVisible();
+  await expect(page.getByRole('button', { name: /Limite Free atteinte/i })).toBeDisabled();
+  await expect(page.getByRole('link', { name: /Passer Pro/i })).toBeVisible();
 });
 
 test('completes a real BIM renaming journey and downloads the ZIP', async ({ page, isMobile }) => {

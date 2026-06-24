@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from 'react';
 import { buildContactMailto } from '@/lib/contact';
+import { PAID_PILOT_PRICE_LABEL } from '@/lib/pricing';
 
 type PilotFormState = {
   name: string;
@@ -26,11 +27,12 @@ const initialState: PilotFormState = {
 };
 
 function buildMailto(values: PilotFormState): string {
-  const subject = `Pilote BimDoc Renamer - ${values.company || 'équipe BIM'}`;
+  const subject = `Réservation pilote BimDoc Renamer ${PAID_PILOT_PRICE_LABEL} - ${values.company || 'équipe BIM'}`;
   const body = [
     'Bonjour,',
     '',
-    'Je souhaite tester BimDoc Renamer sur un lot réel.',
+    `Je souhaite réserver le pilote payant BimDoc Renamer (${PAID_PILOT_PRICE_LABEL}, paiement unique).`,
+    'Merci de me répondre avec le lien de paiement ou les informations de facturation.',
     '',
     `Nom : ${values.name}`,
     `Email : ${values.email}`,
@@ -175,7 +177,7 @@ export function PilotRequestForm() {
           disabled={!isReady}
           className="inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition hover:bg-brick disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Demander un pilote
+          Réserver le pilote {PAID_PILOT_PRICE_LABEL}
         </button>
         <a
           href={mailtoHref}
@@ -186,8 +188,9 @@ export function PilotRequestForm() {
       </div>
 
       <p className="text-xs leading-5 text-ink-mute">
-        Ce formulaire ouvre votre client email. Aucune donnée n’est stockée par BimDoc Renamer
-        depuis cette page, et aucun fichier projet ne doit être joint avant accord.
+        Ce formulaire ouvre votre client email pour finaliser le paiement manuel.
+        Aucune donnée n’est stockée par BimDoc Renamer depuis cette page, et aucun fichier
+        projet ne doit être joint avant accord.
       </p>
 
       {submitted && (

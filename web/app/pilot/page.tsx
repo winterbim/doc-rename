@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PilotRequestForm } from '@/components/commercial/PilotRequestForm';
+import { PAID_PILOT_PRICE_LABEL, pilotCta } from '@/lib/pricing';
 
 export const metadata: Metadata = {
   title: 'Pilote BIM 14 jours',
   description:
-    'Tester BimDoc Renamer sur une convention BIM réelle : onboarding 30 minutes, lot pilote, traitement local navigateur, aucun upload de fichiers.',
+    'Réserver un pilote BimDoc Renamer à 149 CHF sur une convention BIM réelle : onboarding 30 minutes, lot pilote, traitement local navigateur, aucun upload de fichiers.',
   alternates: {
     canonical: '/pilot',
   },
@@ -20,9 +21,10 @@ const outcomes = [
 
 const pilotSteps = [
   ['1', 'Cadrage 15 min', 'Vous décrivez la convention, la CDE utilisée et le volume de fichiers.'],
-  ['2', 'Onboarding 30 min', 'On prépare un modèle exploitable et vous testez sur un lot non confidentiel.'],
-  ['3', 'Pilote 14 jours', 'Vous renommez vos lots en autonomie, sans compte obligatoire et sans upload fichier.'],
-  ['4', 'Décision', 'Pro individuel, Team partagé, ou arrêt propre si le gain n’est pas démontré.'],
+  ['2', 'Paiement pilote', `Paiement unique ${PAID_PILOT_PRICE_LABEL}, par lien Stripe si configuré ou facturation manuelle.`],
+  ['3', 'Onboarding 30 min', 'On prépare un modèle exploitable et vous testez sur un lot non confidentiel.'],
+  ['4', 'Pilote 14 jours', 'Vous renommez vos lots en autonomie, sans compte obligatoire et sans upload fichier.'],
+  ['5', 'Décision', 'Pro individuel, Team partagé, ou arrêt propre si le gain n’est pas démontré.'],
 ];
 
 export default function PilotPage() {
@@ -60,24 +62,32 @@ export default function PilotPage() {
               fichier envoyé à un serveur pendant le flux de renommage.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
+              <a
+                href={pilotCta.checkout ? pilotCta.href : '#demande'}
+                {...(pilotCta.checkout ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                className="inline-flex min-h-11 items-center rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition hover:bg-brick"
+              >
+                {pilotCta.label}
+              </a>
               <Link
                 href="/app"
-                className="inline-flex min-h-11 items-center rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition hover:bg-brick"
+                className="inline-flex min-h-11 items-center rounded-full border border-ink px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-ink hover:text-paper"
               >
                 Tester avec un lot exemple
               </Link>
-              <a
-                href="#demande"
-                className="inline-flex min-h-11 items-center rounded-full border border-ink px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-ink hover:text-paper"
-              >
-                Demander le pilote
-              </a>
             </div>
           </div>
 
           <aside className="rounded-lg border border-line bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-mute">
-              Ce qui est inclus
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brick">
+              Offre vendable aujourd’hui
+            </p>
+            <p className="mt-3 text-4xl font-semibold tracking-tight text-ink">
+              {PAID_PILOT_PRICE_LABEL}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-ink-soft">
+              Paiement unique pour valider la convention, préparer un modèle et tester sur
+              un lot non confidentiel. Objectif : décider vite si Pro ou Team vaut le coût.
             </p>
             <ul className="mt-4 grid gap-3 text-sm leading-6 text-ink-soft">
               {outcomes.map((item) => (
@@ -88,14 +98,15 @@ export default function PilotPage() {
               ))}
             </ul>
             <p className="mt-5 rounded-md bg-paper-2 px-3 py-2 text-xs leading-5 text-ink-mute">
-              Prix beta recommandé : Pro 19,99 CHF / mois, Team 34,90 CHF / mois pour 3 utilisateurs.
-              Facturation manuelle tant que les 3 premiers pilotes payants ne sont pas confirmés.
+              Après le pilote : Pro 19,99 CHF / mois pour usage individuel, Team 34,90 CHF / mois
+              pour 3 utilisateurs. Le pilote reste volontairement manuel tant que les premiers
+              clients payants ne confirment pas la demande.
             </p>
           </aside>
         </section>
 
         <section className="border-b border-line py-12">
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-5">
             {pilotSteps.map(([number, title, text]) => (
               <article key={number} className="rounded-lg border border-line bg-white p-4">
                 <span className="flex h-8 w-8 items-center justify-center rounded-md bg-ink text-xs font-bold text-paper">
@@ -114,12 +125,13 @@ export default function PilotPage() {
               Demande pilote
             </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink">
-              On part de votre réalité, pas d’une démo générique.
+              Réservez le pilote, puis on part de votre réalité.
             </h2>
             <p className="mt-4 text-base leading-7 text-ink-soft">
               Le bon critère commercial est simple : est-ce que BimDoc Renamer réduit
               vraiment le temps passé à préparer vos livrables avant dépôt CDE ? Si oui,
-              le pilote devient Pro ou Team. Sinon, on documente la limite et on arrête proprement.
+              le pilote devient Pro ou Team. Sinon, vous gardez le diagnostic et le modèle de
+              convention préparé.
             </p>
             <div className="mt-6 rounded-lg border border-line bg-white p-4">
               <p className="text-sm font-semibold text-ink">À ne pas envoyer par email</p>

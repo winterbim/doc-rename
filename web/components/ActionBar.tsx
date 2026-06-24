@@ -1,12 +1,22 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
 import { useAppContext } from '@/lib/app-state';
 import { batchGenerate, normalizeOutputName } from '@/lib/bim/nomenclature';
 import { getActiveFieldsForProfile, normalizeFieldValuesForGeneration } from '@/lib/profiles';
 import { normalizeZipArchiveName, writeZip } from '@/lib/bim/zip-io';
 import { useFileIngestion } from '@/lib/hooks/useFileIngestion';
+import { proCta } from '@/lib/pricing';
+import {
+  FREE_DAILY_RENAME_LIMIT,
+  getAccessPlanLabel,
+  getConfiguredAccessPlan,
+  getRemainingFreeRenames,
+  isUsageLimitEnabled,
+  readDailyRenameUsage,
+  recordFreeRenames,
+} from '@/lib/usage-limits';
 import { Button } from './ui/Button';
 
 function normalizeZipFolder(folder: string): string {
@@ -22,8 +32,20 @@ export function ActionBar() {
   const { files, fields, separator, isRenaming, isUploading } = state;
   const { selectedIds, applyScope } = state.ui;
   const [zipName, setZipName] = useState('FICHIERS_RENOMMES');
+  const [remainingFreeRenames, setRemainingFreeRenames] = useState(FREE_DAILY_RENAME_LIMIT);
   const { processFiles } = useFileIngestion();
   const addInputRef = useRef<HTMLInputElement | null>(null);
+  const accessPlan = getConfiguredAccessPlan();
+  const accessPlanLabel = getAccessPlanLabel(accessPlan);
+  const usageLimitEnabled = isUsageLimitEnabled(accessPlan);
+
+  const refreshUsage = useCallback(() => {
+    setRemainingFreeRenames(getRemainingFreeRenames());
+  }, []);
+
+  useEffect(() => {
+    refreshUsage();
+  }, [refreshUsage]);
 
   const handleOpenAddPicker = useCallback(() => {
     addInputRef.current?.click();
@@ -51,6 +73,7 @@ export function ActionBar() {
 
   const hasTarget = targetFiles.length > 0;
   const hasRenamed = targetFiles.some((f) => f.status === 'renamed');
+  const freeLimitReached = usageLimitEnabled && remainingFreeRenames <= 0;
 
   // --- Scope toggle ---
 
@@ -65,6 +88,16 @@ export function ActionBar() {
 
   const handleRename = useCallback(() => {
     if (!hasTarget) return;
+
+    if (usageLimitEnabled && getRemainingFreeRenames() <= 0) {
+      refreshUsage();
+      dispatch({
+        type: 'TOAST_SHOW',
+        msg: 'Limite Free atteinte pour aujourd’hui. Passez en Pro pour des lots illimités.',
+      });
+      return;
+    }
+
     dispatch({ type: 'RENAME_ALL_START' });
 
     const ctx = {
@@ -83,12 +116,23 @@ export function ActionBar() {
       const results = batchGenerate(targetFiles, ctx);
       dispatch({ type: 'RENAME_ALL_COMPLETE', results });
       const renamed = results.filter((r) => r.errors.length === 0).length;
+      let quotaMsg = '';
+      if (usageLimitEnabled && renamed > 0) {
+        const nextUsage = recordFreeRenames(1);
+        const remaining = Math.max(0, FREE_DAILY_RENAME_LIMIT - nextUsage.count);
+        setRemainingFreeRenames(remaining);
+        quotaMsg = ` Il reste ${remaining}/${FREE_DAILY_RENAME_LIMIT} lot(s) Free aujourd’hui.`;
+      }
       dispatch({
         type: 'TOAST_SHOW',
-        msg: `${renamed}/${targetFiles.length} fichier(s) renommé(s).`,
+        msg: `${renamed}/${targetFiles.length} fichier(s) renommé(s).${quotaMsg}`,
       });
     } catch (err) {
       dispatch({ type: 'RENAME_ALL_COMPLETE', results: [] });
+      if (usageLimitEnabled) {
+        const usage = readDailyRenameUsage();
+        setRemainingFreeRenames(Math.max(0, FREE_DAILY_RENAME_LIMIT - usage.count));
+      }
       dispatch({
         type: 'TOAST_SHOW',
         msg: `Erreur lors du renommage: ${err instanceof Error ? err.message : String(err)}`,
@@ -101,6 +145,8 @@ export function ActionBar() {
     separator,
     state.profileId,
     state.profileEntities,
+    usageLimitEnabled,
+    refreshUsage,
     dispatch,
   ]);
 
@@ -146,7 +192,9 @@ export function ActionBar() {
   // --- Labels ---
 
   const renameLabel =
-    applyScope === 'selection' && hasSelection
+    freeLimitReached
+      ? 'Limite Free atteinte'
+      : applyScope === 'selection' && hasSelection
       ? 'Renommer la sélection'
       : 'Renommer tout';
 
@@ -160,6 +208,36 @@ export function ActionBar() {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
+      <div
+        className={[
+          'flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-sans',
+          usageLimitEnabled
+            ? freeLimitReached
+              ? 'border-brick/40 bg-brick/10 text-brick-deep'
+              : 'border-line bg-paper-2/60 text-ink-soft'
+            : 'border-olive/30 bg-olive/10 text-olive',
+        ].join(' ')}
+        aria-live="polite"
+      >
+        <span className="font-semibold text-ink">{accessPlanLabel}</span>
+        {usageLimitEnabled ? (
+          <>
+            <span>
+              {remainingFreeRenames} lot(s) restant(s) aujourd’hui
+            </span>
+            <a
+              href={proCta.href}
+              {...(proCta.checkout ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              className="font-semibold text-brick underline underline-offset-2 hover:text-brick-deep"
+            >
+              Passer Pro
+            </a>
+          </>
+        ) : (
+          <span>lots illimités</span>
+        )}
+      </div>
+
       {/* Apply-to segmented control */}
       {hasFiles && (
         <div
@@ -212,7 +290,7 @@ export function ActionBar() {
       <Button
         variant="primary"
         onClick={handleRename}
-        disabled={!hasTarget}
+        disabled={!hasTarget || freeLimitReached}
         loading={isRenaming}
         aria-label={`${renameLabel} selon la nomenclature active`}
       >

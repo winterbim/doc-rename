@@ -71,6 +71,14 @@ Modules:
 - `persistState()` is debounced 500 ms via `setTimeout`.
 - All access wrapped in `try/catch`; SSR-safe (`globalThis.localStorage?.`).
 
+### Free quota (`web/lib/usage-limits.ts`)
+
+- Public Free plan defaults to 3 rename lots per local day.
+- The counter is local-only (`doc_rename_daily_usage_v1`) and stores `{ date, count }`.
+- `NEXT_PUBLIC_DOC_RENAME_PLAN=free|pro|team` controls the in-app badge and quota gate.
+- `pro` and `team` disable the Free quota for manually provisioned paid access.
+- This quota never stores file names, file contents or binary buffers.
+
 ## 5. Security
 
 ### HTTP layer (`web/next.config.ts`)
@@ -116,10 +124,10 @@ Telemetry (`web/components/TelemetryProvider.tsx`) is disabled unless
 default, text and element attributes masked, Do Not Track respected, and only
 manual pageview events are emitted.
 
-The `/pilot` request form is deliberately mailto-only for beta validation. It
-opens the user's email client with contact details and project context, but the
-app does not store that form submission or accept confidential files from that
-route.
+The `/pilot` request form is deliberately mailto-only for paid pilot validation.
+It opens the user's email client with contact details, project context and the
+149 CHF pilot request, but the app does not store that form submission or accept
+confidential files from that route.
 
 ## 6. Viewer caches (`web/lib/viewer-cache.ts`)
 
@@ -188,7 +196,7 @@ runs `cd web && npx tsc --noEmit` before every commit on the developer's machine
 
 ## 11. Versioning
 
-`web/package.json` — `0.1.0` (current). Versioning follows
+`web/package.json` — `0.2.0` (current). Versioning follows
 [Semantic Versioning 2.0](https://semver.org). Bump rules:
 
 - **Patch** (`0.1.x`): bug fix, no API/UX change visible to users

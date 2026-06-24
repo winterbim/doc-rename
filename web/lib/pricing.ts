@@ -12,6 +12,9 @@ const PRO_LINK = process.env.NEXT_PUBLIC_STRIPE_LINK_PRO?.trim();
 const TEAM_LINK = process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM?.trim();
 const PILOT_LINK = process.env.NEXT_PUBLIC_STRIPE_LINK_PILOT?.trim();
 
+export const PAID_PILOT_PRICE_CHF = 149;
+export const PAID_PILOT_PRICE_LABEL = `${PAID_PILOT_PRICE_CHF} CHF`;
+
 export interface PlanCta {
   /** Destination: Stripe checkout when configured, else the pilot page. */
   readonly href: string;
@@ -34,4 +37,8 @@ function buildCta(
 
 export const proCta = buildCta(PRO_LINK, "S'abonner — Pro", 'Demander le pilote Pro');
 export const teamCta = buildCta(TEAM_LINK, "S'abonner — Team", 'Planifier Team');
-export const pilotCta = buildCta(PILOT_LINK, 'Démarrer le pilote 14 j', 'Demander un pilote');
+export const pilotCta = buildCta(
+  PILOT_LINK,
+  `Réserver le pilote — ${PAID_PILOT_PRICE_LABEL}`,
+  `Réserver le pilote — ${PAID_PILOT_PRICE_LABEL}`,
+);

@@ -62,3 +62,17 @@ Ce dossier est l’application à déployer. Pour Vercel, définir `web/` comme
 racine du projet.
 
 Production actuelle: `https://doc-rename-saas.vercel.app`.
+
+## Monétisation V1
+
+La V1 peut encaisser sans backend via Stripe Payment Links. Les boutons Pro et
+Team utilisent `NEXT_PUBLIC_STRIPE_LINK_PRO` et `NEXT_PUBLIC_STRIPE_LINK_TEAM`;
+si ces variables sont vides, ils renvoient vers `/pilot`.
+
+Le pilote BIM 14 jours est vendu 149 CHF en paiement unique. Sans
+`NEXT_PUBLIC_STRIPE_LINK_PILOT`, le formulaire `/pilot` prépare une réservation
+par email pour paiement manuel ou facture.
+
+L'atelier applique une limite Free locale de 3 lots de renommage par jour.
+Définir `NEXT_PUBLIC_DOC_RENAME_PLAN=pro` ou `team` sur un déploiement protégé
+retire cette limite pour un client provisionné manuellement.
