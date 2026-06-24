@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { useAppContext } from '@/lib/app-state';
 import { getVisibleFiles } from '@/lib/file-filters';
+import { PAID_PILOT_PRICE_LABEL, pilotCta } from '@/lib/pricing';
 import { FileRow } from './FileRow';
 import { UploadZone } from './UploadZone';
 import { SearchAndFilter } from './files/SearchAndFilter';
@@ -25,6 +26,8 @@ export function FilesList() {
 
   const allVisibleSelected =
     visibleIds.length > 0 && visibleIds.every((id) => selectedSet.has(id));
+
+  const renamedCount = files.filter((file) => file.status === 'renamed').length;
 
   const handleSelectAllToggle = () => {
     if (allVisibleSelected) {
@@ -75,6 +78,33 @@ export function FilesList() {
         <>
           {/* Search + extension filter */}
           <SearchAndFilter />
+
+          {renamedCount > 0 && (
+            <section
+              className="rounded-lg border border-brick/30 bg-brick/5 px-4 py-3"
+              aria-label="Conversion pilote BIM"
+            >
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-ink">
+                    Lot prêt à déposer : {renamedCount} fichier(s) renommé(s).
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-ink-soft">
+                    Si ce workflow vous évite une reprise manuelle, réservez le pilote
+                    BIM {PAID_PILOT_PRICE_LABEL} : convention reproduite, onboarding 30 min,
+                    test sur un lot réel.
+                  </p>
+                </div>
+                <a
+                  href={pilotCta.href}
+                  {...(pilotCta.checkout ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="inline-flex min-h-9 shrink-0 items-center justify-center rounded-full bg-ink px-4 text-xs font-semibold text-paper transition hover:bg-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
+                >
+                  {pilotCta.label}
+                </a>
+              </div>
+            </section>
+          )}
 
           {/* Select-all toolbar */}
           <div className="flex items-center justify-between">

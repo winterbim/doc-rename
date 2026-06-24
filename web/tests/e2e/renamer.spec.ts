@@ -90,6 +90,8 @@ test('completes a real BIM renaming journey and downloads the ZIP', async ({ pag
 
   await expect(page.getByText('Renommé', { exact: true }).first()).toBeVisible();
   await expect(page.getByText(/MUSEE_BAT01_ARC_PLAN_BOUYGUES_BATIMENT_/).first()).toBeVisible();
+  await expect(page.getByText(/Lot prêt à déposer/i)).toBeVisible();
+  await expect(page.getByRole('link', { name: /Réserver le pilote/i })).toBeVisible();
 
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Télécharger tout (ZIP)', exact: true }).click();
