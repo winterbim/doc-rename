@@ -7,7 +7,6 @@ import { batchGenerate, normalizeOutputName } from '@/lib/bim/nomenclature';
 import { getActiveFieldsForProfile, normalizeFieldValuesForGeneration } from '@/lib/profiles';
 import { normalizeZipArchiveName, writeZip } from '@/lib/bim/zip-io';
 import { useFileIngestion } from '@/lib/hooks/useFileIngestion';
-import { proCta } from '@/lib/pricing';
 import {
   FREE_DAILY_RENAME_LIMIT,
   getAccessPlanLabel,
@@ -226,11 +225,10 @@ export function ActionBar() {
               {remainingFreeRenames} lot(s) restant(s) aujourd’hui
             </span>
             <a
-              href={proCta.href}
-              {...(proCta.checkout ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              href="/pricing"
               className="font-semibold text-brick underline underline-offset-2 hover:text-brick-deep"
             >
-              Passer Pro
+              Passer à l’équipe
             </a>
           </>
         ) : (

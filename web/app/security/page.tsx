@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { CONTACT_EMAIL, buildContactMailto } from '@/lib/contact';
 
 export const metadata: Metadata = {
-  title: 'Sécurité — BimDoc Renamer',
+  title: 'Sécurité — BIMCHECK-Rename',
   description:
-    "Audit sécurité de BimDoc Renamer : architecture local-first, CSP stricte, headers HTTP audités, scans CodeQL et OWASP ZAP en CI. Vérifiable dans DevTools > Réseau.",
+    "Audit sécurité de BIMCHECK-Rename : architecture local-first, CSP stricte, headers HTTP audités, scans CodeQL et OWASP ZAP en CI. Vérifiable dans DevTools > Réseau.",
   alternates: {
     canonical: '/security',
   },
@@ -84,7 +84,7 @@ const ciChecks: Array<{ name: string; what: string; when: string }> = [
 ];
 
 const auditSteps: string[] = [
-  "Ouvrez https://doc-rename-saas.vercel.app/app dans un onglet vierge.",
+  "Ouvrez https://bimcheck-rename.vercel.app/app dans un onglet vierge.",
   'Ouvrez les DevTools du navigateur (F12 ou ⌘⌥I).',
   "Allez dans l’onglet Réseau (Network), filtre « Fetch / XHR ».",
   'Glissez 10 fichiers PDF/DWG/IFC sur la zone de dépôt.',
@@ -101,7 +101,7 @@ export default function SecurityPage() {
           href="/"
           className="mb-10 inline-flex w-fit text-sm font-sans font-semibold text-ink hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
         >
-          ← Retour à BimDoc Renamer
+          ← Retour à BIMCHECK-Rename
         </Link>
 
         <header className="border-b border-line pb-10">
@@ -112,7 +112,7 @@ export default function SecurityPage() {
             Vérifiez vous-même. <em className="font-serif italic font-normal text-brick">Ouvrez l’onglet Réseau.</em>
           </h1>
           <p className="mt-5 max-w-3xl font-sans text-xl leading-8 text-ink-soft">
-            BimDoc Renamer traite les fichiers à 100 % dans votre navigateur.
+            BIMCHECK-Rename traite les fichiers à 100 % dans votre navigateur.
             Aucune requête sortante de contenu pendant un renommage — c’est
             mesurable, et c’est notre première ligne de défense.
             Cette page documente tout ce que vous pouvez auditer.
@@ -142,7 +142,7 @@ export default function SecurityPage() {
             1. Architecture local-first
           </h2>
           <p className="mt-4 max-w-3xl text-base text-ink-soft">
-            Le cœur de BimDoc Renamer est une application Next.js statique +
+            Le cœur de BIMCHECK-Rename est une application Next.js statique +
             React qui lit, parse, renomme et empaquette vos fichiers entièrement
             côté client. Le serveur ne voit ni le contenu, ni les noms d’origine,
             ni les noms générés.
@@ -396,7 +396,7 @@ upgrade-insecure-requests;`}
 
         <footer className="mt-16 border-t border-line py-8 text-sm text-ink-mute">
           <p>
-            BimDoc Renamer — sécurité contact :{' '}
+            BIMCHECK-Rename — sécurité contact :{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-brick font-semibold underline underline-offset-2">
               {CONTACT_EMAIL}
             </a>

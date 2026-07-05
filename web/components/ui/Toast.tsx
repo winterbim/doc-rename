@@ -21,13 +21,13 @@ export function Toast() {
   return (
     <div
       role="alert"
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-lg bg-ink text-paper px-4 py-3 text-sm font-sans shadow-xl"
+      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-xl bg-slate-900 text-white px-4 py-3 text-sm font-sans shadow-2xl shadow-slate-900/20"
     >
       <span>{toastMsg}</span>
       <button
         onClick={() => dispatch({ type: 'TOAST_CLEAR' })}
         aria-label="Fermer la notification"
-        className="ml-2 text-ink-mute hover:text-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper/50"
+        className="ml-2 text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded"
       >
         ✕
       </button>

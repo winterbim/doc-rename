@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Header } from './Header';
 import { FilesList } from './FilesList';
 import { ActionBar } from './ActionBar';
+import { CloudConventionToolbarContainer } from './CloudConventionToolbarContainer';
 import { StatsFooter } from './StatsFooter';
 import { NomenclatureBuilder } from './nomenclature/NomenclatureBuilder';
 import { Toast } from './ui/Toast';
@@ -132,10 +133,32 @@ export function RenamerShell() {
     <div className="flex min-h-screen flex-col bg-paper lg:h-screen lg:overflow-hidden">
       <Header />
 
+      {/* UPGRADE BANNER — soft paywall for team sync */}
+      <div className="border-b border-border bg-gradient-to-r from-indigo-600 to-indigo-700 px-5 py-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs sm:text-sm text-white/90">
+            <span className="font-semibold text-white">Nouveau :</span>{' '}
+            partagez cette convention avec votre équipe et gardez une version d’or synchronisée.
+          </p>
+          <a
+            href="/pricing"
+            className="inline-flex items-center gap-1.5 rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-indigo-700 shadow-sm hover:bg-indigo-50 transition-colors"
+          >
+            Voir les offres Team
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
       {/* STICKY TOOLBAR — always visible primary actions */}
       <div className="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-3 border-b border-line bg-white/95 dark:bg-paper-2/95 backdrop-blur px-5 py-2 shadow-sm">
         <StatsFooter compact />
         <div className="flex items-center gap-2">
+          <div className="hidden sm:flex">
+            <CloudConventionToolbarContainer />
+          </div>
           <ActionBar />
           <button
             type="button"

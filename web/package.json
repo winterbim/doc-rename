@@ -20,11 +20,14 @@
     "postinstall": "node -e \"const fs=require('fs');const path=require('path');const candidates=['node_modules/react-pdf/node_modules/pdfjs-dist/build/pdf.worker.min.mjs','node_modules/pdfjs-dist/build/pdf.worker.min.mjs'];const src=candidates.find(p=>fs.existsSync(p));if(!src){console.error('pdf.worker.min.mjs not found');process.exit(1);}fs.copyFileSync(src,'public/pdf.worker.min.mjs');console.log('Copied worker from '+src);const laSrc='node_modules/libarchive.js/dist/worker-bundle.js';if(fs.existsSync(laSrc)){fs.copyFileSync(laSrc,'public/libarchive-worker.js');console.log('Copied libarchive worker to public/');}else{console.warn('libarchive worker not found at '+laSrc+', skipping');}const laWasm='node_modules/libarchive.js/dist/libarchive.wasm';if(fs.existsSync(laWasm)){fs.copyFileSync(laWasm,'public/libarchive.wasm');console.log('Copied libarchive.wasm to public/');}else{console.warn('libarchive.wasm not found at '+laWasm+', skipping');}\" && (bash scripts/install-hooks.sh 2>/dev/null || true)"
   },
   "dependencies": {
+    "@auth/core": "^0.41.1",
+    "@convex-dev/auth": "^0.0.94",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@sentry/nextjs": "^10.53.1",
     "@types/dompurify": "^3.0.5",
+    "convex": "^1.42.1",
     "dompurify": "^3.4.8",
     "dxf-parser": "^1.1.2",
     "file-saver": "^2.0.5",

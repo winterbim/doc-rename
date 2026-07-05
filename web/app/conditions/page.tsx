@@ -1,18 +1,18 @@
-import type { Metadata } from "next";
-import type { ReactNode } from "react";
-import Link from "next/link";
 import { CONTACT_EMAIL } from "@/lib/contact";
+import type { ReactNode } from "react";
+import type { Metadata } from "next";
+import Link from "next/link";
+
 
 export const metadata: Metadata = {
   title: "Conditions générales d’utilisation et de vente",
   description:
-    "CGU/CGV de BimDoc Renamer : objet, offres Free/Pro/Team, paiement, résiliation, responsabilité et droit applicable (Suisse & France).",
+    "CGU/CGV de BIMCHECK-Rename : objet, offres Free/Pro/Team, paiement, résiliation, responsabilité et droit applicable (Suisse & France).",
   alternates: { canonical: "/conditions" },
-  // BROUILLON : ne pas indexer tant que l’entité juridique n’est pas renseignée.
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
 };
 
-const TODO = "[À COMPLÉTER]";
+const LAST_UPDATED = "2026-01-01";
 
 const sections = [
   { href: "#objet", label: "Objet" },
@@ -54,19 +54,9 @@ export default function ConditionsPage() {
           href="/"
           className="mb-10 inline-flex w-fit text-sm font-sans font-semibold text-ink hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
         >
-          ← Retour à BimDoc Renamer
+          ← Retour à BIMCHECK-Rename
         </Link>
 
-        {/* BROUILLON — à retirer avant publication */}
-        <div
-          role="note"
-          className="mb-8 rounded-lg border border-brick/40 bg-brick/5 p-4 text-sm leading-6 text-brick-deep"
-        >
-          <strong>Brouillon non contractuel.</strong> Modèle de CGU/CGV à <strong>faire relire par
-          un professionnel du droit</strong> et à compléter ({TODO}) avant mise en ligne. Sans valeur
-          juridique en l’état. Couvre à la fois la Suisse (CO / nLPD) et la France (Code civil / Code
-          de la consommation / RGPD) — adapter selon l’entité réellement créée.
-        </div>
 
         <header className="border-b border-line pb-10">
           <p className="mb-3 text-xs font-sans font-semibold uppercase tracking-[0.16em] text-ink-mute">
@@ -76,10 +66,10 @@ export default function ConditionsPage() {
             Conditions d’utilisation et de vente
           </h1>
           <p className="mt-5 max-w-3xl font-sans text-xl leading-8 text-ink-soft">
-            Les présentes conditions régissent l’accès et l’usage de BimDoc Renamer, outil de
+            Les présentes conditions régissent l’accès et l’usage de BIMCHECK-Rename, outil de
             renommage de livrables BIM, ainsi que la souscription aux offres payantes.
           </p>
-          <p className="mt-5 text-sm font-sans text-ink-mute">Dernière mise à jour : {TODO}.</p>
+          <p className="mt-5 text-sm font-sans text-ink-mute">Dernière mise à jour : {LAST_UPDATED}.</p>
         </header>
 
         <nav aria-label="Sections des conditions" className="flex flex-wrap gap-2 border-b border-line py-5">
@@ -107,7 +97,7 @@ export default function ConditionsPage() {
 
           <Section id="service" title="2. Description du service">
             <p>
-              BimDoc Renamer permet de renommer et préparer des lots de livrables BIM selon une
+              BIMCHECK-Rename permet de renommer et préparer des lots de livrables BIM selon une
               convention de nommage (ISO 19650, SIA 2051 ou personnalisée), puis de les exporter en
               ZIP. Le renommage, la prévisualisation et la génération du ZIP s’effectuent localement
               dans votre navigateur : le contenu de vos fichiers n’est pas transmis à l’éditeur.
@@ -134,10 +124,10 @@ export default function ConditionsPage() {
               <li><strong>Entreprise / Pilote</strong> : sur devis ou selon l’offre pilote en vigueur.</li>
             </ul>
             <p>
-              Prix en francs suisses (CHF), {TODO} hors taxes / TTC selon le statut TVA de l’éditeur.
-              Les prix peuvent évoluer ; le tarif applicable est celui en vigueur lors de la
-              souscription. Une tarification en euros (EUR) pourra être proposée pour le marché
-              français.
+              Prix en francs suisses (CHF), selon le statut fiscal applicable de l’éditeur
+              (hors taxes ou TTC selon les obligations légales). Les prix peuvent évoluer ; le tarif
+              applicable est celui en vigueur lors de la souscription. Une tarification en euros (EUR)
+              pourra être proposée pour le marché français.
             </p>
           </Section>
 
@@ -150,7 +140,7 @@ export default function ConditionsPage() {
             <p>
               Vous pouvez résilier à tout moment ; la résiliation prend effet à la fin de la période
               en cours, sans remboursement du mois entamé sauf disposition légale impérative
-              contraire. Modalités de résiliation : {TODO} (ex. par email à {CONTACT_EMAIL}).
+              contraire. Modalités de résiliation : notification par email à {CONTACT_EMAIL}.
             </p>
           </Section>
 
@@ -161,7 +151,7 @@ export default function ConditionsPage() {
               vous pouvez être invité à renoncer expressément à ce droit afin d’accéder au service
               sans délai. Les clients <strong>professionnels (B2B)</strong> ne bénéficient pas de ce
               droit. En droit suisse, aucun droit de rétractation légal général ne s’applique à la
-              vente en ligne. À préciser : {TODO}.
+              vente en ligne.
             </p>
           </Section>
 
@@ -202,10 +192,10 @@ export default function ConditionsPage() {
               à la date d’utilisation.
             </p>
             <p>
-              Droit applicable : {TODO} (suisse et/ou français selon l’entité). Juridiction
-              compétente : tribunaux du siège de l’éditeur, sous réserve des règles protectrices des
-              consommateurs. Pour la France, en cas de litige de consommation, un médiateur de la
-              consommation pourra être désigné : {TODO}.
+              Droit applicable : droit du siège de l’éditeur. Juridiction compétente : tribunaux du
+              siège de l’éditeur, sous réserve des règles protectrices des consommateurs. Pour la
+              France, en cas de litige de consommation, un médiateur de la consommation peut être saisi
+              conformément aux dispositions légales en vigueur.
             </p>
             <p className="text-ink-mute">Contact : {CONTACT_EMAIL}.</p>
           </Section>

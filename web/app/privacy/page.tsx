@@ -5,7 +5,7 @@ import { CONTACT_EMAIL } from "@/lib/contact";
 export const metadata: Metadata = {
   title: "Confidentialité, sécurité et conditions",
   description:
-    "Politique de confidentialité BimDoc Renamer : traitement local des fichiers, migration SaaS, RGPD, CNIL, sécurité, cookies et conditions d'utilisation.",
+    "Politique de confidentialité BIMCHECK-Rename : traitement local des fichiers, migration SaaS, RGPD, CNIL, sécurité, cookies et conditions d'utilisation.",
   alternates: {
     canonical: "/privacy",
   },
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
           href="/"
           className="mb-10 inline-flex w-fit text-sm font-sans font-semibold text-ink hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
         >
-          ← Retour à BimDoc Renamer
+          ← Retour à BIMCHECK-Rename
         </Link>
 
         <header className="border-b border-line pb-10">
@@ -36,13 +36,13 @@ export default function PrivacyPage() {
             Confidentialité · Sécurité · Conditions
           </p>
           <h1 className="max-w-3xl font-sans text-5xl font-semibold leading-tight tracking-tight text-ink sm:text-6xl">
-            BimDoc Renamer garde vos fichiers dans le navigateur.
+            BIMCHECK-Rename garde vos fichiers dans le navigateur.
           </h1>
           <p className="mt-5 max-w-3xl font-sans text-xl leading-8 text-ink-soft">
-            BimDoc Renamer devient un service Free / Pro / Team, mais le principe central ne
+            BIMCHECK-Rename devient un service Free / Pro / Team, mais le principe central ne
             change pas : le renommage, la prévisualisation et l’export ZIP se font dans votre
             navigateur lorsque la fonctionnalité le permet. Le contenu de vos fichiers n’est pas
-            envoyé à BimDoc Renamer pour être renommé.
+            envoyé à BIMCHECK-Rename pour être renommé.
           </p>
           <p className="mt-5 text-sm font-sans text-ink-mute">
             Dernière mise à jour: 17 mai 2026.
@@ -141,7 +141,7 @@ export default function PrivacyPage() {
             </div>
 
             <p className="mt-4 max-w-3xl text-ink-soft">
-              BimDoc Renamer ne doit pas recevoir vos fichiers pour renommer un lot. Si vous envoyez
+              BIMCHECK-Rename ne doit pas recevoir vos fichiers pour renommer un lot. Si vous envoyez
               volontairement un fichier au support, il sera traité uniquement pour résoudre votre
               demande.
             </p>
@@ -188,7 +188,7 @@ export default function PrivacyPage() {
               <div className="rounded-lg border border-line bg-white p-4">
                 <h3 className="font-sans text-lg font-semibold text-ink">Responsable du traitement</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
-                  BimDoc Renamer, représenté par Jawani Fernandes, détermine les finalités et moyens des
+                  BIMCHECK-Rename, représenté par Jawani Fernandes, détermine les finalités et moyens des
                   traitements nécessaires au service SaaS. Pour les documents que vous traitez
                   localement, vous restez responsable de leur contenu et des personnes concernées
                   dans vos propres fichiers.
@@ -257,7 +257,7 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="font-sans text-lg font-semibold text-ink">Objet du service</h3>
                 <p className="mt-2 max-w-3xl text-ink-soft">
-                  BimDoc Renamer aide à appliquer une convention de nommage BIM
+                  BIMCHECK-Rename aide à appliquer une convention de nommage BIM
                   (ISO 19650, SIA 2051 ou convention maison) à des lots de
                   livrables avant dépôt CDE. Le service ne remplace pas une
                   CDE, une GED, ni une certification réglementaire.
@@ -285,7 +285,7 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="font-sans text-lg font-semibold text-ink">Usage interdit</h3>
                 <p className="mt-2 max-w-3xl text-ink-soft">
-                  Il est interdit d’utiliser BimDoc Renamer pour contourner des obligations légales,
+                  Il est interdit d’utiliser BIMCHECK-Rename pour contourner des obligations légales,
                   masquer l’origine de documents, diffuser des fichiers illicites ou traiter des
                   données sans base légale dans votre propre organisation.
                 </p>

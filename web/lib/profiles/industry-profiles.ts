@@ -381,6 +381,7 @@ export const INDUSTRY_PROFILES: IndustryProfile[] = [
     ],
     statuses: [...genericStatuses, doc('signed', 'Signe', 'SIGNE'), doc('served', 'Notifie', 'NOTIFIE')],
     templates: [
+      template('legal-acts', 'Actes de cession', 'Convention pour actes de cession, vente et transmission.', ['entity', 'case', 'docType', 'date', 'reference', 'version'], 'CLIENT_DOSSIER_ACTE_20260515_REF_V01'),
       template('legal-client', 'Dossier client', 'Structure client, dossier, type, date et version.', ['entity', 'case', 'docType', 'date', 'version'], 'CLIENT_DOSSIER_CTR_20260515_V01'),
       template('legal-contracts', 'Contrats', 'Structure contrat et reference.', ['entity', 'docType', 'reference', 'status', 'version'], 'CLIENT_CTR_REF_SIGNE_V01'),
       template('legal-procedure', 'Procedures', 'Structure dossier, type, reference et statut.', ['case', 'docType', 'reference', 'status'], 'DOSSIER_PROC_REF_VALIDE'),

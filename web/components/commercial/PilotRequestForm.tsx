@@ -27,11 +27,11 @@ const initialState: PilotFormState = {
 };
 
 function buildMailto(values: PilotFormState): string {
-  const subject = `Réservation pilote BimDoc Renamer ${PAID_PILOT_PRICE_LABEL} - ${values.company || 'équipe BIM'}`;
+  const subject = `Réservation pilote BIMCHECK-Rename ${PAID_PILOT_PRICE_LABEL} - ${values.company || 'équipe BIM'}`;
   const body = [
     'Bonjour,',
     '',
-    `Je souhaite réserver le pilote payant BimDoc Renamer (${PAID_PILOT_PRICE_LABEL}, paiement unique).`,
+    `Je souhaite réserver le pilote payant BIMCHECK-Rename (${PAID_PILOT_PRICE_LABEL}, paiement unique).`,
     'Merci de me répondre avec le lien de paiement ou les informations de facturation.',
     '',
     `Nom : ${values.name}`,
@@ -189,7 +189,7 @@ export function PilotRequestForm() {
 
       <p className="text-xs leading-5 text-ink-mute">
         Ce formulaire ouvre votre client email pour finaliser le paiement manuel.
-        Aucune donnée n’est stockée par BimDoc Renamer depuis cette page, et aucun fichier
+        Aucune donnée n’est stockée par BIMCHECK-Rename depuis cette page, et aucun fichier
         projet ne doit être joint avant accord.
       </p>
 

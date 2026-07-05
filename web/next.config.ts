@@ -16,7 +16,8 @@ const cspDirectives: string[] = [
   // blob: required for fetch() against URL.createObjectURL() — used by
   // react-pdf, libarchive.js worker (WASM fetch), mammoth, xlsx, the
   // template export, the error-log download, and per-file downloads.
-  "connect-src 'self' blob: https://*.ingest.sentry.io https://*.sentry.io https://app.posthog.com https://eu.i.posthog.com https://us.i.posthog.com",
+  // Convex backend (https + wss for sync)
+  "connect-src 'self' blob: https://*.convex.cloud wss://*.convex.cloud https://*.ingest.sentry.io https://*.sentry.io https://app.posthog.com https://eu.i.posthog.com https://us.i.posthog.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

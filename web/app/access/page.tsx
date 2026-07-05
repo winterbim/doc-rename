@@ -33,7 +33,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
           <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-ink text-sm font-semibold text-paper">
             BD
           </div>
-          <h1 className="text-xl font-semibold leading-tight">Accès privé BimDoc Renamer</h1>
+          <h1 className="text-xl font-semibold leading-tight">Accès privé BIMCHECK-Rename</h1>
           <p className="mt-2 text-sm text-ink-soft">
             Entrez le mot de passe fourni pour accéder à l’application.
           </p>

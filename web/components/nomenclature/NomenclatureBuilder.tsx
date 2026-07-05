@@ -317,7 +317,7 @@ export function NomenclatureBuilder() {
             />
             <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
               <span className="text-[10px] text-ink-mute">
-                Formats acceptés : colonnes champ/valeur, code/valeur ou export CSV BimDoc Renamer.
+                Formats acceptés : colonnes champ/valeur, code/valeur ou export CSV BIMCHECK-Rename.
               </span>
               <div className="flex items-center gap-1.5">
                 <button

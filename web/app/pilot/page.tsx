@@ -6,14 +6,14 @@ import { PAID_PILOT_PRICE_LABEL, pilotCta } from '@/lib/pricing';
 export const metadata: Metadata = {
   title: 'Pilote BIM 14 jours',
   description:
-    'Réserver un pilote BimDoc Renamer à 149 CHF sur une convention BIM réelle : onboarding 30 minutes, lot pilote, traitement local navigateur, aucun upload de fichiers.',
+    'Réserver un pilote BIMCHECK-Rename à 149 CHF sur une convention BIM réelle : onboarding 30 minutes, lot pilote, traitement local navigateur, aucun upload de fichiers.',
   alternates: {
     canonical: '/pilot',
   },
 };
 
 const outcomes = [
-  'Votre convention BIM importée ou reproduite dans BimDoc Renamer.',
+  'Votre convention BIM importée ou reproduite dans BIMCHECK-Rename.',
   'Un lot de livrables renommé avec aperçu Avant / Après.',
   'Un ZIP final prêt à déposer dans votre CDE.',
   'Un retour clair sur les écarts de convention et les limites à traiter.',
@@ -39,7 +39,7 @@ export default function PilotPage() {
             <span className="flex h-8 w-8 items-center justify-center rounded-md bg-ink text-xs font-bold text-paper">
               BD
             </span>
-            BimDoc Renamer
+            BIMCHECK-Rename
           </Link>
           <nav className="flex flex-wrap items-center gap-4 text-sm text-ink-soft" aria-label="Navigation pilote">
             <Link href="/app" className="hover:text-brick">Essayer l’app</Link>
@@ -57,7 +57,7 @@ export default function PilotPage() {
               Pilote BIM 14 jours sur votre convention réelle.
             </h1>
             <p className="mt-5 max-w-3xl text-xl leading-8 text-ink-soft">
-              BimDoc Renamer se vend quand il prouve un gain sur un lot concret :
+              BIMCHECK-Rename se vend quand il prouve un gain sur un lot concret :
               moins de renommage manuel, moins d’erreurs avant dépôt CDE, et aucun
               fichier envoyé à un serveur pendant le flux de renommage.
             </p>
@@ -128,7 +128,7 @@ export default function PilotPage() {
               Réservez le pilote, puis on part de votre réalité.
             </h2>
             <p className="mt-4 text-base leading-7 text-ink-soft">
-              Le bon critère commercial est simple : est-ce que BimDoc Renamer réduit
+              Le bon critère commercial est simple : est-ce que BIMCHECK-Rename réduit
               vraiment le temps passé à préparer vos livrables avant dépôt CDE ? Si oui,
               le pilote devient Pro ou Team. Sinon, vous gardez le diagnostic et le modèle de
               convention préparé.

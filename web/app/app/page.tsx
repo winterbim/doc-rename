@@ -26,7 +26,7 @@ function AppLoadingState() {
           </span>
           <div>
             <h1 className="text-base font-sans font-semibold leading-none tracking-[-0.01em] text-ink">
-              BimDoc Renamer
+              BIMCHECK-Rename
             </h1>
             <p className="mt-0.5 text-xs font-sans text-ink-mute">
               Chargement de l&apos;atelier de renommage BIM…

@@ -42,3 +42,94 @@ export const pilotCta = buildCta(
   `Réserver le pilote — ${PAID_PILOT_PRICE_LABEL}`,
   `Réserver le pilote — ${PAID_PILOT_PRICE_LABEL}`,
 );
+
+/* ---------------------------------------------------------------------------
+ * New 2026 monetisation model — Free / Team / Cabinet
+ * --------------------------------------------------------------------------- */
+
+const TEAM_EUR_LINK = process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM_EUR?.trim();
+const CABINET_EUR_LINK = process.env.NEXT_PUBLIC_STRIPE_LINK_CABINET_EUR?.trim();
+
+export const TEAM_PRICE_EUR = 49;
+export const CABINET_PRICE_EUR = 149;
+
+export interface PricingPlan {
+  readonly id: string;
+  readonly name: string;
+  readonly price: number;
+  readonly priceUnit: string;
+  readonly billing: string;
+  readonly description: string;
+  readonly features: readonly string[];
+  readonly cta: PlanCta;
+  readonly highlighted?: boolean;
+  readonly badge?: string;
+}
+
+export const freePlan: PricingPlan = {
+  id: 'free',
+  name: 'Free',
+  price: 0,
+  priceUnit: '€',
+  billing: 'pour toujours',
+  description: 'Parfait pour tester et pour l’usage ponctuel.',
+  features: [
+    'Renommage local sans compte',
+    'Tous les profils métier',
+    'Convention personnalisée illimitée',
+    '3 lots par jour',
+    'Export ZIP',
+  ],
+  cta: { href: '/app', label: 'Essayer gratuitement', checkout: false },
+};
+
+export const teamPlan: PricingPlan = {
+  id: 'team',
+  name: 'Team',
+  price: TEAM_PRICE_EUR,
+  priceUnit: '€',
+  billing: '/mois',
+  description: 'Pour les équipes qui veulent une convention unique.',
+  features: [
+    'Tout Free +',
+    'Compte équipe jusqu’à 10 personnes',
+    'Sync des conventions entre membres',
+    'Bibliothèque de templates',
+    'Jusqu’à 3 projets',
+    'Support email',
+  ],
+  cta: buildCta(
+    TEAM_EUR_LINK,
+    'S’abonner — Team',
+    'Demander une démo Team',
+    '/pilot?plan=team',
+  ),
+  highlighted: true,
+  badge: 'Le plus choisi',
+};
+
+export const cabinetPlan: PricingPlan = {
+  id: 'cabinet',
+  name: 'Cabinet',
+  price: CABINET_PRICE_EUR,
+  priceUnit: '€',
+  billing: '/mois',
+  description: 'Pour les cabinets soumis à audit et conformité.',
+  features: [
+    'Tout Team +',
+    'Utilisateurs illimités',
+    'Projets illimités',
+    'Audit trail complet',
+    'Rapport de conformité PDF',
+    'Connecteur SharePoint',
+    'Support dédié',
+  ],
+  cta: buildCta(
+    CABINET_EUR_LINK,
+    'S’abonner — Cabinet',
+    'Contacter les ventes',
+    '/pilot?plan=cabinet',
+  ),
+};
+
+export const pricingPlans: readonly PricingPlan[] = [freePlan, teamPlan, cabinetPlan];

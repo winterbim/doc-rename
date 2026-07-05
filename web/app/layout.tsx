@@ -1,7 +1,11 @@
-import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Newsreader } from "next/font/google";
-import { TelemetryProvider } from "@/components/TelemetryProvider";
 import "./globals.css";
+
+import { TelemetryProvider } from "@/components/TelemetryProvider";
+import { ConvexClientProvider } from "@/components/ConvexClientProvider";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -21,8 +25,8 @@ const newsreader = Newsreader({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://doc-rename-saas.vercel.app";
-const appTitle = "BimDoc Renamer — Renommer vos livrables BIM avant dépôt CDE";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bimcheck-rename.vercel.app";
+const appTitle = "BIMCHECK-Rename — Renommer vos livrables BIM avant dépôt CDE";
 const appDescription =
   "Outil local-first pour appliquer une convention de nommage ISO 19650 ou SIA 2051 à vos lots de plans, IFC, DWG, PDF. Aucun upload : tout reste dans votre navigateur. Compatible Autodesk Docs, Trimble Connect, Kroqi.";
 
@@ -30,13 +34,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: appTitle,
-    template: "%s — BimDoc Renamer",
+    template: "%s — BIMCHECK-Rename",
   },
   description: appDescription,
-  applicationName: "BimDoc Renamer",
+  applicationName: "BIMCHECK-Rename",
   authors: [{ name: "Jawani Fernandes" }],
   creator: "Jawani Fernandes",
-  publisher: "BimDoc Renamer",
+  publisher: "BIMCHECK-Rename",
   alternates: {
     canonical: "/",
   },
@@ -45,7 +49,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     url: "/",
-    siteName: "BimDoc Renamer",
+    siteName: "BIMCHECK-Rename",
     title: appTitle,
     description: appDescription,
   },
@@ -95,7 +99,7 @@ const earlyThemeScript = `
 })();
 `.trim();
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -112,7 +116,11 @@ export default function RootLayout({
         <link rel="prefetch" href="/pdf.worker.min.mjs" as="script" />
       </head>
       <body>
-        <TelemetryProvider>{children}</TelemetryProvider>
+        <ConvexAuthNextjsServerProvider>
+          <ConvexClientProvider>
+            <TelemetryProvider>{children}</TelemetryProvider>
+          </ConvexClientProvider>
+        </ConvexAuthNextjsServerProvider>
       </body>
     </html>
   );
