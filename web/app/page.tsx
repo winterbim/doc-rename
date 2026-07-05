@@ -139,7 +139,7 @@ const LANDING_CSS = `
   }
   .button.primary { background: var(--color-primary); color: white; box-shadow: 0 6px 20px -8px rgba(79, 70, 229, .4); }
   .button.primary:hover { background: var(--color-indigo-700); transform: translateY(-1px); }
-  .button.secondary { background: white; color: var(--color-ink); border-color: var(--color-border); }
+  .button.secondary { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
   .button.secondary:hover { border-color: var(--color-border-2); background: var(--color-surface-2); }
 
   .small-note {
@@ -153,7 +153,7 @@ const LANDING_CSS = `
 
   .product-shot {
     border: 1px solid var(--color-border); border-radius: 16px;
-    background: white; box-shadow: 0 32px 80px -40px rgba(15, 23, 42, .22); overflow: hidden;
+    background: var(--color-surface); box-shadow: 0 32px 80px -40px rgba(15, 23, 42, .22); overflow: hidden;
   }
   .shot-top {
     display: flex; align-items: center; justify-content: space-between;
@@ -211,7 +211,7 @@ const LANDING_CSS = `
 
   .card {
     border: 1px solid var(--color-border); border-radius: 16px;
-    background: white; padding: 26px;
+    background: var(--color-surface); padding: 26px;
   }
   .card strong {
     display: block; margin-bottom: 8px; color: var(--color-ink);
@@ -240,10 +240,10 @@ const LANDING_CSS = `
   }
   .roi-card {
     border: 1px solid var(--color-border); border-radius: 16px;
-    background: white; padding: 28px;
+    background: var(--color-surface); padding: 28px;
   }
   .roi-card.dark {
-    background: var(--color-slate-900); color: white; border-color: var(--color-slate-800);
+    background: #0F172A; color: #F8FAFC; border-color: #1E293B;
   }
   .roi-label {
     display: block; margin-bottom: 10px; color: var(--color-primary);
@@ -272,7 +272,7 @@ const LANDING_CSS = `
 
   .compare-table {
     width: 100%; border-collapse: collapse;
-    background: white; border: 1px solid var(--color-border); border-radius: 16px; overflow: hidden;
+    background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; overflow: hidden;
   }
   .compare-table th, .compare-table td {
     padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--color-border);
@@ -294,7 +294,7 @@ const LANDING_CSS = `
 
   .devtools {
     border: 1px solid var(--color-border); border-radius: 16px;
-    background: white; box-shadow: 0 24px 60px -36px rgba(15, 23, 42, .2); overflow: hidden;
+    background: var(--color-surface); box-shadow: 0 24px 60px -36px rgba(15, 23, 42, .2); overflow: hidden;
   }
   .devtools-top {
     background: var(--color-surface-2); border-bottom: 1px solid var(--color-border);
@@ -310,7 +310,7 @@ const LANDING_CSS = `
 
   .persona-card {
     border: 1px solid var(--color-border); border-radius: 16px;
-    background: white; padding: 26px; display: flex; flex-direction: column; gap: 14px;
+    background: var(--color-surface); padding: 26px; display: flex; flex-direction: column; gap: 14px;
   }
   .persona-role { color: var(--color-primary); font-size: 11px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
   .persona-quote { margin: 0; font-size: 16px; color: var(--color-ink); line-height: 1.55; }
@@ -321,9 +321,9 @@ const LANDING_CSS = `
   .plan {
     display: flex; flex-direction: column; min-height: 100%;
     border: 1px solid var(--color-border); border-radius: 16px;
-    background: white; padding: 26px;
+    background: var(--color-surface); padding: 26px;
   }
-  .plan.pro { border-color: var(--color-slate-800); background: var(--color-slate-900); color: white; }
+  .plan.pro { border-color: #1E293B; background: #0F172A; color: #F8FAFC; }
   .plan.team { border-color: var(--color-primary); background: var(--color-indigo-50); box-shadow: 0 18px 50px -36px rgba(79, 70, 229, .45); }
   .plan-top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 22px; }
   .plan h3 { margin: 0; font-size: 24px; letter-spacing: -.03em; font-weight: 650; }
@@ -345,18 +345,18 @@ const LANDING_CSS = `
   }
   .pro li::before { background: var(--color-accent); }
   .plan .button { margin-top: auto; width: fit-content; }
-  .pro .button.primary { background: white; color: var(--color-slate-900); border-color: white; }
+  .pro .button.primary { background: white; color: #0F172A; border-color: white; }
   .pro .button.primary:hover { background: var(--color-accent); border-color: var(--color-accent); }
   .team .button.primary { background: var(--color-primary); border-color: var(--color-primary); color: white; }
   .team .button.primary:hover { background: var(--color-indigo-700); border-color: var(--color-indigo-700); }
   .paid-pilot {
-    margin-top: 22px; border: 1px solid var(--color-border); border-radius: 16px;
-    background: var(--color-slate-900); color: white; padding: 24px;
+    margin-top: 22px; border: 1px solid #1E293B; border-radius: 16px;
+    background: #0F172A; color: #F8FAFC; padding: 24px;
     display: flex; align-items: center; justify-content: space-between; gap: 24px;
   }
   .paid-pilot strong { display: block; font-size: 22px; letter-spacing: -.02em; font-weight: 650; }
   .paid-pilot p { margin: 6px 0 0; color: rgba(248, 250, 252, .7); font-size: 14px; }
-  .paid-pilot .button.primary { background: var(--color-accent); color: var(--color-slate-900); border-color: var(--color-accent); flex-shrink: 0; }
+  .paid-pilot .button.primary { background: var(--color-accent); color: #0F172A; border-color: var(--color-accent); flex-shrink: 0; }
   .paid-pilot .button.primary:hover { background: white; border-color: white; }
 
   .faq { display: grid; gap: 0; border-top: 1px solid var(--color-border); }
@@ -365,15 +365,15 @@ const LANDING_CSS = `
   details p { max-width: 760px; margin: 12px 0 0; color: var(--color-ink-soft); line-height: 1.6; }
 
   .final {
-    background: var(--color-slate-900); color: white;
+    background: #0F172A; color: #F8FAFC;
     padding: clamp(54px, 7vw, 84px); border-radius: 24px; margin-bottom: 44px;
   }
   .final h2 { max-width: 14ch; color: white; }
   .final .section-copy { color: rgba(248, 250, 252, .72); }
-  .final .button.primary { background: var(--color-accent); color: var(--color-slate-900); }
+  .final .button.primary { background: var(--color-accent); color: #0F172A; }
   .final .button.primary:hover { background: white; }
   .final .button.secondary { color: white; border-color: rgba(248, 250, 252, .3); background: transparent; }
-  .final .button.secondary:hover { background: white; color: var(--color-slate-900); border-color: white; }
+  .final .button.secondary:hover { background: white; color: #0F172A; border-color: white; }
 
   footer {
     border-top: 1px solid var(--color-border); padding: 30px 0 42px;
