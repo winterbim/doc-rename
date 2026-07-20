@@ -76,7 +76,7 @@ export function PilotRequestForm() {
           <input
             value={values.name}
             onChange={(event) => updateField('name', event.target.value)}
-            className="rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20"
+            className="rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20 dark:bg-paper-2"
             autoComplete="name"
           />
         </label>
@@ -87,7 +87,7 @@ export function PilotRequestForm() {
             onChange={(event) => updateField('email', event.target.value)}
             required
             type="email"
-            className="rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20"
+            className="rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20 dark:bg-paper-2"
             autoComplete="email"
           />
         </label>
@@ -100,7 +100,7 @@ export function PilotRequestForm() {
             value={values.company}
             onChange={(event) => updateField('company', event.target.value)}
             required
-            className="rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20"
+            className="rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20 dark:bg-paper-2"
             autoComplete="organization"
           />
         </label>
@@ -110,7 +110,7 @@ export function PilotRequestForm() {
             value={values.role}
             onChange={(event) => updateField('role', event.target.value)}
             placeholder="BIM Manager, coordinateur BIM..."
-            className="rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20"
+            className="rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20 dark:bg-paper-2"
           />
         </label>
       </div>
@@ -121,7 +121,7 @@ export function PilotRequestForm() {
           <select
             value={values.cde}
             onChange={(event) => updateField('cde', event.target.value)}
-            className="rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20"
+            className="rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20 dark:bg-paper-2"
           >
             <option>Autodesk Docs / ACC</option>
             <option>Trimble Connect</option>
@@ -136,7 +136,7 @@ export function PilotRequestForm() {
           <select
             value={values.monthlyFiles}
             onChange={(event) => updateField('monthlyFiles', event.target.value)}
-            className="rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20"
+            className="rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20 dark:bg-paper-2"
           >
             <option>Moins de 50</option>
             <option>50-200</option>
@@ -149,7 +149,7 @@ export function PilotRequestForm() {
           <select
             value={values.convention}
             onChange={(event) => updateField('convention', event.target.value)}
-            className="rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20"
+            className="rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20 dark:bg-paper-2"
           >
             <option>ISO 19650 / BEP projet</option>
             <option>SIA 2051</option>
@@ -167,7 +167,7 @@ export function PilotRequestForm() {
           onChange={(event) => updateField('message', event.target.value)}
           rows={5}
           placeholder="Ex. Nous livrons 80 fichiers PDF/DWG par jalon, avec une convention imposée par le BEP."
-          className="resize-y rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20"
+          className="resize-y rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20 dark:bg-paper-2"
         />
       </label>
 

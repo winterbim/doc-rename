@@ -1,5 +1,5 @@
 /**
- * Per-file caches for viewer outputs. Keyed by file id (BimFile.id).
+ * Per-file caches for viewer outputs. Keyed by file id (WorkspaceFile.id).
  * Cleared when a file is removed from state — wire that via a side-effect hook
  * in RenamerShell (useViewerCacheCleanup).
  *

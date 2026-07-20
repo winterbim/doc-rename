@@ -1,5 +1,5 @@
 /**
- * Tests for lib/bim/zip-io.ts
+ * Tests for lib/rename-engine/zip-io.ts
  * Uses jszip to build test ZIPs in memory, then verifies readZip / writeZip.
  */
 

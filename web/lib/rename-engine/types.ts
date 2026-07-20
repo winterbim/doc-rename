@@ -1,6 +1,8 @@
 /**
- * BIM shared type definitions
- * Ported from the legacy browser extension (config.js + fields.js)
+ * Shared types for the rename engine (pure logic, no React / DOM).
+ *
+ * Domain-agnostic: used by every industry profile (BIM, finance, legal, HR…).
+ * BIM-specific catalogues (lots, companies, ISO fields) live under `config/`.
  */
 
 // ---------------------------------------------------------------------------
@@ -61,7 +63,7 @@ export interface Discipline {
 // ---------------------------------------------------------------------------
 // Naming convention templates (from CONFIG.DEFAULT_TEMPLATES)
 // ---------------------------------------------------------------------------
-export interface BimTemplate {
+export interface ConventionTemplate {
   name: string;
   description: string;
   fields: string[];
@@ -124,7 +126,7 @@ export interface FieldDefinition {
 // ---------------------------------------------------------------------------
 export type FileCategory = 'documents' | 'cad' | 'bim' | 'images' | 'archives' | 'other';
 
-export interface BimFile {
+export interface WorkspaceFile {
   id: string;
   original: string;
   newName?: string;
@@ -222,7 +224,7 @@ export interface PrefixRule {
 // ---------------------------------------------------------------------------
 // Settings / defaults
 // ---------------------------------------------------------------------------
-export interface BimDefaultSettings {
+export interface AppDefaultSettings {
   theme: 'light' | 'dark' | 'system';
   language: 'fr' | 'en' | 'de' | 'it';
   defaultCase: 'upper' | 'lower' | 'preserve';

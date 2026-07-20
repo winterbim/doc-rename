@@ -25,7 +25,7 @@ import {
   importFieldsState,
   importFieldsStateFromTable,
   type FieldsState,
-} from '@/lib/bim/fields';
+} from '@/lib/rename-engine/fields';
 import { getActiveFieldsForProfile, getInactiveFieldsForProfile } from '@/lib/profiles';
 import { checkFilename, checkSize } from '@/lib/upload-guard';
 
@@ -36,7 +36,7 @@ import { AvailableFieldsList } from './AvailableFieldsList';
 import { LivePreview } from './LivePreview';
 import { ProfilePicker } from '@/components/profiles/ProfilePicker';
 import { EntityImportPanel } from '@/components/profiles/EntityImportPanel';
-import type { FieldDefinition } from '@/lib/bim/types';
+import type { FieldDefinition } from '@/lib/rename-engine/types';
 
 // ---------------------------------------------------------------------------
 // Compact overlay card (shown while dragging)
@@ -44,7 +44,7 @@ import type { FieldDefinition } from '@/lib/bim/types';
 
 function OverlayCard({ field }: { field: FieldDefinition }) {
   return (
-    <div className="flex items-center gap-2 rounded-md border border-brick/40 bg-white px-3 py-2 text-sm text-ink shadow-lg cursor-grabbing select-none opacity-95">
+    <div className="flex items-center gap-2 rounded-md border border-brick/40 bg-surface px-3 py-2 text-sm text-ink shadow-lg cursor-grabbing select-none opacity-95 dark:bg-paper-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="h-3.5 w-3.5 shrink-0 text-ink-mute"
@@ -235,11 +235,11 @@ export function NomenclatureBuilder() {
             onClick={() => {
               downloadTextFile(
                 exportFieldsState(state.fields),
-                'bimdoc-renamer-nomenclature.json',
+                'bimcheck-rename-nomenclature.json',
                 'application/json',
               );
             }}
-            className="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors"
+            className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors dark:bg-paper-2"
             aria-label="Exporter le modèle en JSON"
             title="Télécharger la configuration de nomenclature au format JSON"
           >
@@ -250,18 +250,18 @@ export function NomenclatureBuilder() {
             onClick={() => {
               downloadTextFile(
                 exportFieldsStateCsv(state.fields),
-                'bimdoc-renamer-nomenclature.csv',
+                'bimcheck-rename-nomenclature.csv',
                 'text/csv;charset=utf-8',
               );
             }}
-            className="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors"
+            className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors dark:bg-paper-2"
             aria-label="Exporter le modèle en CSV"
             title="Télécharger la configuration de nomenclature au format CSV"
           >
             ↓ CSV
           </button>
           <label
-            className="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors cursor-pointer"
+            className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors cursor-pointer dark:bg-paper-2"
             title="Importer une configuration JSON, CSV, Excel ou ODS"
           >
             ↑ Fichier
@@ -287,7 +287,7 @@ export function NomenclatureBuilder() {
           <button
             type="button"
             onClick={() => setShowTableImport((value) => !value)}
-            className="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors"
+            className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] font-sans text-ink-soft hover:border-brick hover:text-brick transition-colors dark:bg-paper-2"
             aria-expanded={showTableImport}
             aria-controls="table-import-panel"
             title="Coller des colonnes depuis Excel, Numbers, LibreOffice ou un CSV"
@@ -299,7 +299,7 @@ export function NomenclatureBuilder() {
         {showTableImport && (
           <div
             id="table-import-panel"
-            className="rounded-md border border-line bg-white p-3 dark:bg-paper-2"
+            className="rounded-md border border-line bg-surface p-3 dark:bg-paper-2"
           >
             <label
               htmlFor="table-import-text"
@@ -313,7 +313,7 @@ export function NomenclatureBuilder() {
               onChange={(event) => setTableImportText(event.target.value)}
               placeholder={'champ\tvaleur\nCode Projet\tPRJ01\nType Document\tPLA\nRévision\tA'}
               rows={5}
-              className="w-full resize-y rounded-md border border-line bg-white px-2.5 py-1.5 font-mono text-xs text-ink placeholder:text-ink-mute focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick dark:bg-paper-2"
+              className="w-full resize-y rounded-md border border-line bg-surface px-2.5 py-1.5 font-mono text-xs text-ink placeholder:text-ink-mute focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick dark:bg-paper-2"
             />
             <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
               <span className="text-[10px] text-ink-mute">
@@ -324,7 +324,7 @@ export function NomenclatureBuilder() {
                   type="button"
                   onClick={() => setTableImportText('')}
                   disabled={!tableImportText}
-                  className="rounded-md border border-line bg-white px-2 py-1 text-[11px] text-ink-soft transition-colors hover:border-brick hover:text-brick disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-ink-soft transition-colors hover:border-brick hover:text-brick disabled:cursor-not-allowed disabled:opacity-50 dark:bg-paper-2"
                 >
                   Effacer
                 </button>

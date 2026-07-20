@@ -1,27 +1,16 @@
-# Contribution interne
+# Contribuer — BIMCHECK-Rename
 
-DOC-RENAME est un projet proprietaire.
-
-## Installation
+Projet propriétaire. Contributions externes uniquement sur invitation.
 
 ```bash
-cd DOC-RENAME
+cd DOC-RENAME   # dossier local du dépôt
 npm run install:web
 npm run dev
 ```
 
-## Qualite minimale avant commit
+Avant toute PR interne :
 
-```bash
-npm run lint
-npm run test
-npm run build
-```
-
-## Regles produit
-
-- Ne pas melanger les profils metier.
-- Ne pas afficher une fonctionnalite non implementee comme disponible.
-- Ne pas ajouter de faux temoignage, faux logo client ou placeholder marketing.
-- Garder le traitement des fichiers local tant qu'aucune infrastructure cloud n'est branchee.
-- Ne pas modifier la licence sans accord explicite du proprietaire.
+1. Lire `README.md` et `docs/product/VISION.md` (vérité multi-métiers)
+2. Ne pas réintroduire `lib/bim`, `BimFile`, ou la marque « BimDoc Renamer »
+3. `npm run verify` depuis `web/`
+4. Mettre à jour `ARCHITECTURE.md` si la structure change

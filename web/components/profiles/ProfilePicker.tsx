@@ -26,7 +26,7 @@ export function ProfilePicker() {
   const showStatic = BIM_ONLY || PROFILE_OPTIONS.length <= 1;
 
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-line bg-white p-3 dark:bg-paper-2">
+    <div className="flex flex-col gap-2 rounded-md border border-line bg-surface p-3 dark:bg-paper-2">
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between gap-2">
           {showStatic ? (
@@ -63,7 +63,7 @@ export function ProfilePicker() {
             id="industry-profile"
             value={state.profileId}
             onChange={(event) => handleProfileChange(event.target.value as IndustryProfileId)}
-            className="w-full rounded-md border border-line bg-white px-2.5 py-1.5 text-xs text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick dark:bg-paper-2"
+            className="w-full rounded-md border border-line bg-surface px-2.5 py-1.5 text-xs text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick dark:bg-paper-2"
           >
             {PROFILE_OPTIONS.map((option) => (
               <option key={option.id} value={option.id}>

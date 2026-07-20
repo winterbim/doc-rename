@@ -28,7 +28,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-paper px-6 py-12 text-ink">
-      <section className="w-full max-w-sm rounded-lg border border-line bg-white p-6 shadow-sm dark:border-line-2 dark:bg-paper-2">
+      <section className="w-full max-w-sm rounded-lg border border-line bg-surface p-6 shadow-sm dark:border-line-2 dark:bg-paper-2">
         <div className="mb-6">
           <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-ink text-sm font-semibold text-paper">
             BD
@@ -52,7 +52,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
               autoComplete="current-password"
               autoFocus
               required
-              className="w-full rounded-md border border-line bg-white px-3 py-2 text-sm outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20 dark:border-line-2 dark:bg-paper"
+              className="w-full rounded-md border border-line bg-surface px-3 py-2 text-sm outline-none transition focus:border-brick focus:ring-2 focus:ring-brick/20 dark:border-line-2 dark:bg-paper-2"
             />
             {hasError && (
               <p className="mt-2 text-sm text-brick-deep" role="alert">

@@ -106,7 +106,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <button
               type="button"
               onClick={downloadErrorLog}
-              className="rounded-full border border-line bg-white px-4 py-2 text-sm text-ink transition-colors hover:border-brick hover:text-brick"
+              className="rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink transition-colors hover:border-brick hover:text-brick dark:bg-paper-2"
             >
               Télécharger le journal
             </button>

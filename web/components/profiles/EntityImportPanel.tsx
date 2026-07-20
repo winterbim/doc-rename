@@ -57,7 +57,7 @@ export function EntityImportPanel() {
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-line bg-white p-3 dark:bg-paper-2">
+    <div className="flex flex-col gap-2 rounded-md border border-line bg-surface p-3 dark:bg-paper-2">
       <label htmlFor="profile-entities" className="text-[11px] font-medium text-ink-mute uppercase tracking-wide">
         {profile.entityImportLabel}
       </label>
@@ -67,14 +67,14 @@ export function EntityImportPanel() {
         onChange={(event) => setText(event.target.value)}
         placeholder="Une entrée par ligne, ou collez depuis Excel"
         rows={3}
-        className="w-full resize-y rounded-md border border-line bg-white px-2.5 py-1.5 text-xs text-ink placeholder:text-ink-mute focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick dark:bg-paper-2"
+        className="w-full resize-y rounded-md border border-line bg-surface px-2.5 py-1.5 text-xs text-ink placeholder:text-ink-mute focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick dark:bg-paper-2"
       />
       <div className="flex items-center justify-between gap-2">
         <span className="text-[10px] text-ink-mute">{formatEntityCount(entities.length)}</span>
         <div className="flex items-center gap-1.5">
           <label
             className={[
-              'rounded-md border border-line bg-white px-2 py-1 text-[11px] text-ink-soft transition-colors hover:border-brick hover:text-brick',
+              'rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-ink-soft transition-colors hover:border-brick hover:text-brick dark:bg-paper-2',
               isImportingFile ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
             ].join(' ')}
             title="Importer une liste Excel, ODS, CSV, TSV ou TXT"
@@ -107,7 +107,7 @@ export function EntityImportPanel() {
             type="button"
             onClick={handleImport}
             disabled={!text.trim()}
-            className="rounded-md border border-line bg-white px-2 py-1 text-[11px] text-ink-soft transition-colors hover:border-brick hover:text-brick disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-ink-soft transition-colors hover:border-brick hover:text-brick disabled:cursor-not-allowed disabled:opacity-50 dark:bg-paper-2"
           >
             Coller
           </button>

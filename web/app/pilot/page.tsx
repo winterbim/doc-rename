@@ -78,7 +78,7 @@ export default function PilotPage() {
             </div>
           </div>
 
-          <aside className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <aside className="rounded-lg border border-line bg-surface p-5 shadow-sm dark:bg-paper-2">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brick">
               Offre vendable aujourd’hui
             </p>
@@ -108,7 +108,7 @@ export default function PilotPage() {
         <section className="border-b border-line py-12">
           <div className="grid gap-4 md:grid-cols-5">
             {pilotSteps.map(([number, title, text]) => (
-              <article key={number} className="rounded-lg border border-line bg-white p-4">
+              <article key={number} className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <span className="flex h-8 w-8 items-center justify-center rounded-md bg-ink text-xs font-bold text-paper">
                   {number}
                 </span>
@@ -133,7 +133,7 @@ export default function PilotPage() {
               le pilote devient Pro ou Team. Sinon, vous gardez le diagnostic et le modèle de
               convention préparé.
             </p>
-            <div className="mt-6 rounded-lg border border-line bg-white p-4">
+            <div className="mt-6 rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
               <p className="text-sm font-semibold text-ink">À ne pas envoyer par email</p>
               <p className="mt-2 text-sm leading-6 text-ink-soft">
                 Fichiers confidentiels, maquettes propriétaires, documents client sensibles.
@@ -142,7 +142,7 @@ export default function PilotPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-line bg-surface p-5 shadow-sm dark:bg-paper-2">
             <PilotRequestForm />
           </div>
         </section>

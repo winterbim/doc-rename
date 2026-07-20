@@ -1,5 +1,5 @@
 /**
- * Tests for lib/bim/detection.ts
+ * Tests for lib/rename-engine/detection.ts
  * Covers all five public detection functions.
  */
 

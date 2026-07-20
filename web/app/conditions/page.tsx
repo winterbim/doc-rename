@@ -67,7 +67,7 @@ export default function ConditionsPage() {
           </h1>
           <p className="mt-5 max-w-3xl font-sans text-xl leading-8 text-ink-soft">
             Les présentes conditions régissent l’accès et l’usage de BIMCHECK-Rename, outil de
-            renommage de livrables BIM, ainsi que la souscription aux offres payantes.
+            convention de nommage multi-métiers, ainsi que la souscription aux offres payantes.
           </p>
           <p className="mt-5 text-sm font-sans text-ink-mute">Dernière mise à jour : {LAST_UPDATED}.</p>
         </header>
@@ -77,7 +77,7 @@ export default function ConditionsPage() {
             <a
               key={s.href}
               href={s.href}
-              className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:border-brick hover:text-brick"
+              className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:border-brick hover:text-brick dark:bg-paper-2"
             >
               {s.label}
             </a>
@@ -97,7 +97,7 @@ export default function ConditionsPage() {
 
           <Section id="service" title="2. Description du service">
             <p>
-              BIMCHECK-Rename permet de renommer et préparer des lots de livrables BIM selon une
+              BIMCHECK-Rename permet de renommer et préparer des lots de fichiers selon une
               convention de nommage (ISO 19650, SIA 2051 ou personnalisée), puis de les exporter en
               ZIP. Le renommage, la prévisualisation et la génération du ZIP s’effectuent localement
               dans votre navigateur : le contenu de vos fichiers n’est pas transmis à l’éditeur.

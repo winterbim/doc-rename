@@ -6,9 +6,9 @@
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { loadPersistedState, persistState, flushPersist, SCHEMA_VERSION } from '../persistence';
-import { STORAGE_KEYS } from '../bim/config/defaults';
-import { createDefaultFieldsState } from '../bim/fields';
-import { createDefaultState as createDefaultCleaner } from '../bim/filename-cleaner';
+import { STORAGE_KEYS } from '../rename-engine/config/defaults';
+import { createDefaultFieldsState } from '../rename-engine/fields';
+import { createDefaultState as createDefaultCleaner } from '../rename-engine/filename-cleaner';
 import { DEFAULT_PROFILE_ID } from '../profiles';
 import type { AppState } from '../app-state';
 

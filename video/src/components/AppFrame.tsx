@@ -3,7 +3,7 @@ import { colors, fonts, radii, shadows } from '../lib/tokens';
 import { BrandMark } from './BrandMark';
 
 /**
- * A faithful reconstruction of the DOC-RENAME app chrome:
+ * A faithful reconstruction of the BIMCHECK-Rename app chrome:
  *   - browser-ish window (traffic lights + URL)
  *   - app header (DR mark + theme dot + lang)
  *   - 3-pane layout (left nomenclature / center files / optional right tools)

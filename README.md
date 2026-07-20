@@ -1,45 +1,74 @@
-# BimDoc Renamer
+# BIMCHECK-Rename
 
-BimDoc Renamer est une application web pour préparer des lots de livrables BIM
-avant dépôt CDE. Elle applique une convention de nommage ISO 19650, SIA 2051 ou
-BEP projet, affiche un aperçu Avant / Après, puis exporte un ZIP propre.
+**Convention de nommage multi-métiers, local-first.**
 
-Le flux de renommage est local-first: les fichiers sont traités dans le
-navigateur et ne sont pas envoyés à un serveur pour être renommés.
+BIMCHECK-Rename standardise les noms de fichiers d’une équipe avant dépôt,
+archivage ou partage. Les fichiers sont traités **dans le navigateur** :
+aucun upload n’est requis pour renommer.
 
-## Statut
+## Vérité produit
 
-- Application principale: `web/`
-- URL production: `https://doc-rename-saas.vercel.app`
-- Framework: Next.js 16, React 19, TypeScript
-- Tests: Vitest + Playwright
-- Licence: propriétaire, tous droits réservés
+| | |
+|---|---|
+| **Produit** | BIMCHECK-Rename |
+| **Catégorie** | Standardisation de nommage de fichiers (pas un CDE) |
+| **Positionnement** | Multi-métiers — le BIM est un profil parmi d’autres |
+| **Différenciateur** | Local-first prouvable (DevTools → Réseau) |
+| **App** | `web/` (Next.js 16, React 19, TypeScript) |
+| **Vidéos** | `video/` (Remotion, marketing) |
+| **Docs vivantes** | ce README + `docs/product/` |
+| **Docs historiques** | `docs/archive/` (ne plus les traiter comme source de vérité) |
 
-## Offre V1
+### Profils métiers
 
-- Cible: BIM Managers, BIM Coordinators, agences d’architecture, bureaux d’études et petites équipes construction.
-- Cas d’usage: renommer PDF, DWG, IFC, RVT, DOCX, images et tableurs avant dépôt dans Autodesk Docs / ACC, Trimble Connect, Kroqi, ProjectWise ou CDE interne.
-- Conversion: pilote BIM 14 jours sur convention réelle via `/pilot`.
-- Prix beta: Pro 19,99 CHF / mois, Team 34,90 CHF / mois.
+- BIM / Construction (ISO 19650, SIA 2051, lots, CDE…)
+- Finance
+- Juridique
+- RH
+- Santé
+- Administration
+- Industrie
+- Immobilier
+- Custom (convention libre)
 
-## Fonctionnalités principales
+> Option de déploiement : `NEXT_PUBLIC_BIM_ONLY=true` peut masquer temporairement
+> les profils non-BIM. **Par défaut, le catalogue multi-métiers est exposé.**
 
-- Import de fichiers individuels et archives.
-- Lot exemple intégré pour tester sans fichier client.
-- Modèles BIM: ISO 19650, SIA 2051, BIM France, convention maison.
-- Champs paramétrables: projet, phase, lot, zone, niveau, type, discipline, séquence, révision, statut.
-- Import d’entités par CSV, Excel, ODS ou copier-coller tableur.
-- Normalisation des noms: majuscules, suppression des accents, nettoyage des caractères dangereux, séparateur `_`, `-` ou `.`.
-- Aperçu Avant / Après et correction manuelle.
-- Export ZIP avec arborescence conservée.
-- Export/import de conventions en JSON/CSV.
-- Aperçu multi-format selon les capacités du navigateur.
+## Structure du dépôt
+
+```
+.
+├── README.md                 ← source de vérité produit (ce fichier)
+├── CHANGELOG.md
+├── TODO.md
+├── PRIVACY_POLICY.md
+├── STRIPE_SETUP.md
+├── package.json              ← scripts racine (délègue à web/)
+├── docs/
+│   ├── product/              ← décisions produit actives
+│   └── archive/              ← anciennes stratégies contradictoires
+├── web/                      ← application Next.js (à déployer)
+│   ├── app/                  ← routes (landing, /app, pricing, legal…)
+│   ├── components/           ← UI
+│   ├── lib/
+│   │   ├── rename-engine/    ← logique pure (nomenclature, zip, cleaner…)
+│   │   ├── profiles/         ← profils métiers + templates
+│   │   └── …                 ← state, persistence, limits, viewer
+│   └── convex/               ← auth / conventions cloud (optionnel)
+└── video/                    ← assets vidéo marketing
+```
+
+## Flux principal
+
+1. Import de fichiers ou archives (ZIP, etc.)
+2. Choix d’un **profil métier** + modèle de convention
+3. Aperçu **Avant / Après**, correction manuelle
+4. Export ZIP renommé (arborescence conservée)
 
 ## Commandes
 
-Depuis la racine du dépôt:
-
 ```bash
+# depuis la racine
 npm run install:web
 npm run dev
 npm run lint
@@ -47,34 +76,28 @@ npm run test
 npm run build
 ```
 
-Depuis `web/`:
-
 ```bash
+# depuis web/
 npm ci
 npm run dev
-npm run lint
-npm test
-npm run build
+npm run verify   # tsc + lint + test + build
 npm run test:e2e
-npm run audit:prod
 ```
 
 ## Déploiement
 
-Le dossier à déployer est `web/`.
+- Racine Vercel : `web/`
+- Framework : Next.js
+- Variables optionnelles : `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_POSTHOG_KEY`,
+  `NEXT_PUBLIC_TELEMETRY_ENABLED`, `NEXT_PUBLIC_BIM_ONLY`, Sentry DSN
 
-Production Vercel: `doc-rename-saas`, racine `web/`, framework Next.js.
+## Offre (indicatif)
 
-Variables optionnelles:
-
-- `NEXT_PUBLIC_SITE_URL`
-- `NEXT_PUBLIC_POSTHOG_KEY`
-- `NEXT_PUBLIC_TELEMETRY_ENABLED`
-- Sentry DSN/env si l’observabilité est activée
+- Free (quota journalier local)
+- Pro / Team (provisionnement manuel ou Stripe — voir `STRIPE_SETUP.md`)
+- Pilote accompagné via `/pilot`
 
 ## Propriétaire
 
-Copyright (c) 2026 Jawani Fernandes.
-Tous droits réservés.
-
-Ce dépôt contient du code propriétaire. Aucune licence open source n’est accordée.
+Copyright (c) 2026 Jawani Fernandes.  
+Tous droits réservés. Licence propriétaire — aucune licence open source.

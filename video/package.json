@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "license": "UNLICENSED",
-  "description": "DOC-RENAME marketing video — built with Remotion (silent + integrated subtitles, FR).",
+  "description": "BIMCHECK-Rename marketing video — built with Remotion (silent + integrated subtitles, FR).",
   "scripts": {
     "start": "remotion studio",
     "studio": "remotion studio",

@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from 'react';
 import { useAppContext } from '@/lib/app-state';
-import { detectPrefixes, applyPrefixActionBatch } from '@/lib/bim/prefixes';
-import type { DetectedPrefix } from '@/lib/bim/types';
+import { detectPrefixes, applyPrefixActionBatch } from '@/lib/rename-engine/prefixes';
+import type { DetectedPrefix } from '@/lib/rename-engine/types';
 import { getProfileFieldDefinitions } from '@/lib/profiles';
-import type { FieldDefinition } from '@/lib/bim/types';
+import type { FieldDefinition } from '@/lib/rename-engine/types';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -141,7 +141,7 @@ function PrefixRow({ detected, mappableFields, onRemove, onReplace, onMap }: Pre
             }
             placeholder="Nouveau préfixe…"
             autoFocus
-            className="min-w-0 flex-1 rounded-md border border-line bg-white text-ink px-2 py-1 text-xs focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition"
+            className="min-w-0 flex-1 rounded-md border border-line bg-surface text-ink px-2 py-1 text-xs focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition dark:bg-paper-2"
           />
           <button
             type="submit"
@@ -187,7 +187,7 @@ function PrefixRow({ detected, mappableFields, onRemove, onReplace, onMap }: Pre
                   );
                   setInline({ kind: 'map', data: { assignments: updated } });
                 }}
-                className="flex-1 rounded-md border border-line bg-white text-ink py-1 pl-2 pr-6 text-xs focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition"
+                className="flex-1 rounded-md border border-line bg-surface text-ink py-1 pl-2 pr-6 text-xs focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition dark:bg-paper-2"
               >
                 <option value="">— Champ —</option>
                 {mappableFields.map((field) => (

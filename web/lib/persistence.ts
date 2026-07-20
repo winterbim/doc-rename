@@ -1,5 +1,5 @@
 /**
- * localStorage persistence helpers for DOC-RENAME app state.
+ * localStorage persistence helpers for BIMCHECK-Rename app state.
  *
  * Keys mirror the extension's localStorage keys (via STORAGE_KEYS) so future
  * migration between the extension and the web app is clean.
@@ -12,10 +12,10 @@
  *   isUploading, isRenaming, preview, toastMsg
  */
 
-import { STORAGE_KEYS } from '@/lib/bim/config/defaults';
+import { STORAGE_KEYS } from '@/lib/rename-engine/config/defaults';
 import type { AppState, PersistedSlices } from '@/lib/app-state';
-import type { CleanerState } from '@/lib/bim/filename-cleaner';
-import type { PrefixRule } from '@/lib/bim/types';
+import type { CleanerState } from '@/lib/rename-engine/filename-cleaner';
+import type { PrefixRule } from '@/lib/rename-engine/types';
 import {
   coercePublicProfileId,
   isIndustryProfileId,
@@ -177,9 +177,8 @@ export function loadPersistedState(): PersistedSlices {
   // --- profileId ---
   const rawProfileId = storageGet(STORAGE_KEYS.PROFILE_ID);
   if (rawProfileId !== null && isIndustryProfileId(rawProfileId)) {
-    // Coerce hidden profiles (Finance, RH, etc.) to BIM when BIM_ONLY V1
-    // gate is on. Keeps users out of unsupported UI states without losing
-    // the rest of their persisted preferences.
+    // If NEXT_PUBLIC_BIM_ONLY is on, coerce non-BIM profiles to the default
+    // BIM profile so the UI never lands on a hidden profile.
     slices.profileId = coercePublicProfileId(rawProfileId);
   }
 

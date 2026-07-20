@@ -41,7 +41,7 @@ export default function MentionsLegalesPage() {
             <h2 id="editeur" className="font-sans text-2xl font-semibold text-ink">
               Éditeur du service
             </h2>
-            <div className="mt-4 overflow-hidden rounded-lg border border-line bg-white">
+            <div className="mt-4 overflow-hidden rounded-lg border border-line bg-surface dark:bg-paper-2">
               <table className="w-full border-collapse text-left text-sm">
                 <tbody className="divide-y divide-line">
                   {[

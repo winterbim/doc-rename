@@ -1,5 +1,5 @@
 /**
- * Tests for lib/bim/fields.ts
+ * Tests for lib/rename-engine/fields.ts
  * Covers the full public API surface of the fields module.
  */
 

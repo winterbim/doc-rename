@@ -11,7 +11,7 @@ import { subtitles } from '../lib/script';
  * 9:16 portrait variant — 1080×1920 — 30 fps.
  *
  * Strategy:
- *   - Top band: DOC-RENAME wordmark + short tagline.
+ *   - Top band: BIMCHECK-Rename wordmark + short tagline.
  *   - Middle: the master visual timeline, scaled to fit width.
  *   - Bottom band: bigger subtitles + CTA strap.
  *

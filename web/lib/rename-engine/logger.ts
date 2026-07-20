@@ -72,7 +72,7 @@ function createLogger(initialLevel: LogLevel = LOG_LEVELS.INFO): Logger {
 /**
  * Singleton logger — drop-in replacement for window.Logger.
  * Import and use directly:
- *   import { logger } from '@/lib/bim/logger';
+ *   import { logger } from '@/lib/rename-engine/logger';
  *   logger.info('Processing', file.original);
  */
 export const logger: Logger = createLogger();

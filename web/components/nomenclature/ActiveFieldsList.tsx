@@ -24,7 +24,7 @@ import { useState } from 'react';
 import { useAppContext } from '@/lib/app-state';
 import { getActiveFieldsForProfile } from '@/lib/profiles';
 import { FieldInput } from './FieldInput';
-import type { FieldDefinition } from '@/lib/bim/types';
+import type { FieldDefinition } from '@/lib/rename-engine/types';
 
 // ---------------------------------------------------------------------------
 // DragHandle icon
@@ -110,7 +110,7 @@ function SortableFieldItem({ field, index, isDraggingOverlay = false }: Sortable
 
 function FieldCard({ field, index }: { field: FieldDefinition; index: number }) {
   return (
-    <div className="flex items-start gap-2 rounded-lg border border-brick/40 bg-white shadow-lg px-1 py-1 opacity-95 cursor-grabbing">
+    <div className="flex items-start gap-2 rounded-lg border border-brick/40 bg-surface shadow-lg px-1 py-1 opacity-95 cursor-grabbing dark:bg-paper-2">
       <button
         type="button"
         className="shrink-0 mt-5 cursor-grabbing rounded p-0.5 text-ink-mute"

@@ -130,7 +130,7 @@ export default function SecurityPage() {
             <a
               key={s.href}
               href={s.href}
-              className="rounded-full border border-line bg-white px-3 py-1 font-medium text-ink-soft transition-colors hover:border-brick hover:text-brick"
+              className="rounded-full border border-line bg-surface px-3 py-1 font-medium text-ink-soft transition-colors hover:border-brick hover:text-brick dark:bg-paper-2"
             >
               {s.label}
             </a>
@@ -148,7 +148,7 @@ export default function SecurityPage() {
             ni les noms générés.
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-lg border border-line bg-white p-5">
+            <div className="rounded-lg border border-line bg-surface p-5 dark:bg-paper-2">
               <p className="text-xs font-mono uppercase tracking-wide text-brick">Côté navigateur</p>
               <ul className="mt-3 space-y-1.5 text-sm text-ink-soft">
                 <li>• Lecture File API</li>
@@ -158,7 +158,7 @@ export default function SecurityPage() {
                 <li>• Empaquetage ZIP de sortie</li>
               </ul>
             </div>
-            <div className="rounded-lg border border-line bg-white p-5">
+            <div className="rounded-lg border border-line bg-surface p-5 dark:bg-paper-2">
               <p className="text-xs font-mono uppercase tracking-wide text-muted">Côté serveur</p>
               <ul className="mt-3 space-y-1.5 text-sm text-ink-soft">
                 <li>• Servir les fichiers statiques Next.js</li>
@@ -240,7 +240,7 @@ upgrade-insecure-requests;`}
           </p>
           <div className="mt-6 grid gap-3">
             {ciChecks.map((c) => (
-              <div key={c.name} className="rounded-lg border border-line bg-white p-4 sm:flex sm:items-start sm:gap-4">
+              <div key={c.name} className="rounded-lg border border-line bg-surface p-4 sm:flex sm:items-start sm:gap-4 dark:bg-paper-2">
                 <div className="sm:w-48 sm:shrink-0">
                   <p className="font-mono text-sm font-semibold text-brick">{c.name}</p>
                   <p className="mt-1 text-xs text-muted">{c.when}</p>
@@ -326,7 +326,7 @@ upgrade-insecure-requests;`}
             elles correspondent à votre cas — votre demande nourrit la roadmap.
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-lg border border-line bg-white p-5">
+            <div className="rounded-lg border border-line bg-surface p-5 dark:bg-paper-2">
               <p className="font-sans font-semibold text-ink">Mode SaaS Entreprise</p>
               <ul className="mt-2 space-y-1 text-sm text-ink-soft">
                 <li>• SSO SAML 2.0 + OIDC (Entra ID, Okta, Google Workspace)</li>
@@ -337,7 +337,7 @@ upgrade-insecure-requests;`}
                 <li>• Branding personnalisable (logo, couleurs)</li>
               </ul>
             </div>
-            <div className="rounded-lg border border-line bg-white p-5">
+            <div className="rounded-lg border border-line bg-surface p-5 dark:bg-paper-2">
               <p className="font-sans font-semibold text-ink">Mode on-premise</p>
               <ul className="mt-2 space-y-1 text-sm text-ink-soft">
                 <li>• Image Docker / Helm chart</li>
@@ -371,7 +371,7 @@ upgrade-insecure-requests;`}
           </p>
           <ol className="mt-6 grid gap-3 text-sm text-ink-soft">
             {auditSteps.map((step, i) => (
-              <li key={step} className="flex gap-3 rounded-lg border border-line bg-white p-4">
+              <li key={step} className="flex gap-3 rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <span className="font-serif text-2xl italic text-brick">{String(i + 1).padStart(2, '0')}</span>
                 <span className="pt-1">{step}</span>
               </li>

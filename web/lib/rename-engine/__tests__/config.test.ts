@@ -319,12 +319,12 @@ describe('config: defaults', () => {
     expect(STORAGE_PREFIX).toBe('bimcheck_rename_');
   });
 
-  it('APP_NAME is DOC-RENAME', () => {
-    expect(APP_NAME).toBe('DOC-RENAME');
+  it('APP_NAME is BIMCHECK-Rename', () => {
+    expect(APP_NAME).toBe('BIMCHECK-Rename');
   });
 
-  it('VERSION is 2.1.0', () => {
-    expect(VERSION).toBe('2.1.0');
+  it('VERSION is 0.3.0', () => {
+    expect(VERSION).toBe('0.3.0');
   });
 
   it('DEFAULT_TEMPLATES has 3 templates', () => {

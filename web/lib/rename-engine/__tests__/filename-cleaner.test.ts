@@ -1,5 +1,5 @@
 /**
- * Tests for lib/bim/filename-cleaner.ts
+ * Tests for lib/rename-engine/filename-cleaner.ts
  * Every public function + every algorithm branch + edge cases.
  */
 

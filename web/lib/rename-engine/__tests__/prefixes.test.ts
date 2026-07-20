@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { detectPrefixes, applyPrefixAction, applyPrefixActionBatch } from '../prefixes';
-import type { BimFile, PrefixRule } from '../types';
+import type { WorkspaceFile, PrefixRule } from '../types';
 
 // ---------------------------------------------------------------------------
 // Test fixtures
@@ -13,9 +13,9 @@ function makeDetectInput(
   return originals.map((o, i) => ({ id: `f${i}`, original: o, cleanedBaseName: null }));
 }
 
-/** Full BimFile stub — only the fields we actually touch */
-function makeFile(overrides: Partial<BimFile> & { original: string }): BimFile {
-  const defaults: BimFile = {
+/** Full WorkspaceFile stub — only the fields we actually touch */
+function makeFile(overrides: Partial<WorkspaceFile> & { original: string }): WorkspaceFile {
+  const defaults: WorkspaceFile = {
     id: 'test-id',
     original: overrides.original,
     extension: '.pdf',
@@ -274,7 +274,7 @@ describe("applyPrefixAction('map')", () => {
 
 describe('applyPrefixActionBatch', () => {
   it('applies rule to all matching files and skips non-matching', () => {
-    const files: BimFile[] = [
+    const files: WorkspaceFile[] = [
       makeFile({ id: 'a', original: 'H3_ARC_Plan_001.pdf' }),
       makeFile({ id: 'b', original: 'H3_ARC_Plan_002.pdf' }),
       makeFile({ id: 'c', original: 'STR_Beam_001.pdf' }),
@@ -290,7 +290,7 @@ describe('applyPrefixActionBatch', () => {
 
   it('does not mutate the original file objects', () => {
     const original = makeFile({ id: 'a', original: 'H3_ARC_Plan_001.pdf' });
-    const files: BimFile[] = [original];
+    const files: WorkspaceFile[] = [original];
     const rule: PrefixRule = { prefix: 'H3_ARC_', action: 'remove' };
     applyPrefixActionBatch(files, rule);
     // Original file object is unchanged
@@ -298,7 +298,7 @@ describe('applyPrefixActionBatch', () => {
   });
 
   it('returns a new array (does not mutate the input array)', () => {
-    const files: BimFile[] = [makeFile({ id: 'a', original: 'H3_ARC_Plan_001.pdf' })];
+    const files: WorkspaceFile[] = [makeFile({ id: 'a', original: 'H3_ARC_Plan_001.pdf' })];
     const rule: PrefixRule = { prefix: 'H3_ARC_', action: 'remove' };
     const result = applyPrefixActionBatch(files, rule);
     expect(result).not.toBe(files);
@@ -310,7 +310,7 @@ describe('applyPrefixActionBatch', () => {
   });
 
   it('applies map action in batch and records field mappings', () => {
-    const files: BimFile[] = [
+    const files: WorkspaceFile[] = [
       makeFile({ id: 'a', original: 'H3_ARC_Plan_001.pdf', cleanedBaseName: 'H3_ARC_Plan_001' }),
       makeFile({ id: 'b', original: 'H3_ARC_Plan_002.pdf', cleanedBaseName: 'H3_ARC_Plan_002' }),
     ];

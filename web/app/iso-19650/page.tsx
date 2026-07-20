@@ -133,7 +133,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
             Modèle JSON prêt à importer
           </h2>
           <p className="mt-4 max-w-3xl text-base text-ink-soft">
-            Téléchargez le modèle ci-dessous et importez-le dans BimDoc
+            Téléchargez le modèle ci-dessous et importez-le dans BIMCHECK-Rename
             Renamer (bouton « ↑ Fichier » du panneau Nomenclature). Vous
             pouvez ensuite réorganiser les champs ou ajuster les exemples
             pour coller à votre BEP.
@@ -194,7 +194,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
               ['rapport synthese v3.docx', 'PRJ01-AGC-ZZ-XX-RP-S-0003-P03.docx'],
               ['DOE structure.zip', 'PRJ01-AGC-ZZ-XX-ZZ-S-DOE-P01.zip'],
             ].map(([before, after]) => (
-              <div key={before} className="grid gap-2 rounded-lg border border-line bg-white p-4 sm:grid-cols-2 sm:gap-6">
+              <div key={before} className="grid gap-2 rounded-lg border border-line bg-surface p-4 sm:grid-cols-2 sm:gap-6 dark:bg-paper-2">
                 <code className="font-mono text-xs text-ink-mute line-through decoration-brick">{before}</code>
                 <code className="font-mono text-xs font-semibold text-olive">{after}</code>
               </div>
@@ -219,7 +219,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
               'ZIP final exporté avec l’arborescence attendue.',
               'Aucun contenu fichier envoyé à un service externe pendant le renommage.',
             ].map((item) => (
-              <li key={item} className="flex gap-2 rounded-lg border border-line bg-white p-3">
+              <li key={item} className="flex gap-2 rounded-lg border border-line bg-surface p-3 dark:bg-paper-2">
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-olive" aria-hidden="true" />
                 <span>{item}</span>
               </li>

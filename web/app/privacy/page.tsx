@@ -54,7 +54,7 @@ export default function PrivacyPage() {
             <a
               key={section.href}
               href={section.href}
-              className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:border-brick hover:text-brick"
+              className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:border-brick hover:text-brick dark:bg-paper-2"
             >
               {section.label}
             </a>
@@ -67,14 +67,14 @@ export default function PrivacyPage() {
               Résumé clair
             </h2>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-base font-semibold text-ink">Ce qui reste local</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
                   Fichiers déposés, contenu des documents, prévisualisation, génération des noms et
                   ZIP de sortie restent traités côté navigateur pour le flux de renommage.
                 </p>
               </div>
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-base font-semibold text-ink">Ce qui peut être traité côté SaaS</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
                   Compte, email, plan Free/Pro/Team, facturation, support, télémétrie minimale et
@@ -89,7 +89,7 @@ export default function PrivacyPage() {
               Données traitées
             </h2>
 
-            <div className="mt-4 overflow-hidden rounded-lg border border-line bg-white">
+            <div className="mt-4 overflow-hidden rounded-lg border border-line bg-surface dark:bg-paper-2">
               <table className="w-full border-collapse text-left text-sm">
                 <thead className="bg-paper-2 text-ink">
                   <tr>
@@ -185,7 +185,7 @@ export default function PrivacyPage() {
             </p>
 
             <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-lg font-semibold text-ink">Responsable du traitement</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
                   BIMCHECK-Rename, représenté par Jawani Fernandes, détermine les finalités et moyens des
@@ -194,7 +194,7 @@ export default function PrivacyPage() {
                   dans vos propres fichiers.
                 </p>
               </div>
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-lg font-semibold text-ink">Sous-traitants</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
                   Des prestataires peuvent intervenir pour l’hébergement, les emails, le paiement,
@@ -228,7 +228,7 @@ export default function PrivacyPage() {
               Sécurité et confidentialité opérationnelle
             </h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-lg font-semibold text-ink">Mesures applicatives</h3>
                 <ul className="mt-2 list-disc space-y-2 pl-5 text-sm leading-6 text-ink-soft">
                   <li>Traitement local prioritaire pour les fichiers.</li>
@@ -237,7 +237,7 @@ export default function PrivacyPage() {
                   <li>Pas d’envoi volontaire de contenu de fichiers à l’analytics ou au monitoring.</li>
                 </ul>
               </div>
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-lg font-semibold text-ink">Limites</h3>
                 <ul className="mt-2 list-disc space-y-2 pl-5 text-sm leading-6 text-ink-soft">
                   <li>Vous devez vérifier les noms générés avant diffusion.</li>

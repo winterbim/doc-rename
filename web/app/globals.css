@@ -84,6 +84,10 @@
   --color-text-3:     var(--color-slate-500);
   --color-border:     var(--color-slate-200);
   --color-border-2:   var(--color-slate-300);
+
+  /* Viewer / preview surfaces that need to stay light regardless of theme */
+  --color-doc-surface: #FFFFFF;
+  --color-doc-ink:     #1F2937;
 }
 
 /* ---------------------------------------------------------------------------
@@ -145,6 +149,10 @@
   --color-text-3:     var(--color-slate-500);
   --color-border:     var(--color-slate-200);
   --color-border-2:   var(--color-slate-300);
+
+  /* Viewer / preview surfaces stay light for readability */
+  --color-doc-surface: #FFFFFF;
+  --color-doc-ink:     #1F2937;
 }
 
 html, body {
@@ -155,6 +163,10 @@ html, body {
 /* ---------------------------------------------------------------------------
  * DocxPreview — rendered DOCX HTML
  * --------------------------------------------------------------------------- */
+.docx-render {
+  background: var(--color-doc-surface);
+  color: var(--color-doc-ink);
+}
 .docx-render h1 { @apply font-sans text-2xl font-semibold mt-6 mb-3; }
 .docx-render h2 { @apply font-sans text-xl font-semibold mt-5 mb-2; }
 .docx-render h3 { @apply font-sans text-lg font-semibold mt-4 mb-2; }
@@ -169,9 +181,23 @@ html, body {
 /* ---------------------------------------------------------------------------
  * SpreadsheetPreview — SheetJS HTML table
  * --------------------------------------------------------------------------- */
+.spreadsheet-render {
+  background: var(--color-doc-surface);
+  color: var(--color-doc-ink);
+}
 .spreadsheet-render table { @apply border-collapse w-auto; }
 .spreadsheet-render td, .spreadsheet-render th {
   @apply border border-line px-2 py-1 text-xs min-w-[60px];
 }
 .spreadsheet-render th { @apply bg-paper-2 font-sans font-semibold sticky top-0 z-10; }
 .spreadsheet-render tr:nth-child(even) td { @apply bg-paper-2/30; }
+
+/* Ensure native form controls match the theme in dark mode */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+[data-theme="dark"] button {
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+  border-color: var(--color-border) !important;
+}

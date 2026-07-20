@@ -2,11 +2,11 @@ import { expect, test } from '@playwright/test';
 
 test('loads the marketing and privacy pages', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/BimDoc Renamer/i);
-  await expect(page.getByRole('link', { name: /BimDoc Renamer.*accueil/i }).first()).toBeVisible();
+  await expect(page).toHaveTitle(/BIMCHECK-Rename/i);
+  await expect(page.getByRole('link', { name: /BIMCHECK-Rename.*accueil|BIMCHECK.*Rename/i }).first()).toBeVisible();
 
   await page.goto('/privacy');
-  await expect(page.getByRole('heading', { name: /BimDoc Renamer garde vos fichiers/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /BIMCHECK-Rename garde vos fichiers/i })).toBeVisible();
 
   await page.goto('/pilot');
   await expect(page.getByRole('heading', { name: /Pilote BIM 14 jours/i })).toBeVisible();
@@ -27,7 +27,7 @@ test('accepts a local file without uploading to a server', async ({ page }) => {
     .setInputFiles({
       name: 'DOE-PLAN-A101.pdf',
       mimeType: 'application/pdf',
-      buffer: Buffer.from('%PDF-1.4\n% BimDoc Renamer smoke fixture\n'),
+      buffer: Buffer.from('%PDF-1.4\n% BIMCHECK-Rename smoke fixture\n'),
     });
 
   await expect(page.getByText('DOE-PLAN-A101.pdf', { exact: true })).toBeVisible();

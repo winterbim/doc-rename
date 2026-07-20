@@ -1,5 +1,5 @@
 /**
- * Tests for lib/bim/nomenclature.ts
+ * Tests for lib/rename-engine/nomenclature.ts
  * Every public function + every algorithm branch + every edge case.
  */
 
@@ -22,7 +22,7 @@ import {
   type SequenceCounters,
   type ReportEntry,
 } from '../nomenclature';
-import type { BimFile, FieldDefinition } from '../types';
+import type { WorkspaceFile, FieldDefinition } from '../types';
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -49,10 +49,10 @@ function makeCtx(overrides: Partial<NomenclatureContext> = {}): NomenclatureCont
   };
 }
 
-function makeFile(overrides: Partial<BimFile> & { original: string }): BimFile {
+function makeFile(overrides: Partial<WorkspaceFile> & { original: string }): WorkspaceFile {
   const lastDot = overrides.original.lastIndexOf('.');
   const ext = lastDot > 0 ? overrides.original.substring(lastDot) : '';
-  const defaults: BimFile = {
+  const defaults: WorkspaceFile = {
     id: 'file-1',
     original: overrides.original,
     extension: ext,
@@ -729,7 +729,7 @@ describe('generateReport', () => {
 describe('NomenclatureCache', () => {
   let cache: NomenclatureCache;
   let ctx: NomenclatureContext;
-  let file: BimFile;
+  let file: WorkspaceFile;
 
   beforeEach(() => {
     cache = new NomenclatureCache();

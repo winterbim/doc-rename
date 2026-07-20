@@ -18,9 +18,9 @@ Tant qu'une variable n'est pas remplie, le bouton **retombe automatiquement sur 
 2. **Créer 3 produits / prix** (Catalogue → Produits) :
    | Produit | Prix | Récurrence |
    |---|---|---|
-   | BimDoc Renamer — Pro | 19,99 CHF | mensuel (recurring) |
-   | BimDoc Renamer — Team | 34,90 CHF | mensuel (recurring) |
-   | BimDoc Renamer — Pilote BIM 14 j | 149 CHF | paiement unique (one-time) |
+   | BIMCHECK-Rename — Pro | 19,99 CHF | mensuel (recurring) |
+   | BIMCHECK-Rename — Team | 34,90 CHF | mensuel (recurring) |
+   | BIMCHECK-Rename — Pilote BIM 14 j | 149 CHF | paiement unique (one-time) |
 3. **Créer un Payment Link par prix** (Paiements → Payment Links → Nouveau). Pour chacun :
    - activer la collecte de l'email et de l'adresse de facturation ;
    - (Team) limiter la quantité si besoin ;

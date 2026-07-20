@@ -345,7 +345,7 @@ const LANDING_CSS = `
   }
   .pro li::before { background: var(--color-accent); }
   .plan .button { margin-top: auto; width: fit-content; }
-  .pro .button.primary { background: white; color: #0F172A; border-color: white; }
+  .pro .button.primary { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
   .pro .button.primary:hover { background: var(--color-accent); border-color: var(--color-accent); }
   .team .button.primary { background: var(--color-primary); border-color: var(--color-primary); color: white; }
   .team .button.primary:hover { background: var(--color-indigo-700); border-color: var(--color-indigo-700); }
@@ -356,8 +356,8 @@ const LANDING_CSS = `
   }
   .paid-pilot strong { display: block; font-size: 22px; letter-spacing: -.02em; font-weight: 650; }
   .paid-pilot p { margin: 6px 0 0; color: rgba(248, 250, 252, .7); font-size: 14px; }
-  .paid-pilot .button.primary { background: var(--color-accent); color: #0F172A; border-color: var(--color-accent); flex-shrink: 0; }
-  .paid-pilot .button.primary:hover { background: white; border-color: white; }
+  .paid-pilot .button.primary { background: var(--color-accent); color: var(--color-ink); border-color: var(--color-accent); flex-shrink: 0; }
+  .paid-pilot .button.primary:hover { background: var(--color-surface); border-color: var(--color-border); }
 
   .faq { display: grid; gap: 0; border-top: 1px solid var(--color-border); }
   details { border-bottom: 1px solid var(--color-border); padding: 20px 0; }
@@ -368,12 +368,12 @@ const LANDING_CSS = `
     background: #0F172A; color: #F8FAFC;
     padding: clamp(54px, 7vw, 84px); border-radius: 24px; margin-bottom: 44px;
   }
-  .final h2 { max-width: 14ch; color: white; }
+  .final h2 { max-width: 14ch; color: var(--color-surface); }
   .final .section-copy { color: rgba(248, 250, 252, .72); }
-  .final .button.primary { background: var(--color-accent); color: #0F172A; }
-  .final .button.primary:hover { background: white; }
-  .final .button.secondary { color: white; border-color: rgba(248, 250, 252, .3); background: transparent; }
-  .final .button.secondary:hover { background: white; color: #0F172A; border-color: white; }
+  .final .button.primary { background: var(--color-accent); color: var(--color-ink); }
+  .final .button.primary:hover { background: var(--color-surface); }
+  .final .button.secondary { color: var(--color-surface); border-color: rgba(248, 250, 252, .3); background: transparent; }
+  .final .button.secondary:hover { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
 
   footer {
     border-top: 1px solid var(--color-border); padding: 30px 0 42px;

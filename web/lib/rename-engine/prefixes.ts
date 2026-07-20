@@ -17,7 +17,7 @@
  *   - applyPrefixActionBatch — batch, returns new array
  */
 
-import type { BimFile, DetectedPrefix, PrefixRule } from './types';
+import type { WorkspaceFile, DetectedPrefix, PrefixRule } from './types';
 
 // ---------------------------------------------------------------------------
 // Internal helpers
@@ -93,7 +93,7 @@ function buildCandidate(base: string, spans: TokenSpan[], k: number): string {
  * `f.original || f.name || f` fallback.
  */
 export function detectPrefixes(
-  files: Pick<BimFile, 'id' | 'original' | 'cleanedBaseName'>[]
+  files: Pick<WorkspaceFile, 'id' | 'original' | 'cleanedBaseName'>[]
 ): DetectedPrefix[] {
   // Map: candidate prefix → list of original filenames that share it
   const prefixMap = new Map<string, string[]>();
@@ -153,7 +153,7 @@ export function detectPrefixes(
  * Mirrors the JS source's `applyAction` block inside the `for (const file of affected)` loop.
  */
 export function applyPrefixAction(
-  file: Pick<BimFile, 'id' | 'original' | 'cleanedBaseName' | 'mappedFields'>,
+  file: Pick<WorkspaceFile, 'id' | 'original' | 'cleanedBaseName' | 'mappedFields'>,
   rule: PrefixRule
 ): { cleanedBaseName: string | null; mappedFields: Record<string, string> } {
   const { prefix, action, params = {} } = rule;
@@ -207,9 +207,9 @@ export function applyPrefixAction(
  * the input array or any individual file objects.
  */
 export function applyPrefixActionBatch(
-  files: BimFile[],
+  files: WorkspaceFile[],
   rule: PrefixRule
-): BimFile[] {
+): WorkspaceFile[] {
   return files.map((file) => {
     // Only process files whose effective name starts with the target prefix
     const base =

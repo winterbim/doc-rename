@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
 import { useAppContext } from '@/lib/app-state';
-import { batchGenerate, normalizeOutputName } from '@/lib/bim/nomenclature';
+import { batchGenerate, normalizeOutputName } from '@/lib/rename-engine/nomenclature';
 import { getActiveFieldsForProfile, normalizeFieldValuesForGeneration } from '@/lib/profiles';
-import { normalizeZipArchiveName, writeZip } from '@/lib/bim/zip-io';
+import { normalizeZipArchiveName, writeZip } from '@/lib/rename-engine/zip-io';
 import { useFileIngestion } from '@/lib/hooks/useFileIngestion';
 import {
   FREE_DAILY_RENAME_LIMIT,
@@ -376,7 +376,7 @@ export function ActionBar() {
             value={zipName}
             onChange={(event) => setZipName(event.target.value)}
             placeholder="FICHIERS_RENOMMES"
-            className="w-36 rounded-md border border-line bg-white px-2 py-1 text-xs text-ink placeholder:text-ink-mute focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick"
+            className="w-36 rounded-md border border-line bg-surface px-2 py-1 text-xs text-ink placeholder:text-ink-mute focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick dark:bg-paper-2"
             aria-label="Nom du fichier ZIP"
           />
         </label>

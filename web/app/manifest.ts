@@ -3,9 +3,9 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "BIMCHECK-Rename",
-    short_name: "BimDoc",
+    short_name: "BIMCHECK",
     description:
-      "Renommer vos livrables BIM (ISO 19650 / SIA) avant dépôt CDE, en local navigateur.",
+      "Convention de nommage multi-métiers, local-first : BIM, juridique, finance, RH, santé, industrie, immobilier.",
     start_url: "/",
     scope: "/",
     display: "standalone",

@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { useAppContext } from '@/lib/app-state';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 import { ImagePreview } from './ImagePreview';
 import { TextPreview } from './TextPreview';
 import { NoPreview } from './NoPreview';
@@ -87,7 +87,7 @@ const DOCX_EXTENSIONS = new Set(['.docx', '.doc']);
 const SPREADSHEET_EXTENSIONS = new Set(['.xlsx', '.xls', '.xlsm', '.xlsb', '.ods', '.csv', '.tsv']);
 const DXF_EXTENSIONS = new Set(['.dxf']);
 
-function pickPreviewComponent(file: BimFile): React.ReactNode {
+function pickPreviewComponent(file: WorkspaceFile): React.ReactNode {
   const ext = file.extension.toLowerCase();
   const baseName = file.original.split(/[\\/]/).pop()?.toLowerCase() ?? file.original.toLowerCase();
 
@@ -172,7 +172,7 @@ export function FileViewer() {
         role="dialog"
         aria-modal="false"
         aria-label={`Aperçu de ${file.original}`}
-        className="fixed bottom-6 right-6 top-28 z-[500] flex flex-col overflow-hidden rounded-xl border border-line bg-white shadow-xl dark:bg-paper-2 dark:border-line-2"
+        className="fixed bottom-6 right-6 top-28 z-[500] flex flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-xl dark:bg-paper-2 dark:border-line-2"
         style={{ width: 'min(48vw, 720px)' }}
         onClick={(e) => e.stopPropagation()}
       >

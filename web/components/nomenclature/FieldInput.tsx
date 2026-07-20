@@ -2,10 +2,10 @@
 
 import { useId } from 'react';
 import { useAppContext } from '@/lib/app-state';
-import type { FieldDefinition } from '@/lib/bim/types';
-import { WORK_LOTS } from '@/lib/bim/config/workLots';
-import { COMPANIES } from '@/lib/bim/config/companies';
-import { DOCUMENT_TYPES, DISCIPLINES } from '@/lib/bim/config/documentTypes';
+import type { FieldDefinition } from '@/lib/rename-engine/types';
+import { WORK_LOTS } from '@/lib/rename-engine/config/workLots';
+import { COMPANIES } from '@/lib/rename-engine/config/companies';
+import { DOCUMENT_TYPES, DISCIPLINES } from '@/lib/rename-engine/config/documentTypes';
 
 /** Resolve a named option set to an array of {code, name} */
 function resolveOptions(
@@ -48,7 +48,7 @@ export function FieldInput({ field }: FieldInputProps) {
   };
 
   const baseClass =
-    'w-full rounded-md border border-line bg-white px-2 py-1 text-xs text-ink ' +
+    'w-full rounded-md border border-line bg-surface px-2 py-1 text-xs text-ink dark:bg-paper-2 ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick ' +
     'placeholder:text-ink-mute';
 
@@ -167,7 +167,7 @@ export function FieldInput({ field }: FieldInputProps) {
   // Default: text input
   return (
     <div className="flex flex-col gap-1">
-      <label id={labelId} htmlFor={inputId} className="text-xs text-gray-600">
+      <label id={labelId} htmlFor={inputId} className="text-xs text-ink-soft">
         {field.name}
         {field.required && <span className="ml-0.5 text-red-500" aria-hidden="true">*</span>}
       </label>

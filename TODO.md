@@ -1,31 +1,29 @@
-# TODO — Audit final “vendable” + renommage BIMCHEcK-Rename
+# TODO — BIMCHECK-Rename
 
-## 1) Rebranding global
-- [ ] Uniformiser le nom produit vers **BIMCHEcK-Rename** dans les pages publiques et docs clés
-- [ ] Mettre à jour metadata (titre, applicationName, URLs publiques)
-- [ ] Mettre à jour le package name web si nécessaire
+Vérité produit : multi-métiers, marque **BIMCHECK-Rename**.  
+Voir `docs/product/VISION.md`.
 
-### Audit ciblé effectué
-- [x] Lecture `web/app/layout.tsx` (metadata globale + branding + URL)
-- [x] Lecture `web/app/page.tsx` (landing principale + branding + schema.org + footer)
-- [x] Lecture `web/app/mentions-legales/page.tsx` (TODO juridiques bloquants)
-- [x] Lecture `web/app/conditions/page.tsx` (TODO juridiques bloquants)
-- [x] Lecture `web/next.config.ts` (CSP + headers sécurité)
-- [x] Lecture `web/app/api/access/route.ts` (cookie de protection d’accès)
-- [x] Lecture `web/instrumentation.ts` et `web/instrumentation-client.ts` (Sentry)
+## Fait (purification 2026-07-20)
 
-## 2) Juridique publiable
-- [ ] Supprimer les TODO bloquants dans `/mentions-legales` et `/conditions`
-- [ ] Rendre les textes juridiquement non trompeurs et publiables en l’état
-- [ ] Aligner `/privacy` avec les textes finaux
+- [x] Vérité multi-métiers documentée (README + VISION)
+- [x] `lib/bim` → `lib/rename-engine`
+- [x] `BimFile` → `WorkspaceFile`
+- [x] Anciennes stratégies contradictoires → `docs/archive/`
+- [x] Marque / package / APP_NAME alignés sur BIMCHECK-Rename
+- [x] Metadata layout + manifest multi-métiers
 
-## 3) Hardening sécurité
-- [ ] Vérifier/resserrer CSP et security headers
-- [ ] Vérifier politique cookie sur API access
-- [ ] Vérifier garde-fous Sentry/env en production
-- [ ] Aligner page `/security` avec l’implémentation réelle
+## Suite prioritaire
 
-## 4) Validation opérationnelle
-- [ ] Lancer lint/tests/build
-- [ ] Corriger si erreurs
-- [ ] Mettre à jour CHANGELOG avec les changements majeurs
+### Juridique
+- [ ] Finaliser `/mentions-legales` et `/conditions` (plus de TODO trompeurs)
+- [ ] Aligner `/privacy` sur le wording multi-métiers (pas seulement BIM)
+
+### Produit / GTM
+- [ ] Uniformiser pricing affiché (CHF vs EUR) sur toutes les pages
+- [ ] Stripe Payment Links (voir `STRIPE_SETUP.md`)
+- [ ] Remplacer témoignages / captures fictives par preuves réelles
+
+### Technique
+- [ ] Vérifier exports de conventions (`bimcheck-rename-*.json`)
+- [ ] Aligner package-lock name si besoin (`npm install` dans `web/`)
+- [ ] Option : migrer clé `THEME: bim_theme` vers préfixe stable (avec migration)

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 import type { AppState } from '@/lib/app-state';
 import {
   applySearch,
@@ -13,8 +13,8 @@ import {
 // ---------------------------------------------------------------------------
 
 function makeFile(
-  overrides: Partial<BimFile> & { original: string; extension: string }
-): BimFile {
+  overrides: Partial<WorkspaceFile> & { original: string; extension: string }
+): WorkspaceFile {
   const { id, original, extension, newName, ...rest } = overrides;
   return {
     id: id ?? original,
@@ -35,7 +35,7 @@ function makeFile(
   };
 }
 
-const files: BimFile[] = [
+const files: WorkspaceFile[] = [
   makeFile({ id: '1', original: 'H3_ARC_Plan_001.pdf', extension: '.pdf' }),
   makeFile({ id: '2', original: 'H3_ARC_Plan_002.pdf', extension: '.pdf' }),
   makeFile({ id: '3', original: 'H3_STR_Mur_A.dwg', extension: '.dwg' }),

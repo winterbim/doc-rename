@@ -1,13 +1,15 @@
 /**
- * BIM Default Settings & Storage Keys
- * Ported 1:1 from extension/js/config.js — CONFIG.DEFAULT_SETTINGS, CONFIG.STORAGE_KEYS,
- * CONFIG.STORAGE_PREFIX, CONFIG.DEFAULT_TEMPLATES, CONFIG.APP_NAME, CONFIG.VERSION
+ * Default settings & storage keys for BIMCHECK-Rename.
+ *
+ * Storage key names keep the historical `bimcheck_rename_*` prefix so existing
+ * browser localStorage survives upgrades. Do not rename keys without a schema
+ * migration in `lib/persistence.ts`.
  */
 
-import type { BimDefaultSettings, BimTemplate } from '../types';
+import type { AppDefaultSettings, ConventionTemplate } from '../types';
 
-export const APP_NAME = 'DOC-RENAME';
-export const VERSION = '2.1.0';
+export const APP_NAME = 'BIMCHECK-Rename';
+export const VERSION = '0.3.0';
 
 export const STORAGE_PREFIX = 'bimcheck_rename_';
 
@@ -17,7 +19,7 @@ export const STORAGE_KEYS: Record<string, string> = {
   HISTORY: 'history',
   LAST_CONFIG: 'last_config',
   LANGUAGE: 'language',
-  // Persistence keys (port of extension localStorage keys)
+  // Persistence keys — stable; changing them breaks existing sessions
   FIELDS_ACTIVE: 'bimcheck_rename_fields',
   FIELDS_VALUES: 'bimcheck_rename_field_values',
   NOMENCLATURE_SETTINGS: 'bimcheck_rename_settings',
@@ -29,7 +31,7 @@ export const STORAGE_KEYS: Record<string, string> = {
   THEME: 'bim_theme',
 };
 
-export const DEFAULT_SETTINGS: BimDefaultSettings = {
+export const DEFAULT_SETTINGS: AppDefaultSettings = {
   theme: 'light',
   language: 'fr',
   defaultCase: 'upper',
@@ -41,7 +43,7 @@ export const DEFAULT_SETTINGS: BimDefaultSettings = {
   maxHistoryItems: 50,
 };
 
-export const DEFAULT_TEMPLATES: Record<string, BimTemplate> = {
+export const DEFAULT_TEMPLATES: Record<string, ConventionTemplate> = {
   'swiss-bim': {
     name: 'Norme BIM Suisse SIA',
     description: 'Convention selon SIA 2051',

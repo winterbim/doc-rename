@@ -17,7 +17,7 @@
  */
 
 import type {
-  BimFile,
+  WorkspaceFile,
   FieldDefinition,
   ValidationResult,
 } from './types';
@@ -94,7 +94,7 @@ export function normalizeBIM(str: string): string {
 /**
  * Normalize any final output filename shown to the user or written to disk.
  * This is intentionally conservative: it preserves the user's separators and
- * extension while enforcing the DOC-RENAME invariant: uppercase, no accents.
+ * extension while enforcing the BIMCHECK-Rename invariant: uppercase, no accents.
  */
 export function normalizeOutputName(name: string): string {
   return normalizeBIM(name);
@@ -250,7 +250,7 @@ export function validateFilename(filename: string): ValidationResult {
 // ---------------------------------------------------------------------------
 
 type FileInput = Pick<
-  BimFile,
+  WorkspaceFile,
   'original' | 'extension' | 'folder' | 'mappedFields' | 'autoDetected' | 'cleanedBaseName'
 >;
 
@@ -278,9 +278,9 @@ export function generate(
   cache?: NomenclatureCache,
 ): string {
   // Cache lookup (same semantics as getCachedName but cache is caller-owned)
-  const fileId = (file as Partial<BimFile>).id;
+  const fileId = (file as Partial<WorkspaceFile>).id;
   if (cache && fileId) {
-    const hit = cache.get(file as BimFile, ctx);
+    const hit = cache.get(file as WorkspaceFile, ctx);
     if (hit !== undefined) return hit;
   }
 
@@ -353,7 +353,7 @@ export function generate(
 
   // Populate cache on miss
   if (cache && fileId) {
-    cache.set(file as BimFile, ctx, result);
+    cache.set(file as WorkspaceFile, ctx, result);
   }
 
   return result;
@@ -427,7 +427,7 @@ export interface BatchResult {
  * Returns an array of { fileId, newName, errors }.
  */
 export function batchGenerate(
-  files: BimFile[],
+  files: WorkspaceFile[],
   ctx: NomenclatureContext,
   options: { caseTransform?: CaseTransform } = {},
 ): BatchResult[] {
@@ -530,7 +530,7 @@ export class NomenclatureCache {
     });
   }
 
-  private _computeFileHash(file: BimFile): string {
+  private _computeFileHash(file: WorkspaceFile): string {
     return JSON.stringify({
       mf: file.mappedFields ?? null,
       cb: file.cleanedBaseName ?? null,
@@ -539,7 +539,7 @@ export class NomenclatureCache {
     });
   }
 
-  get(file: BimFile, ctx: NomenclatureContext): string | undefined {
+  get(file: WorkspaceFile, ctx: NomenclatureContext): string | undefined {
     const entry = this._cache.get(file.id);
     if (!entry) return undefined;
 
@@ -551,7 +551,7 @@ export class NomenclatureCache {
     return undefined;
   }
 
-  set(file: BimFile, ctx: NomenclatureContext, name: string): void {
+  set(file: WorkspaceFile, ctx: NomenclatureContext, name: string): void {
     this._cache.set(file.id, {
       gh: this._computeGlobalHash(ctx),
       fh: this._computeFileHash(file),

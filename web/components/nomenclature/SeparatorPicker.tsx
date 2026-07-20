@@ -20,7 +20,7 @@ export function SeparatorPicker() {
         id="separator-picker"
         value={state.separator}
         onChange={(e) => dispatch({ type: 'SEPARATOR_SET', separator: e.target.value })}
-        className="w-full rounded-md border border-line bg-white dark:bg-paper-2 text-ink px-2.5 py-1.5 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick"
+        className="w-full rounded-md border border-line bg-surface dark:bg-paper-2 text-ink px-2.5 py-1.5 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick"
       >
         {SEPARATORS.map((s) => (
           <option key={s.value} value={s.value}>

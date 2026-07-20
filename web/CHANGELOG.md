@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the BimDoc Renamer web app are documented here.
+All notable changes to the BIMCHECK-Rename web app are documented here.
 
 Format: [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning 2.0](https://semver.org/spec/v2.0.0.html).
@@ -33,10 +33,10 @@ Versioning: [Semantic Versioning 2.0](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Public wording aligned on **BimDoc Renamer** instead of the old DOC-RENAME label on visible pages and access screens.
+- Public wording aligned on **BIMCHECK-Rename** instead of the old DOC-RENAME label on visible pages and access screens.
 - BIM V1 microcopy polished: French labels, upload/import errors, model/template wording, separators, and profile names.
 - Nomenclature import now reports errors through the app toast system instead of a browser `alert()`.
-- E2E tests updated for the current BimDoc Renamer branding and deterministic upload input selection.
+- E2E tests updated for the current BIMCHECK-Rename branding and deterministic upload input selection.
 - Product marketing context recentered on a BIM-only V1 offer and pilot-based conversion path.
 - `/privacy` updated for the SaaS migration: Free / Pro / Team terms, RGPD/CNIL transparency, account/billing/support data categories, local-first file processing, optional telemetry, security limits, and user responsibilities.
 - `ARCHITECTURE.md` privacy/security section updated to reflect optional Sentry/PostHog observability while preserving the no-file-content telemetry rule.
@@ -64,7 +64,7 @@ Initial public deployment at <https://doc-rename-saas.vercel.app>.
 ### Added
 
 - **Routes**: `/` (static landing), `/app` (renamer), `/privacy`, `/manifest.webmanifest`.
-- **BIM logic** ported to pure TypeScript under `lib/bim/`:
+- **BIM logic** ported to pure TypeScript under `lib/rename-engine/`:
   - 41 work lots, 84 companies, 232 document types in 14 groups, 3 default templates (SIA / ISO 19650 / BIM France).
   - `prefixes`, `nomenclature` (with cache), `filename-cleaner` (121 spelling rules + 36 default words), `fields` (17 definitions), `detection` (5 helpers), `zip-io`.
 - **React UI**: drag-and-drop field reordering (`@dnd-kit/sortable`), name editor modal with segment drag-drop, simple replace panel, prefix actions panel (remove / replace / map), search + extension filter, selection toggle (`Sélection (N)` / `Tous`), template picker, separator picker, live preview.

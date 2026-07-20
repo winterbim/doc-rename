@@ -1,5 +1,5 @@
 /**
- * Property-based fuzz tests for lib/bim public functions.
+ * Property-based fuzz tests for lib/rename-engine public functions.
  *
  * Goal: prove every public function is TOTAL — never throws on any input —
  * and satisfies structural invariants under random data.

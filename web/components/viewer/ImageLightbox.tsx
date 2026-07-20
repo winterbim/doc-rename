@@ -104,13 +104,13 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Toolbar */}
-        <div className="flex items-center gap-2 rounded-t-xl bg-gray-900/90 px-4 py-2">
+        <div className="flex items-center gap-2 rounded-t-xl bg-ink/90 px-4 py-2">
           <button
             type="button"
             ref={closeButtonRef}
             onClick={onClose}
             aria-label="Fermer l'aperçu"
-            className="rounded p-1 text-gray-300 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 transition-colors"
+            className="rounded p-1 text-ink-mute hover:bg-paper/10 hover:text-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper/50 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -125,14 +125,14 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
             </svg>
           </button>
 
-          <div className="mx-1 h-4 w-px bg-gray-600" aria-hidden="true" />
+          <div className="mx-1 h-4 w-px bg-line" aria-hidden="true" />
 
           <button
             type="button"
             onClick={zoomOut}
             disabled={!canZoomOut}
             aria-label="Dézoomer"
-            className="rounded p-1 text-gray-300 hover:bg-white/10 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 transition-colors"
+            className="rounded p-1 text-ink-mute hover:bg-paper/10 hover:text-paper disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper/50 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -151,7 +151,7 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
             </svg>
           </button>
 
-          <span className="min-w-[3rem] text-center text-xs font-medium text-gray-200">
+          <span className="min-w-[3rem] text-center text-xs font-medium text-paper">
             {zoom}%
           </span>
 
@@ -160,7 +160,7 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
             onClick={zoomIn}
             disabled={!canZoomIn}
             aria-label="Zoomer"
-            className="rounded p-1 text-gray-300 hover:bg-white/10 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 transition-colors"
+            className="rounded p-1 text-ink-mute hover:bg-paper/10 hover:text-paper disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper/50 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -183,7 +183,7 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
             type="button"
             onClick={() => { setZoom(100); setTranslate({ x: 0, y: 0 }); }}
             aria-label="Taille réelle (100%)"
-            className="ml-1 rounded px-2 py-1 text-xs text-gray-300 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 transition-colors"
+            className="ml-1 rounded px-2 py-1 text-xs text-ink-mute hover:bg-paper/10 hover:text-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper/50 transition-colors"
           >
             Réinitialiser
           </button>
@@ -191,7 +191,7 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
 
         {/* Image area */}
         <div
-          className="overflow-hidden rounded-b-xl bg-gray-900/50"
+          className="overflow-hidden rounded-b-xl bg-ink/50"
           style={{ cursor: zoom > 100 ? (dragging.current ? 'grabbing' : 'grab') : 'default' }}
         >
           <div

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { appReducer, initialState } from './app-state';
-import type { BimFile } from './bim/types';
+import type { WorkspaceFile } from './rename-engine/types';
 
-function makeFile(overrides: Partial<BimFile> = {}): BimFile {
+function makeFile(overrides: Partial<WorkspaceFile> = {}): WorkspaceFile {
   return {
     id: 'f1',
     original: 'plan.pdf',

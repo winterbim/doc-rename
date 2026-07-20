@@ -644,7 +644,7 @@ function isTruthyCell(value: string): boolean {
  * Import values from CSV, TSV, or pasted spreadsheet data.
  *
  * Accepted shapes:
- * - exported DOC-RENAME CSV: ordre;id;code;champ;valeur;actif
+ * - exported BIMCHECK-Rename CSV: ordre;id;code;champ;valeur;actif
  * - simple two-column paste: champ<TAB>valeur
  * - header variants: field/value, code/value, champ/valeur
  */

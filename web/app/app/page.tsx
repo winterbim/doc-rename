@@ -16,7 +16,7 @@ const RenamerShell = dynamic(
 function AppLoadingState() {
   return (
     <main className="flex min-h-screen flex-col bg-paper text-ink">
-      <header className="flex items-center justify-between border-b border-line bg-white px-6 py-2.5 dark:bg-paper-2">
+      <header className="flex items-center justify-between border-b border-line bg-surface px-6 py-2.5 dark:bg-paper-2">
         <div className="flex items-center gap-3">
           <span
             aria-hidden="true"
@@ -35,7 +35,7 @@ function AppLoadingState() {
         </div>
       </header>
       <section className="flex flex-1 items-center justify-center px-6 py-16" aria-live="polite">
-        <div className="w-full max-w-xl rounded-xl border border-line bg-white p-8 text-center shadow-sm dark:bg-paper-2">
+        <div className="w-full max-w-xl rounded-xl border border-line bg-surface p-8 text-center shadow-sm dark:bg-paper-2">
           <p className="font-sans text-lg text-ink">Préparation de votre lot BIM.</p>
           <p className="mt-3 text-sm text-ink-soft">
             Convention ISO 19650 / SIA 2051 prête à appliquer. Vos fichiers restent dans votre navigateur.

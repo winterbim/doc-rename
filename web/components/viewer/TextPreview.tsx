@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { getTextCache, setTextCache } from '@/lib/viewer-cache';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 
 const MAX_LINES = 500;
 const MAX_SIZE_BYTES = 1024 * 1024; // 1 MB
 
 interface TextPreviewProps {
-  file: BimFile;
+  file: WorkspaceFile;
 }
 
 export function TextPreview({ file }: TextPreviewProps) {
@@ -87,8 +87,8 @@ export function TextPreview({ file }: TextPreviewProps) {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       {(truncated || oversized) && (
-        <div className="shrink-0 border-b border-amber-200 bg-amber-50 px-4 py-2">
-          <p className="text-xs text-amber-700">
+        <div className="shrink-0 border-b border-amber-200/30 bg-amber-500/10 px-4 py-2">
+          <p className="text-xs text-amber-600 dark:text-amber-400">
             {oversized
               ? `Fichier volumineux (${(file.blob.size / 1024 / 1024).toFixed(1)} Mo) — affichage des ${MAX_LINES} premières lignes du premier Mo.`
               : `Affichage limité aux ${MAX_LINES} premières lignes.`}
@@ -96,7 +96,7 @@ export function TextPreview({ file }: TextPreviewProps) {
         </div>
       )}
       <div className="flex-1 overflow-auto p-4">
-        <pre className="font-mono text-xs leading-relaxed text-gray-800 whitespace-pre-wrap break-all">
+        <pre className="font-mono text-xs leading-relaxed text-ink whitespace-pre-wrap break-all">
           {text}
         </pre>
       </div>
