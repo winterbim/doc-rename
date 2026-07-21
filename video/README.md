@@ -1,17 +1,18 @@
 # BIMCHECK-Rename — vidéo de présentation
 
-Projet **Remotion** (React → MP4) qui explique le fonctionnement du SaaS
-BIMCHECK-Rename (import → convention → aperçu → ZIP, local-first, tarifs).
+Projet **Remotion** (React → MP4) ultra-aligné sur le SaaS de production :
 
-Logo officiel récupéré depuis `www.bimcheck-consulting.com` :
-`public/brand/bimcheck-logo.png` (remplace l’ancien tile « BC »).
+- **Visuel** : landing sombre cyan/indigo + chrome atelier slate (comme `/` et `/app`)
+- **UX** : import local → profil métier → convention → Avant/Après → Renommer → ZIP
+- **Offre** : Free 5 lots/j · Team 19 € · licence auto · URL `rename.bimcheck-consulting.com`
+- **Logo** : `public/brand/bimcheck-logo.png` (bimcheck-consulting.com)
 
-Sorties rendues (exemples) :
+Sorties :
 
 | Fichier | Format | Durée |
 | --- | --- | --- |
-| `out/bimcheck-rename-how-it-works-1920x1080.mp4` | 1920×1080 | ~84 s |
-| `out/bimcheck-rename-how-it-works-short-1920x1080.mp4` | 1920×1080 | 30 s |
+| `out/bimcheck-rename-how-it-works-1920x1080.mp4` | 1920×1080 | **90 s** |
+| `out/bimcheck-rename-how-it-works-short-1920x1080.mp4` | 1920×1080 | **30 s** |
 | `out/bimcheck-rename-cover.png` | still | — |
 
 Projet en quatre compositions :
