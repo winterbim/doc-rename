@@ -53,7 +53,23 @@ export function isStripePaymentLinkAllowedForMode(
   }
 }
 
-const PUBLIC_STRIPE_MODE = process.env.NEXT_PUBLIC_STRIPE_MODE?.trim();
+/**
+ * Resolve which Stripe Payment Link family may be exposed.
+ * Production deploys (Vercel production) are live-only: test links are never accepted.
+ * Preview/local may use mode=test for QA only.
+ */
+export function resolvePublicStripeMode(
+  rawMode: string | null | undefined = process.env.NEXT_PUBLIC_STRIPE_MODE,
+  vercelEnv: string | null | undefined = process.env.VERCEL_ENV,
+): 'test' | 'live' | undefined {
+  const isVercelProduction = vercelEnv === 'production';
+  if (isVercelProduction) return 'live';
+  const mode = rawMode?.trim();
+  if (mode === 'test' || mode === 'live') return mode;
+  return undefined;
+}
+
+const PUBLIC_STRIPE_MODE = resolvePublicStripeMode();
 
 const firstStripeLink = (...values: Array<string | undefined>): string | undefined => {
   for (const value of values) {
@@ -93,16 +109,16 @@ export const PAID_ACCOUNTS_AVAILABLE =
   PAID_ACCOUNTS_ENABLED;
 
 /**
- * Checkout is deliberately fail-closed: a leftover Payment Link alone can
- * never expose a purchase button. Authentication and the separately reviewed
- * checkout switch must both be enabled for the same deployment.
+ * Checkout is independent of OAuth/org SaaS. Revenue can start with Stripe
+ * Payment Links + manual fulfillment (activation sous 1 jour ouvré).
+ * Fail-closed: requires an explicit commercial switch AND at least one valid
+ * live (or, off production, test) Payment Link for the resolved mode.
  */
 export function canExposeDirectCheckout(options: {
-  accountsAvailable: boolean;
   checkoutEnabled: boolean;
   hasPaymentLink: boolean;
 }): boolean {
-  return options.accountsAvailable && options.checkoutEnabled && options.hasPaymentLink;
+  return options.checkoutEnabled && options.hasPaymentLink;
 }
 
 const HAS_CONFIGURED_PAYMENT_LINK = Boolean(
@@ -117,9 +133,8 @@ const HAS_CONFIGURED_PAYMENT_LINK = Boolean(
   PILOT_LINK_USD,
 );
 
-/** True only after auth, commercial review and at least one Payment Link are enabled. */
+/** True when paid checkout is commercially opened and links are configured for the mode. */
 export const HAS_DIRECT_CHECKOUT = canExposeDirectCheckout({
-  accountsAvailable: PAID_ACCOUNTS_AVAILABLE,
   checkoutEnabled: process.env.NEXT_PUBLIC_PAID_CHECKOUT_ENABLED === 'true',
   hasPaymentLink: HAS_CONFIGURED_PAYMENT_LINK,
 });
@@ -312,6 +327,7 @@ export function getFreePlan(currency: CurrencyCode = DEFAULT_CURRENCY): PricingP
 export function getTeamPlan(currency: CurrencyCode = DEFAULT_CURRENCY): PricingPlan {
   const meta = CURRENCIES[currency];
   const price = convertFromEur(TEAM_PRICE_EUR, currency);
+  const selling = HAS_DIRECT_CHECKOUT;
   return {
     id: 'team',
     name: 'Team',
@@ -320,23 +336,25 @@ export function getTeamPlan(currency: CurrencyCode = DEFAULT_CURRENCY): PricingP
     priceUnit: meta.symbol,
     currency,
     billing: '/mois',
-    description: PAID_ACCOUNTS_AVAILABLE
-      ? 'Pour l’équipe qui impose une convention unique — prix d’entrée accessible.'
-      : 'Tarif cible ; comptes équipe et souscriptions pas encore ouverts.',
-    features: PAID_ACCOUNTS_AVAILABLE ? [
-      'Tout Free + lots illimités',
-      'Compte (Google / GitHub)',
-      'Sauvegarde cloud des conventions (JSON, pas les fichiers)',
-      'Organisation jusqu’à 10 personnes',
-      'Jusqu’à 3 projets',
-      'Support email',
-    ] : [
-      'Périmètre cible : lots illimités',
-      'Périmètre cible : compte équipe',
-      'Périmètre cible : conventions JSON partagées',
-      'Périmètre cible : jusqu’à 10 personnes et 3 projets',
-      'Accès non encore ouvert — demande sans paiement',
-    ],
+    description: selling
+      ? 'Lots illimités pour l’équipe — activation sous 1 jour ouvré après paiement.'
+      : 'Offre Team — ouverture commerciale dès encaissement Stripe live.',
+    features: selling
+      ? [
+          'Tout Free + lots de renommage illimités',
+          'Activation manuelle sous 1 jour ouvré (e-mail de paiement)',
+          'Support email',
+          PAID_ACCOUNTS_AVAILABLE
+            ? 'Compte + sync cloud des conventions (JSON)'
+            : 'Sync cloud multi-comptes : en déploiement (export JSON déjà inclus)',
+          'Sans upload de vos fichiers',
+        ]
+      : [
+          'Lots illimités après activation',
+          'Support email',
+          'Export conventions JSON',
+          'Paiement en ligne dès configuration Stripe live',
+        ],
     cta: getTeamCta(currency),
     highlighted: true,
     badge: 'Petites équipes',
@@ -346,6 +364,7 @@ export function getTeamPlan(currency: CurrencyCode = DEFAULT_CURRENCY): PricingP
 export function getCabinetPlan(currency: CurrencyCode = DEFAULT_CURRENCY): PricingPlan {
   const meta = CURRENCIES[currency];
   const price = convertFromEur(CABINET_PRICE_EUR, currency);
+  const selling = HAS_DIRECT_CHECKOUT;
   return {
     id: 'cabinet',
     name: 'Cabinet',
@@ -354,21 +373,24 @@ export function getCabinetPlan(currency: CurrencyCode = DEFAULT_CURRENCY): Prici
     priceUnit: meta.symbol,
     currency,
     billing: '/mois',
-    description: PAID_ACCOUNTS_AVAILABLE
-      ? 'Périmètre multi-équipes avec support prioritaire.'
-      : 'Tarif cible ; comptes Cabinet et souscriptions pas encore ouverts.',
-    features: PAID_ACCOUNTS_AVAILABLE ? [
-      'Tout Team +',
-      'Jusqu’à 1 000 utilisateurs et projets',
-      'Support prioritaire',
-      'Onboarding assisté sur demande',
-      'Facturation sur devis / virement possible',
-    ] : [
-      'Périmètre cible : tout Team',
-      'Périmètre cible : jusqu’à 1 000 utilisateurs et projets',
-      'Périmètre cible : support prioritaire',
-      'Accès non encore ouvert — demande sans paiement',
-    ],
+    description: selling
+      ? 'Volume et support prioritaire — activation sous 1 jour ouvré après paiement.'
+      : 'Offre Cabinet — ouverture commerciale dès encaissement Stripe live.',
+    features: selling
+      ? [
+          'Tout Team +',
+          'Support prioritaire',
+          'Onboarding assisté sur demande',
+          PAID_ACCOUNTS_AVAILABLE
+            ? 'Jusqu’à 1 000 utilisateurs et projets'
+            : 'Périmètre multi-équipes (activation manuelle)',
+          'Facture Stripe / devis possible',
+        ]
+      : [
+          'Tout Team + support prioritaire',
+          'Onboarding assisté sur demande',
+          'Paiement en ligne dès configuration Stripe live',
+        ],
     cta: getCabinetCta(currency),
   };
 }
@@ -395,8 +417,8 @@ export const planComparisonRows: readonly {
   {
     feature: 'Lots de renommage / jour',
     free: String(FREE_DAILY_LOTS),
-    team: PAID_ACCOUNTS_AVAILABLE ? 'Illimité' : 'Non ouvert',
-    cabinet: PAID_ACCOUNTS_AVAILABLE ? 'Illimité' : 'Non ouvert',
+    team: HAS_DIRECT_CHECKOUT || PAID_ACCOUNTS_AVAILABLE ? 'Illimité' : 'Sur activation',
+    cabinet: HAS_DIRECT_CHECKOUT || PAID_ACCOUNTS_AVAILABLE ? 'Illimité' : 'Sur activation',
   },
   {
     feature: 'Compte utilisateur',

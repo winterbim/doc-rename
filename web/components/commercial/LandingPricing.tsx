@@ -42,8 +42,13 @@ export function LandingPricing() {
         </p>
         {!HAS_DIRECT_CHECKOUT && (
           <p className="small-note" style={{ margin: 0, textAlign: 'center', maxWidth: 520 }}>
-            Free est ouvert immédiatement. Les comptes Team et Cabinet ne sont pas encore ouverts :
-            vous pouvez seulement demander à être recontacté, sans prélèvement en ligne.
+            Free est ouvert immédiatement. Le paiement en ligne Team / Cabinet / Pilote s’active
+            dès branchement Stripe live (encaissement réel, pas de mode test sur le site public).
+          </p>
+        )}
+        {HAS_DIRECT_CHECKOUT && (
+          <p className="small-note" style={{ margin: 0, textAlign: 'center', maxWidth: 520 }}>
+            Paiement sécurisé Stripe · activation des droits sous 1 jour ouvré · résiliation à tout moment.
           </p>
         )}
       </div>
@@ -79,15 +84,15 @@ export function LandingPricing() {
             {teamPrice} <small>{perMonth}</small>
           </p>
           <p className="muted">
-            {PAID_ACCOUNTS_AVAILABLE
-              ? 'Lots illimités + convention partagée en équipe.'
-              : 'Périmètre cible — accès équipe non encore ouvert.'}
+            {HAS_DIRECT_CHECKOUT
+              ? 'Lots illimités — paiement en ligne, activation sous 1 jour ouvré.'
+              : 'Lots illimités dès paiement Stripe live.'}
           </p>
           <ul>
-            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 10 utilisateurs' : 'Prévu : jusqu’à 10 utilisateurs'}</li>
-            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Sync des conventions (JSON)' : 'Prévu : sync des conventions JSON'}</li>
-            <li>{PAID_ACCOUNTS_AVAILABLE ? '3 projets' : 'Prévu : 3 projets'}</li>
-            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Support email' : 'Échange commercial uniquement'}</li>
+            <li>Lots de renommage illimités</li>
+            <li>Support email</li>
+            <li>Export conventions JSON</li>
+            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Sync cloud multi-comptes' : 'Sans compte obligatoire pour démarrer'}</li>
             <li>Sans upload de vos fichiers</li>
           </ul>
           <a
@@ -108,14 +113,16 @@ export function LandingPricing() {
             {cabinetPrice} <small>{perMonth}</small>
           </p>
           <p className="muted">
-            {PAID_ACCOUNTS_AVAILABLE ? 'Volume élevé, support prioritaire.' : 'Périmètre cible — accès Cabinet non encore ouvert.'}
+            {HAS_DIRECT_CHECKOUT
+              ? 'Volume élevé, support prioritaire — paiement en ligne.'
+              : 'Volume élevé dès paiement Stripe live.'}
           </p>
           <ul>
-            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 1 000 utilisateurs' : 'Prévu : jusqu’à 1 000 utilisateurs'}</li>
-            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 1 000 projets' : 'Prévu : jusqu’à 1 000 projets'}</li>
-            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Sync cloud des conventions' : 'Prévu : sync cloud des conventions'}</li>
-            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Support prioritaire' : 'Échange commercial uniquement'}</li>
-            <li>Facturation à confirmer par écrit avant toute commande</li>
+            <li>Tout Team +</li>
+            <li>Support prioritaire</li>
+            <li>Onboarding assisté sur demande</li>
+            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 1 000 utilisateurs / projets' : 'Multi-équipes (activation manuelle)'}</li>
+            <li>Facture Stripe</li>
           </ul>
           <a
             className="button primary"

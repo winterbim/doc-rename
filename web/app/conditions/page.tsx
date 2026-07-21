@@ -2,7 +2,7 @@ import { CONTACT_EMAIL } from "@/lib/contact";
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { HAS_DIRECT_CHECKOUT, PAID_ACCOUNTS_AVAILABLE } from "@/lib/pricing";
+import { HAS_DIRECT_CHECKOUT } from "@/lib/pricing";
 
 
 export const metadata: Metadata = {
@@ -125,27 +125,30 @@ export default function ConditionsPage() {
           <Section id="offres" title="4. Offres et prix">
             <ul className="list-disc pl-5">
               <li><strong>Free</strong> : 0 € — 5 lots de renommage par jour, sans compte, traitement local.</li>
-              <li><strong>Team</strong> : tarif cible 19 € / mois — lots illimités, compte, sync des conventions, jusqu’à 10 utilisateurs et 3 projets.</li>
-              <li><strong>Cabinet</strong> : tarif cible 49 € / mois — jusqu’à 1 000 membres et projets, support prioritaire.</li>
-              <li><strong>Pilote 14 jours</strong> : 49 € (paiement unique) — onboarding guidé, selon offre en vigueur.</li>
+              <li><strong>Team</strong> : 19 € / mois — lots illimités, support email, activation sous 1 jour ouvré après paiement.</li>
+              <li><strong>Cabinet</strong> : 49 € / mois — volume multi-équipes, support prioritaire, onboarding sur demande.</li>
+              <li><strong>Pilote 14 jours</strong> : 49 € (paiement unique) — onboarding guidé.</li>
             </ul>
             <p>
               Prix de référence en euros (EUR). L’interface peut afficher des
               équivalents CHF ou USD à titre indicatif (conversion arrondie). La facturation
-              suit le lien de paiement Stripe ou le devis seulement lorsqu’une offre est ouverte.
-              Tant que les comptes payants sont fermés, ces montants ne constituent pas une offre
-              de vente. Avant toute commande, un écrit devra préciser le prix HT/TTC, les taxes,
-              l’identité de facturation et les droits effectivement fournis.
+              suit le lien de paiement Stripe (mode live) ou un devis écrit.
+              {!HAS_DIRECT_CHECKOUT && (
+                <> Tant que le paiement en ligne n’est pas activé sur le site, aucune commande
+                n’est acceptée via les boutons publics.</>
+              )}
             </p>
           </Section>
 
           <Section id="paiement" title="5. Paiement, reconduction et résiliation">
-            {HAS_DIRECT_CHECKOUT && PAID_ACCOUNTS_AVAILABLE ? (
+            {HAS_DIRECT_CHECKOUT ? (
               <>
                 <p>
-                  Les paiements sont traités par notre prestataire <strong>Stripe</strong> ;
-                  l’éditeur n’a pas accès à vos données de carte. Les abonnements mensuels sont
-                  reconduits tacitement à chaque échéance jusqu’à résiliation.
+                  Les paiements sont traités par notre prestataire <strong>Stripe</strong> en
+                  mode production ; l’éditeur n’a pas accès à vos données de carte. Les
+                  abonnements mensuels sont reconduits tacitement à chaque échéance jusqu’à
+                  résiliation. L’activation des droits payants (lots illimités, support) est
+                  réalisée sous <strong>1 jour ouvré</strong> après confirmation du paiement.
                 </p>
                 <p>
                   Vous pouvez résilier à tout moment ; la résiliation prend effet à la fin de la
@@ -156,10 +159,9 @@ export default function ConditionsPage() {
               </>
             ) : (
               <p>
-                Aucun paiement ni abonnement n’est actuellement initié depuis le site public. Les
-                comptes Team et Cabinet ne sont pas ouverts. Les demandes servent à préparer un
-                échange, sans prélèvement ni engagement ; aucune commande n’est acceptée tant que
-                l’identité légale, le traitement fiscal et les droits livrés ne sont pas confirmés par écrit.
+                Le paiement en ligne n’est pas encore branché sur ce déploiement. Dès activation
+                Stripe live, les offres Team, Cabinet et Pilote seront payables directement depuis
+                le site. Contact : {CONTACT_EMAIL}.
               </p>
             )}
           </Section>

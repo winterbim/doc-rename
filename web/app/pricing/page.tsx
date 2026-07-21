@@ -18,11 +18,11 @@ import {
 
 export const metadata: Metadata = {
   title: 'Tarifs',
-  description: `BIMCHECK-Rename Free est ouvert. Team à ${TEAM_PRICE_EUR} €/mois et Cabinet à ${CABINET_PRICE_EUR} €/mois sont des tarifs cibles non ouverts. Local-first.`,
+  description: `BIMCHECK-Rename : Free gratuit, Team ${TEAM_PRICE_EUR} €/mois, Cabinet ${CABINET_PRICE_EUR} €/mois, Pilote ${PILOT_PRICE_EUR} €. Local-first, paiement Stripe.`,
   alternates: { canonical: '/pricing' },
   openGraph: {
     title: 'Tarifs BIMCHECK-Rename',
-    description: `Free est ouvert. Tarifs cibles Team ${TEAM_PRICE_EUR} €/mois et Cabinet ${CABINET_PRICE_EUR} €/mois, sans achat en ligne tant que les comptes restent fermés.`,
+    description: `Free, Team ${TEAM_PRICE_EUR} €/mois, Cabinet ${CABINET_PRICE_EUR} €/mois. Paiement sécurisé Stripe en production.`,
     url: '/pricing',
   },
 };
@@ -30,25 +30,25 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: 'Puis-je vraiment tout faire en Free ?',
-    a: `Oui pour le renommage local : tous les profils métier, convention personnalisée, export ZIP. Limite : ${FREE_DAILY_LOTS} lots par jour. Team (${TEAM_PRICE_EUR} €/mois) est un tarif cible ; les comptes équipe ne sont pas encore ouverts.`,
+    a: `Oui pour le renommage local : tous les profils métier, convention personnalisée, export ZIP. Limite : ${FREE_DAILY_LOTS} lots par jour. Team (${TEAM_PRICE_EUR} €/mois) lève cette limite.`,
   },
   {
     q: 'Pourquoi des prix aussi bas ?',
-    a: 'Parce que le Free fait déjà le cœur du produit : renommage local, aperçu et ZIP. Les futures offres payantes visent le volume, la collaboration et le support — pas un faux CDE.',
+    a: 'Parce que le Free fait déjà le cœur du produit : renommage local, aperçu et ZIP. Les offres payantes ajoutent le volume, le support et l’accompagnement.',
   },
   {
     q: 'Mes fichiers quittent-ils le navigateur ?',
-    a: 'Non. Le renommage et le ZIP restent 100 % locaux. En Team/Cabinet, seul le JSON de convention peut être synchronisé — jamais le contenu des fichiers.',
+    a: 'Non. Le renommage et le ZIP restent 100 % locaux. Seul un JSON de convention peut être synchronisé plus tard — jamais le contenu des fichiers.',
   },
   {
     q: 'Puis-je afficher les prix en CHF ou USD ?',
-    a: 'Oui : utilisez le sélecteur de devise en haut des tarifs. Les montants hors euro sont des conversions indicatives (base EUR). Aucune facturation n’est ouverte actuellement.',
+    a: 'Oui : utilisez le sélecteur de devise en haut des tarifs. Les montants hors euro sont des conversions indicatives (base EUR). La facturation Stripe est en EUR.',
   },
   {
     q: 'Comment l’accès payant est-il activé ?',
     a: HAS_DIRECT_CHECKOUT
-      ? `Après paiement Stripe ou devis, activation manuelle sous 1 jour ouvré. Pilote guidé disponible à ${PILOT_PRICE_EUR} € (paiement unique).`
-      : `Les souscriptions en ligne ne sont pas ouvertes. Vous pouvez demander un échange pour Team, Cabinet ou le pilote annoncé à ${PILOT_PRICE_EUR} €, sans paiement ni engagement depuis le site.`,
+      ? `Paiement Stripe live, puis activation manuelle sous 1 jour ouvré (e-mail du paiement). Pilote guidé : ${PILOT_PRICE_EUR} € (paiement unique).`
+      : `Dès que le paiement Stripe live est branché sur ce site, vous payez en ligne puis les droits sont activés sous 1 jour ouvré. En attendant : demande via /pilot.`,
   },
 ];
 
@@ -97,7 +97,9 @@ export default function PricingPage() {
           <Container className="relative">
             <div className="mx-auto max-w-3xl text-center">
               <Badge variant="primary" className="mb-6">
-                {PAID_ACCOUNTS_AVAILABLE ? 'Prix publics · annulation à tout moment' : 'Free ouvert · tarifs payants cibles'}
+                {HAS_DIRECT_CHECKOUT
+                  ? 'Prix publics · paiement Stripe · annulation à tout moment'
+                  : 'Free ouvert · paiement live en cours d’activation'}
               </Badge>
               <h1 className="text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
                 Des tarifs pensés pour ne pas vous faire fuir.
@@ -105,7 +107,9 @@ export default function PricingPage() {
               <p className="mt-6 text-lg text-ink-soft">
                 Free généreux. Team à {TEAM_PRICE_EUR}&nbsp;€/mois. Cabinet à {CABINET_PRICE_EUR}&nbsp;€/mois.
                 Changez la devise d’affichage (EUR, CHF, USD) ci-dessous.{' '}
-                {!PAID_ACCOUNTS_AVAILABLE && 'Les comptes payants ne sont pas encore ouverts.'}
+                {HAS_DIRECT_CHECKOUT
+                  ? 'Paiement sécurisé en ligne (Stripe production).'
+                  : 'Encaissement réel dès finalisation du compte Stripe live.'}
               </p>
             </div>
           </Container>
@@ -124,9 +128,11 @@ export default function PricingPage() {
               align="center"
               badge="Comparaison"
               title="Tout ce qui est inclus dans chaque plan"
-              description={PAID_ACCOUNTS_AVAILABLE
-                ? 'Capacités disponibles avec chaque plan.'
-                : 'Free est disponible aujourd’hui. Les colonnes Team et Cabinet décrivent un périmètre cible non encore ouvert.'}
+              description={
+                HAS_DIRECT_CHECKOUT
+                  ? 'Capacités livrées avec chaque plan après activation.'
+                  : 'Free disponible maintenant. Team et Cabinet s’achètent dès Stripe live branché.'
+              }
             />
 
             <p className="mt-8 text-center text-xs font-medium text-ink-mute sm:hidden">

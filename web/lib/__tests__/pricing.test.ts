@@ -73,35 +73,25 @@ describe('pricing — audit-aligned offer', () => {
     expect(normalizeStripePaymentLink('not-a-url')).toBeUndefined();
   });
 
-  it('keeps checkout fail-closed until accounts and commercial checkout are both enabled', () => {
+  it('opens checkout with commercial switch + payment links — OAuth/org not required', () => {
     expect(
       canExposeDirectCheckout({
-        accountsAvailable: false,
         checkoutEnabled: true,
         hasPaymentLink: true,
       }),
-    ).toBe(false);
+    ).toBe(true);
     expect(
       canExposeDirectCheckout({
-        accountsAvailable: true,
         checkoutEnabled: false,
         hasPaymentLink: true,
       }),
     ).toBe(false);
     expect(
       canExposeDirectCheckout({
-        accountsAvailable: true,
         checkoutEnabled: true,
         hasPaymentLink: false,
       }),
     ).toBe(false);
-    expect(
-      canExposeDirectCheckout({
-        accountsAvailable: true,
-        checkoutEnabled: true,
-        hasPaymentLink: true,
-      }),
-    ).toBe(true);
   });
 
   it('never mixes Stripe test and live Payment Links', () => {
@@ -112,5 +102,13 @@ describe('pricing — audit-aligned offer', () => {
     expect(isStripePaymentLinkAllowedForMode(liveLink, 'live')).toBe(true);
     expect(isStripePaymentLinkAllowedForMode(liveLink, 'test')).toBe(false);
     expect(isStripePaymentLinkAllowedForMode(testLink, undefined)).toBe(false);
+  });
+
+  it('forces live-only Stripe mode on Vercel production', async () => {
+    const { resolvePublicStripeMode } = await import('../pricing');
+    expect(resolvePublicStripeMode('test', 'production')).toBe('live');
+    expect(resolvePublicStripeMode('live', 'production')).toBe('live');
+    expect(resolvePublicStripeMode('test', 'preview')).toBe('test');
+    expect(resolvePublicStripeMode(undefined, 'preview')).toBeUndefined();
   });
 });
