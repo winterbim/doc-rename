@@ -1,7 +1,20 @@
 # BIMCHECK-Rename — vidéo de présentation
 
-Projet **Remotion** (React → MP4) qui produit la vidéo marketing/démo de
-BIMCHECK-Rename en quatre formats :
+Projet **Remotion** (React → MP4) qui explique le fonctionnement du SaaS
+BIMCHECK-Rename (import → convention → aperçu → ZIP, local-first, tarifs).
+
+Logo officiel récupéré depuis `www.bimcheck-consulting.com` :
+`public/brand/bimcheck-logo.png` (remplace l’ancien tile « BC »).
+
+Sorties rendues (exemples) :
+
+| Fichier | Format | Durée |
+| --- | --- | --- |
+| `out/bimcheck-rename-how-it-works-1920x1080.mp4` | 1920×1080 | ~84 s |
+| `out/bimcheck-rename-how-it-works-short-1920x1080.mp4` | 1920×1080 | 30 s |
+| `out/bimcheck-rename-cover.png` | still | — |
+
+Projet en quatre compositions :
 
 | Composition         | Format       | Durée  | Usage                                             |
 | ------------------- | ------------ | ------ | ------------------------------------------------- |

@@ -49,7 +49,7 @@ export function SceneCTA() {
         }}
       >
         <div style={{ transform: `scale(${logo})`, opacity: logo }}>
-          <BrandMark size="xl" inverted />
+          <BrandMark size="xl" inverted showWordmark />
         </div>
 
         <div
@@ -89,13 +89,13 @@ export function SceneCTA() {
             color: 'rgba(247, 243, 234, 0.78)',
             fontFamily: fonts.sans,
             fontSize: 22,
-            maxWidth: 760,
+            maxWidth: 820,
             lineHeight: 1.55,
           }}
         >
-          Convention ISO 19650 / SIA appliquée à vos livrables BIM.
+          Importez · Composez · Contrôlez · Exportez.
           <br />
-          Local, sans compte, sans dépendance cloud.
+          Local-first · Free ou Team 19 €/mois · licence activée automatiquement.
         </p>
 
         <div
@@ -140,7 +140,7 @@ export function SceneCTA() {
             letterSpacing: '0.01em',
           }}
         >
-          doc-rename.com
+          rename.bimcheck-consulting.com
         </p>
       </div>
     </AbsoluteFill>

@@ -62,7 +62,7 @@ export function SceneSolution() {
                 letterSpacing: '-0.005em',
               }}
             >
-              Renommage documentaire{' '}
+              La convention de nommage,{' '}
               <em
                 style={{
                   fontFamily: fonts.serif,
@@ -71,7 +71,7 @@ export function SceneSolution() {
                   fontWeight: 460,
                 }}
               >
-                professionnel
+                appliquée sans improviser
               </em>
               .
             </p>
@@ -84,7 +84,7 @@ export function SceneSolution() {
                 fontWeight: 500,
               }}
             >
-              ISO 19650 · SIA 2051 · Local-first
+              Local-first · Multi-métiers · Free &amp; Team
             </p>
           </div>
           <div
@@ -97,7 +97,7 @@ export function SceneSolution() {
               opacity: chipsOpacity,
             }}
           >
-            {['ISO 19650', 'SIA 2051', 'BIM France', 'Plans', 'IFC', 'DWG', 'DOE', 'Convention maison'].map(
+            {['BIM', 'Juridique', 'Finance', 'RH', 'Santé', 'Industrie', 'Import', 'ZIP export'].map(
               (label, i) => {
                 const t = softSpring({ frame, fps, delay: 80 + i * 4 });
                 return (

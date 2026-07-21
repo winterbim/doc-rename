@@ -7,12 +7,12 @@
   "scripts": {
     "start": "remotion studio",
     "studio": "remotion studio",
-    "build": "remotion render MainMaster out/doc-rename-master-1920x1080.mp4",
-    "build:vertical": "remotion render MainVertical out/doc-rename-vertical-1080x1920.mp4",
-    "build:short": "remotion render MainShort out/doc-rename-short-1920x1080.mp4",
-    "build:short:vertical": "remotion render MainShortVertical out/doc-rename-short-1080x1920.mp4",
+    "build": "remotion render MainMaster out/bimcheck-rename-how-it-works-1920x1080.mp4",
+    "build:vertical": "remotion render MainVertical out/bimcheck-rename-how-it-works-vertical-1080x1920.mp4",
+    "build:short": "remotion render MainShort out/bimcheck-rename-how-it-works-short-1920x1080.mp4",
+    "build:short:vertical": "remotion render MainShortVertical out/bimcheck-rename-how-it-works-short-1080x1920.mp4",
     "build:all": "npm run build && npm run build:vertical && npm run build:short && npm run build:short:vertical",
-    "still:cover": "remotion still MainMaster out/cover.png --frame=60",
+    "still:cover": "remotion still MainMaster out/bimcheck-rename-cover.png --frame=360",
     "upgrade": "remotion upgrade"
   },
   "engines": {
@@ -32,5 +32,8 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.5.0"
+  },
+  "allowScripts": {
+    "esbuild@0.25.0": true
   }
 }
