@@ -3,29 +3,32 @@ import { AbsoluteFill } from 'remotion';
 import { colors } from '../lib/tokens';
 
 /**
- * Warm-paper background with the same subtle dot/line grid used on
- * the landing page (web/app/page.tsx).
+ * Landing-like dark canvas with the same soft cyan / indigo glows as production.
  */
 export function PaperBackground({
   children,
-  tint = colors.paper,
-  showGrid = true,
+  variant = 'dark',
 }: {
   children?: React.ReactNode;
-  tint?: string;
-  showGrid?: boolean;
+  variant?: 'dark' | 'app';
 }) {
-  const gridLayer = showGrid
-    ? `
-        linear-gradient(90deg, rgba(36,31,25,.045) 1px, transparent 1px),
-        linear-gradient(rgba(36,31,25,.035) 1px, transparent 1px),
-      `
-    : '';
+  if (variant === 'app') {
+    return (
+      <AbsoluteFill style={{ background: colors.bg }}>
+        {children}
+      </AbsoluteFill>
+    );
+  }
+
   return (
     <AbsoluteFill
       style={{
-        background: `${gridLayer}${tint}`,
-        backgroundSize: '44px 44px',
+        background: `
+          radial-gradient(circle at 78% 12%, rgba(34, 211, 238, .10), transparent 28rem),
+          radial-gradient(circle at 8% 80%, rgba(99, 102, 241, .12), transparent 30rem),
+          ${colors.navy}
+        `,
+        color: colors.inkOnDark,
       }}
     >
       {children}

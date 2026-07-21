@@ -1,23 +1,51 @@
 /**
- * Design tokens lifted verbatim from the production landing CSS
- * (web/app/page.tsx). Keep these in sync if the brand palette evolves.
+ * Design tokens aligned with production SaaS (2026):
+ * - Landing: dark navy + cyan/indigo gradient (web/app/page.tsx LANDING_CSS)
+ * - App shell: slate surfaces + indigo primary (web/app/globals.css)
  */
 
 export const colors = {
-  paper: '#F7F3EA',
-  paperSoft: '#EEE7DA',
-  paperHard: '#FFFAF0',
-  ink: '#241F19',
-  inkSoft: '#5B5045',
-  muted: '#817466',
-  line: '#D8CDBB',
-  lineStrong: '#B8AA95',
-  brick: '#A54835',
-  brickDeep: '#8C3722',
-  moss: '#4F6948',
+  // Landing dark canvas
+  navy: '#0A0F1E',
+  navy2: '#0E1628',
+  navy3: '#152238',
+  inkOnDark: '#E6EDF6',
+  inkSoftOnDark: '#A8B6CA',
+  inkMuteOnDark: '#7F90A8',
+  cyan: '#67E8F9',
+  cyanDeep: '#22D3EE',
+  indigo: '#6366F1',
+  indigoDeep: '#4F46E5',
+  success: '#2DD4BF',
+  accent: '#818CF8',
+
+  // App light shell
+  bg: '#F8FAFC',
+  surface: '#FFFFFF',
+  surface2: '#F1F5F9',
+  ink: '#0F172A',
+  inkSoft: '#475569',
+  inkMute: '#64748B',
+  primary: '#0E7490',
+  primarySoft: '#ECFEFF',
+  border: '#E2E8F0',
+  borderStrong: '#CBD5E1',
+  danger: '#DC2626',
+  ok: '#047857',
+
+  // Legacy aliases used by older components
+  paper: '#F8FAFC',
+  paperSoft: '#F1F5F9',
+  paperHard: '#FFFFFF',
+  muted: '#64748B',
+  line: '#E2E8F0',
+  lineStrong: '#CBD5E1',
+  brick: '#0E7490',
+  brickDeep: '#155E75',
+  moss: '#047857',
   blue: '#314D63',
-  gold: '#C0913F',
-  goldSoft: '#E0B96B',
+  gold: '#67E8F9',
+  goldSoft: '#A5F3FC',
 } as const;
 
 export const fonts = {
@@ -27,40 +55,38 @@ export const fonts = {
 } as const;
 
 export const shadows = {
-  card: '0 24px 70px -44px rgba(36, 31, 25, .45)',
-  cardSoft: '0 12px 36px -28px rgba(36, 31, 25, .35)',
-  plan: '0 18px 50px -36px rgba(165, 72, 53, .55)',
+  card: '0 24px 70px -40px rgba(2, 6, 23, .55)',
+  cardSoft: '0 12px 36px -28px rgba(2, 6, 23, .35)',
+  glow: '0 12px 40px -12px rgba(34, 211, 238, .45)',
+  plan: '0 18px 50px -36px rgba(14, 116, 144, .45)',
 } as const;
 
 export const radii = {
-  sm: 4,
-  md: 6,
-  lg: 8,
+  sm: 6,
+  md: 10,
+  lg: 14,
+  xl: 16,
   pill: 999,
 } as const;
 
-/** Master 16:9 size — also informs scaling for the 9:16 variant. */
 export const SIZE_16x9 = { width: 1920, height: 1080 };
 export const SIZE_9x16 = { width: 1080, height: 1920 };
-
-/** Single source of truth: 30 fps everywhere (long form + shorts). */
 export const FPS = 30;
 
 /**
- * Master scene durations (in frames @ 30fps).
- *
- * V1 BIM-only timeline (no more "Others" scene). Total ≈ 82 s — short
- * enough for hero embed, long enough to demo the full flow.
+ * Real product story (~90 s):
+ * problem → product → open /app free → import → convention → rename preview →
+ * export ZIP → privacy + pricing → CTA
  */
 export const SCENE_FRAMES = {
-  problem: 10 * FPS, //   0 – 10  s
-  solution: 10 * FPS, //  10 – 20 s
-  imports: 12 * FPS, //   20 – 32 s
-  nomen: 16 * FPS, //     32 – 48 s
-  bim: 12 * FPS, //       48 – 60 s
-  exportZip: 12 * FPS, // 60 – 72 s   (legacy export, now with CDE badges)
-  privacy: 8 * FPS, //    72 – 80 s
-  cta: 4 * FPS, //        80 – 84 s
+  problem: 10 * FPS, //  0–10
+  solution: 10 * FPS, // 10–20
+  imports: 12 * FPS, // 20–32
+  nomen: 14 * FPS, // 32–46
+  bim: 14 * FPS, // 46–60  (before/after rename in app)
+  exportZip: 12 * FPS, // 60–72
+  privacy: 10 * FPS, // 72–82  (local-first + Free/Team)
+  cta: 8 * FPS, // 82–90
 } as const;
 
 export const TOTAL_FRAMES =
@@ -73,7 +99,6 @@ export const TOTAL_FRAMES =
   SCENE_FRAMES.privacy +
   SCENE_FRAMES.cta;
 
-/** Cumulative scene starts — handy for sequencing & subtitle offsets. */
 export function sceneStartFrames(): Record<keyof typeof SCENE_FRAMES, number> {
   const order: Array<keyof typeof SCENE_FRAMES> = [
     'problem',
@@ -93,3 +118,6 @@ export function sceneStartFrames(): Record<keyof typeof SCENE_FRAMES, number> {
   }
   return out as Record<keyof typeof SCENE_FRAMES, number>;
 }
+
+export const SITE_URL = 'rename.bimcheck-consulting.com';
+export const APP_URL = 'rename.bimcheck-consulting.com/app';

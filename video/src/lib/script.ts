@@ -1,16 +1,11 @@
-import { FPS, SCENE_FRAMES, sceneStartFrames } from './tokens';
+import { FPS, sceneStartFrames, SCENE_FRAMES } from './tokens';
 
-/**
- * Subtitle cues for the silent master explaining the SaaS product.
- * `start`/`end` are absolute frames @ 30fps from the start of the master comp.
- */
 export type Cue = {
   start: number;
   end: number;
   text: string;
 };
 
-const starts = sceneStartFrames();
 const s = (sec: number) => Math.round(sec * FPS);
 
 const cue = (fromSec: number, toSec: number, text: string): Cue => ({
@@ -20,61 +15,50 @@ const cue = (fromSec: number, toSec: number, text: string): Cue => ({
 });
 
 /**
- * Master subtitle track (≈ 84 s) — how BIMCHECK-Rename works.
- * Scene boundaries in seconds:
- *   problem 0-10 · solution 10-20 · import 20-32 · nomen 32-48 ·
- *   bim 48-60 · exportZip 60-72 · privacy 72-80 · cta 80-84
+ * Master (~90 s) — parcours réel du SaaS.
+ * 0–10 problem · 10–20 product · 20–32 import · 32–46 convention ·
+ * 46–60 rename · 60–72 export · 72–82 privacy+pricing · 82–90 CTA
  */
 export const subtitles: Cue[] = [
-  // Scene 1 — Problem 0 → 10 s
   cue(0.4, 4.0, 'Chaque équipe renomme à sa façon.'),
-  cue(4.2, 7.2, 'Erreurs, pertes de temps, livrables non conformes.'),
-  cue(7.4, 9.8, 'Avant dépôt CDE, archive ou partage client.'),
+  cue(4.2, 7.2, 'Versions, abréviations, erreurs avant dépôt.'),
+  cue(7.4, 9.8, 'Temps perdu. Image brouillée auprès des clients.'),
 
-  // Scene 2 — Solution 10 → 20 s
-  cue(10.2, 13.8, 'BIMCHECK-Rename.'),
-  cue(14.0, 17.2, 'La même convention de nommage, appliquée sans improviser.'),
-  cue(17.4, 19.8, 'BIM, Juridique, Finance, RH, Santé, Industrie…'),
+  cue(10.2, 13.6, 'BIMCHECK-Rename.'),
+  cue(13.8, 17.2, 'La même convention, appliquée sans improviser.'),
+  cue(17.4, 19.8, 'BIM · Juridique · Finance · RH · Santé · Industrie'),
 
-  // Scene 3 — Import 20 → 32 s
-  cue(20.3, 24.4, '1. Importez votre lot : PDF, IFC, DWG, ZIP…'),
-  cue(24.6, 28.2, 'Lecture 100 % navigateur — aucun upload fichier.'),
-  cue(28.4, 31.8, 'Tout reste sur votre poste.'),
+  cue(20.3, 24.2, 'Ouvrez /app — sans compte.'),
+  cue(24.4, 28.0, 'Importez PDF, DWG, IFC, DOCX, ZIP…'),
+  cue(28.2, 31.8, 'Aucun fichier n’est uploadé. Tout reste local.'),
 
-  // Scene 4 — Nomenclature 32 → 48 s
-  cue(32.3, 36.4, '2. Composez votre convention.'),
-  cue(36.6, 41.6, 'Templates métier + champs, abréviations, séparateur.'),
-  cue(41.8, 47.8, 'Importez vos entités (CSV / Excel) si besoin.'),
+  cue(32.3, 36.4, 'Choisissez un profil métier.'),
+  cue(36.6, 41.4, 'Composez les champs de votre convention.'),
+  cue(41.6, 45.8, 'Aperçu live pendant que vous ajustez.'),
 
-  // Scene 5 — Before/After 48 → 60 s
-  cue(48.3, 53.0, '3. Contrôlez l’aperçu Avant / Après.'),
-  cue(53.2, 59.8, 'Corrigez une ligne, renommez tout le lot.'),
+  cue(46.3, 51.0, 'Avant / Après, ligne par ligne.'),
+  cue(51.2, 55.6, 'Corrigez une entrée, puis renommez le lot.'),
+  cue(55.8, 59.8, 'Free : 5 lots par jour. Team : illimité.'),
 
-  // Scene 6 — Export 60 → 72 s
-  cue(60.3, 65.4, '4. Exportez un ZIP propre, arborescence intacte.'),
-  cue(65.6, 71.8, 'Prêt pour CDE, GED ou partage client.'),
+  cue(60.3, 65.0, 'Téléchargez le ZIP, arborescence intacte.'),
+  cue(65.2, 71.8, 'Prêt pour CDE, GED ou partage client.'),
 
-  // Scene 7 — Privacy + plans 72 → 80 s
-  cue(72.3, 76.0, 'Local-first : vérifiable dans DevTools > Réseau.'),
-  cue(76.2, 79.8, 'Free · Team 19 €/mois · licence activée automatiquement.'),
+  cue(72.3, 76.2, 'Local-first : vérifiable dans DevTools > Réseau.'),
+  cue(76.4, 81.8, 'Team 19 €/mois — licence activée automatiquement après paiement.'),
 
-  // Scene 8 — CTA 80 → 84 s
-  cue(80.3, 83.8, 'Essayer sans compte — rename.bimcheck-consulting.com'),
+  cue(82.3, 86.4, 'Essayer sans compte.'),
+  cue(86.6, 89.8, 'rename.bimcheck-consulting.com'),
 ];
 
-/**
- * Short variant (30 s) — product how-it-works.
- */
 export const subtitlesShort: Cue[] = [
-  cue(0.4, 3.4, 'Convention de nommage en équipe :\nplus de chaos avant dépôt.'),
-  cue(3.6, 7.2, 'BIMCHECK-Rename — local-first, multi-métiers.'),
-  cue(7.4, 12.0, 'Importez. Composez. Contrôlez. Exportez.'),
-  cue(12.2, 17.0, 'Aucun fichier ne quitte le navigateur.'),
-  cue(17.2, 22.4, 'Free pour tester. Team 19 €/mois, licence auto.'),
-  cue(22.6, 26.8, 'ZIP propre, prêt pour votre CDE / GED.'),
-  cue(27.0, 29.8, 'rename.bimcheck-consulting.com'),
+  cue(0.3, 3.2, 'Des noms de fichiers chaotiques ?'),
+  cue(3.4, 7.0, 'BIMCHECK-Rename — convention multi-métiers.'),
+  cue(7.2, 12.0, 'Importez. Composez. Contrôlez. Exportez.'),
+  cue(12.2, 16.8, '100 % navigateur — aucun upload fichier.'),
+  cue(17.0, 22.2, 'Free 5 lots/jour · Team 19 € · licence auto.'),
+  cue(22.4, 26.6, 'ZIP propre, prêt à déposer.'),
+  cue(26.8, 29.8, 'rename.bimcheck-consulting.com'),
 ];
 
-/** Convenience export so the layout layer can re-use scene frame map. */
-export const sceneStarts = starts;
+export const sceneStarts = sceneStartFrames();
 export const sceneFrames = SCENE_FRAMES;

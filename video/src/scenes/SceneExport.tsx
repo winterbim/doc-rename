@@ -1,262 +1,134 @@
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame, interpolate, useVideoConfig } from 'remotion';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from 'remotion';
 import { PaperBackground } from '../components/PaperBackground';
 import { AppFrame } from '../components/AppFrame';
-import { FileRow } from '../components/FileRow';
-import { Cursor } from '../components/Cursor';
 import { colors, fonts } from '../lib/tokens';
-import { easeOutCubic, liftIn, softSpring } from '../lib/easing';
+import { softSpring } from '../lib/easing';
 
-const RENAMED = [
-  'CLIENT_2026_05_FACTURE_REF.PDF',
-  'CLIENT_2026_05_PAIEMENT_OK.PDF',
-  'CLIENT_2026_05_RAPPORT_REF.PDF',
-  'CLIENT_2026_05_ANNEXE_REF.PDF',
+const TREE = [
+  'FICHIERS_RENOMMES/',
+  '├── MUSEE_BAT01_ARC_PLAN_AGC_001_P02.pdf',
+  '├── MUSEE_BAT01_ARC_PLAN_AGC_002_P01.dwg',
+  '├── MUSEE_BAT01_ARC_RAP_AGC_001_P03.docx',
+  '└── MUSEE_BAT01_STR_MOD_BET_001_P01.ifc',
 ];
 
-/**
- * Scene 7 — Export ZIP (72–82 s).
- * User types a ZIP name, clicks "Télécharger tout", file lands in the dock.
- */
 export function SceneExport() {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const head = liftIn({ frame, start: 4 });
-
-  const typedName = useTypedName('LIVRABLES_CLIENT_MAI_2026', { from: 30, to: 100 });
-
-  const buttonScale = softSpring({ frame, fps, delay: 130 });
-  const clickFrame = 150;
-  const zipOpacity = interpolate(frame, [clickFrame, clickFrame + 24], [0, 1], {
+  const shell = softSpring({ frame, fps, delay: 2 });
+  const progress = interpolate(frame, [30, 120], [0, 100], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
-    easing: easeOutCubic,
   });
-  const zipY = interpolate(frame, [clickFrame, clickFrame + 30], [-40, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeOutCubic,
-  });
+  const done = progress >= 99;
 
   return (
     <AbsoluteFill>
       <PaperBackground>
-        <AbsoluteFill style={{ padding: '60px 100px', display: 'flex', flexDirection: 'column', gap: 22 }}>
-          <div
-            style={{
-              opacity: head.opacity,
-              transform: `translateY(${head.translateY}px)`,
-              fontFamily: fonts.sans,
-              fontSize: 22,
-              fontWeight: 700,
-              color: colors.inkSoft,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Étape 3 · Exporter en ZIP
-          </div>
+        <AbsoluteFill style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 48 }}>
+          <div style={{ width: 1480, height: 820, opacity: shell, transform: `scale(${0.95 + 0.05 * shell})` }}>
+            <AppFrame width="100%" height="100%">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontWeight: 750, fontSize: 22, color: colors.ink }}>Export ZIP</div>
+                  <div style={{ fontSize: 15, color: colors.inkSoft, marginTop: 4 }}>
+                    Arborescence intacte · prêt CDE / GED / client
+                  </div>
+                </div>
+                <div
+                  style={{
+                    padding: '12px 20px',
+                    borderRadius: 10,
+                    background: done
+                      ? 'linear-gradient(135deg, #67E8F9, #6366F1)'
+                      : colors.primary,
+                    color: done ? '#06121F' : '#fff',
+                    fontWeight: 750,
+                    fontSize: 15,
+                    boxShadow: done ? '0 12px 32px -14px rgba(34,211,238,.65)' : undefined,
+                  }}
+                >
+                  {done ? '✓ FICHIERS_RENOMMES.ZIP' : 'Télécharger tout (ZIP)'}
+                </div>
+              </div>
 
-          <AppFrame url="doc-rename.com/app" width="100%" height="80%">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, height: '100%' }}>
-              {/* Renamed file list */}
               <div
                 style={{
-                  border: `1px solid ${colors.line}`,
-                  borderRadius: 10,
-                  background: '#FFFAF0',
-                  padding: 16,
-                  flex: 1,
+                  marginTop: 18,
+                  height: 12,
+                  borderRadius: 999,
+                  background: colors.surface2,
+                  border: `1px solid ${colors.border}`,
                   overflow: 'hidden',
                 }}
               >
-                {RENAMED.map((name, i) => (
-                  <FileRow
-                    key={name}
-                    name={name}
-                    kind="new"
-                    appearAt={i * 6}
-                    status="RENOMMÉ"
-                  />
-                ))}
-              </div>
-
-              {/* Export bar */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 14,
-                  padding: 16,
-                  border: `1px solid ${colors.line}`,
-                  borderRadius: 10,
-                  background: '#FFF',
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: fonts.sans,
-                    fontSize: 14,
-                    color: colors.muted,
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                  }}
-                >
-                  Nom ZIP
-                </span>
                 <div
                   style={{
-                    flex: 1,
-                    background: colors.paper,
-                    border: `1px solid ${colors.lineStrong}`,
-                    borderRadius: 8,
-                    padding: '10px 14px',
-                    fontFamily: fonts.mono,
-                    fontSize: 22,
-                    color: colors.ink,
-                    fontWeight: 700,
-                    letterSpacing: '-0.005em',
+                    width: `${progress}%`,
+                    height: '100%',
+                    background: 'linear-gradient(90deg, #67E8F9, #6366F1)',
                   }}
-                >
-                  {typedName}
-                  <span
-                    style={{
-                      opacity:
-                        Math.floor(frame / (fps / 2)) % 2 === 0 && frame < 110 ? 1 : 0,
-                      color: colors.ink,
-                    }}
-                  >
-                    |
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  style={{
-                    transform: `scale(${0.95 + buttonScale * 0.05})`,
-                    padding: '14px 24px',
-                    background: colors.ink,
-                    color: colors.paper,
-                    border: `1px solid ${colors.ink}`,
-                    borderRadius: 999,
-                    fontFamily: fonts.sans,
-                    fontWeight: 700,
-                    fontSize: 16,
-                    letterSpacing: '0.01em',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Télécharger tout (ZIP)
-                </button>
+                />
               </div>
-            </div>
-          </AppFrame>
 
-          {/* Cursor moves toward the button + clicks */}
-          <Cursor
-            from={{ x: 900, y: 540 }}
-            to={{ x: 1620, y: 700 }}
-            start={110}
-            end={145}
-            click={clickFrame}
-          />
+              <div
+                style={{
+                  marginTop: 20,
+                  padding: 20,
+                  borderRadius: 14,
+                  background: colors.navy,
+                  fontFamily: fonts.mono,
+                  fontSize: 18,
+                  lineHeight: 1.55,
+                  color: colors.inkOnDark,
+                }}
+              >
+                {TREE.map((line, i) => {
+                  const t = softSpring({ frame, fps, delay: 40 + i * 8 });
+                  return (
+                    <div
+                      key={line}
+                      style={{
+                        opacity: t,
+                        color: i === 0 ? colors.cyan : colors.inkSoftOnDark,
+                        fontWeight: i === 0 ? 700 : 500,
+                      }}
+                    >
+                      {line}
+                    </div>
+                  );
+                })}
+              </div>
 
-          {/* Downloaded ZIP file appearing at the bottom-right */}
-          <div
-            style={{
-              position: 'absolute',
-              right: 110,
-              bottom: 40,
-              padding: '14px 22px',
-              background: colors.ink,
-              color: colors.paper,
-              borderRadius: 12,
-              boxShadow: '0 20px 40px -22px rgba(36, 31, 25, 0.6)',
-              opacity: zipOpacity,
-              transform: `translateY(${zipY}px)`,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 14,
-              fontFamily: fonts.mono,
-            }}
-          >
-            <span
-              style={{
-                background: colors.gold,
-                color: colors.ink,
-                fontFamily: fonts.sans,
-                fontWeight: 700,
-                fontSize: 14,
-                padding: '4px 10px',
-                borderRadius: 6,
-              }}
-            >
-              ZIP
-            </span>
-            <span style={{ fontSize: 18, fontWeight: 700 }}>{typedName}.zip</span>
-            <span style={{ fontSize: 14, color: colors.goldSoft, fontWeight: 600 }}>↓ téléchargé</span>
-          </div>
-
-          {/* CDE compatibility badges — appear once the ZIP lands.
-              Makes it obvious the output plugs into the existing CDE
-              ecosystem instead of replacing it. */}
-          <div
-            style={{
-              position: 'absolute',
-              left: 110,
-              bottom: 40,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-              opacity: zipOpacity,
-              transform: `translateY(${zipY}px)`,
-            }}
-          >
-            <span
-              style={{
-                fontFamily: fonts.sans,
-                fontSize: 12,
-                color: colors.muted,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                fontWeight: 700,
-              }}
-            >
-              Compatible CDE
-            </span>
-            <div style={{ display: 'flex', gap: 8 }}>
-              {['Autodesk Docs', 'Trimble Connect', 'Kroqi'].map((cde) => (
-                <span
-                  key={cde}
-                  style={{
-                    fontFamily: fonts.sans,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: colors.ink,
-                    background: '#FFFAF0',
-                    border: `1px solid ${colors.lineStrong}`,
-                    borderRadius: 999,
-                    padding: '6px 14px',
-                  }}
-                >
-                  {cde}
-                </span>
-              ))}
-            </div>
+              <div style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
+                {['Autodesk Docs', 'Trimble Connect', 'Kroqi', 'ProjectWise', 'GED / dossier'].map(
+                  (label, i) => {
+                    const t = softSpring({ frame, fps, delay: 100 + i * 6 });
+                    return (
+                      <div
+                        key={label}
+                        style={{
+                          opacity: t,
+                          padding: '8px 14px',
+                          borderRadius: 999,
+                          border: `1px solid ${colors.border}`,
+                          background: colors.surface,
+                          fontSize: 14,
+                          fontWeight: 650,
+                          color: colors.inkSoft,
+                        }}
+                      >
+                        {label}
+                      </div>
+                    );
+                  },
+                )}
+              </div>
+            </AppFrame>
           </div>
         </AbsoluteFill>
       </PaperBackground>
     </AbsoluteFill>
   );
-}
-
-/** Reveal `target` character-by-character between frames `from` and `to`. */
-function useTypedName(target: string, range: { from: number; to: number }): string {
-  const frame = useCurrentFrame();
-  const ratio = interpolate(frame, [range.from, range.to], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
-  const count = Math.round(ratio * target.length);
-  return target.slice(0, count);
 }

@@ -2,31 +2,19 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, useVideoConfig } from 'remotion';
 import { PaperBackground } from '../components/PaperBackground';
 import { BrandMark } from '../components/BrandMark';
-import { Chip } from '../components/Chip';
 import { colors, fonts } from '../lib/tokens';
 import { easeOutCubic, softSpring } from '../lib/easing';
 
-/**
- * Scene 2 — Solution / Brand reveal (10–20 s).
- * Logo grows in, tagline below, profile chips bloom.
- */
+const CHIPS = ['BIM', 'Juridique', 'Finance', 'RH', 'Santé', 'Industrie', 'Immobilier'];
+
 export function SceneSolution() {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const logoScale = softSpring({ frame, fps, delay: 6 });
-  const taglineOpacity = interpolate(frame, [30, 50], [0, 1], {
+  const taglineOpacity = interpolate(frame, [28, 50], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOutCubic,
-  });
-  const taglineY = interpolate(frame, [30, 50], [22, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeOutCubic,
-  });
-  const chipsOpacity = interpolate(frame, [80, 110], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
   });
 
   return (
@@ -38,75 +26,74 @@ export function SceneSolution() {
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            gap: 36,
+            gap: 28,
             padding: 80,
           }}
         >
-          <div style={{ transform: `scale(${0.6 + 0.4 * logoScale})`, opacity: logoScale }}>
-            <BrandMark size="xl" />
+          <div style={{ transform: `scale(${0.65 + 0.35 * logoScale})`, opacity: logoScale }}>
+            <BrandMark size="xl" inverted showWordmark />
           </div>
-          <div
-            style={{
-              opacity: taglineOpacity,
-              transform: `translateY(${taglineY}px)`,
-              textAlign: 'center',
-            }}
-          >
-            <p
+
+          <div style={{ opacity: taglineOpacity, textAlign: 'center' }}>
+            <h2
               style={{
                 margin: 0,
                 fontFamily: fonts.sans,
-                color: colors.inkSoft,
-                fontSize: 30,
-                fontWeight: 500,
-                letterSpacing: '-0.005em',
+                fontWeight: 800,
+                fontSize: 48,
+                letterSpacing: '-0.035em',
+                color: colors.inkOnDark,
+                maxWidth: 980,
+                lineHeight: 1.1,
               }}
             >
-              La convention de nommage,{' '}
-              <em
-                style={{
-                  fontFamily: fonts.serif,
-                  fontStyle: 'italic',
-                  color: colors.brick,
-                  fontWeight: 460,
-                }}
-              >
-                appliquée sans improviser
-              </em>
-              .
-            </p>
+              La même convention de nommage,{' '}
+              <span style={{ color: colors.cyan }}>appliquée sans improviser.</span>
+            </h2>
             <p
               style={{
-                margin: '8px 0 0',
+                margin: '18px 0 0',
+                color: colors.inkSoftOnDark,
                 fontFamily: fonts.sans,
-                color: colors.muted,
-                fontSize: 20,
-                fontWeight: 500,
+                fontSize: 22,
               }}
             >
-              Local-first · Multi-métiers · Free &amp; Team
+              Local-first · multi-métiers · Free pour tester · Team pour l’illimité
             </p>
           </div>
+
           <div
             style={{
               display: 'flex',
-              gap: 12,
+              gap: 10,
               flexWrap: 'wrap',
               justifyContent: 'center',
-              maxWidth: 920,
-              opacity: chipsOpacity,
+              maxWidth: 960,
+              marginTop: 8,
             }}
           >
-            {['BIM', 'Juridique', 'Finance', 'RH', 'Santé', 'Industrie', 'Import', 'ZIP export'].map(
-              (label, i) => {
-                const t = softSpring({ frame, fps, delay: 80 + i * 4 });
-                return (
-                  <div key={label} style={{ transform: `scale(${t})`, opacity: t }}>
-                    <Chip label={label} />
-                  </div>
-                );
-              },
-            )}
+            {CHIPS.map((label, i) => {
+              const t = softSpring({ frame, fps, delay: 70 + i * 5 });
+              return (
+                <div
+                  key={label}
+                  style={{
+                    transform: `scale(${t})`,
+                    opacity: t,
+                    padding: '10px 16px',
+                    borderRadius: 999,
+                    border: '1px solid rgba(103, 232, 249, .28)',
+                    background: 'rgba(103, 232, 249, .08)',
+                    color: colors.cyan,
+                    fontFamily: fonts.sans,
+                    fontWeight: 650,
+                    fontSize: 16,
+                  }}
+                >
+                  {label}
+                </div>
+              );
+            })}
           </div>
         </AbsoluteFill>
       </PaperBackground>

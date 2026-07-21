@@ -3,13 +3,6 @@ import { useCurrentFrame, interpolate, Easing } from 'remotion';
 import type { Cue } from '../lib/script';
 import { colors, fonts } from '../lib/tokens';
 
-/**
- * Always-on subtitle bar at the bottom-center of the frame.
- * Each cue fades in/out around its window.
- *
- * `vertical=true` switches positioning + font sizes for the 9:16 crop
- * (bigger text, slightly higher position so it never crowds the bottom).
- */
 export function Subtitle({
   cues,
   vertical = false,
@@ -19,9 +12,7 @@ export function Subtitle({
 }) {
   const frame = useCurrentFrame();
   const fadeFrames = 6;
-
   const active = cues.find((c) => frame >= c.start - fadeFrames && frame <= c.end + fadeFrames);
-
   if (!active) return null;
 
   const opacity = interpolate(
@@ -41,7 +32,7 @@ export function Subtitle({
         position: 'absolute',
         left: 0,
         right: 0,
-        bottom: vertical ? 240 : 96,
+        bottom: vertical ? 240 : 88,
         display: 'flex',
         justifyContent: 'center',
         padding: '0 60px',
@@ -51,21 +42,20 @@ export function Subtitle({
     >
       <div
         style={{
-          background: 'rgba(36, 31, 25, 0.92)',
-          color: colors.paper,
-          padding: vertical ? '20px 32px' : '18px 28px',
-          borderRadius: 10,
+          background: 'rgba(10, 15, 30, 0.92)',
+          color: colors.inkOnDark,
+          padding: vertical ? '20px 32px' : '16px 26px',
+          borderRadius: 12,
           fontFamily: fonts.sans,
           fontWeight: 600,
-          fontSize: vertical ? 44 : 34,
-          lineHeight: 1.25,
-          letterSpacing: '-0.005em',
-          maxWidth: vertical ? 920 : 1500,
+          fontSize: vertical ? 42 : 32,
+          lineHeight: 1.28,
+          letterSpacing: '-0.01em',
+          maxWidth: vertical ? 920 : 1480,
           textAlign: 'center',
           whiteSpace: 'pre-line',
-          textShadow: '0 1px 0 rgba(0,0,0,0.2)',
-          backdropFilter: 'blur(8px)',
-          border: `1px solid rgba(247, 243, 234, 0.12)`,
+          border: '1px solid rgba(103, 232, 249, 0.22)',
+          boxShadow: '0 16px 40px -20px rgba(0,0,0,.55)',
         }}
       >
         {active.text}

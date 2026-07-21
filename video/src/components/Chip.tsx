@@ -1,5 +1,7 @@
 import React from 'react';
-import { colors, fonts } from '../lib/tokens';
+import { colors as c, fonts } from '../lib/tokens';
+// keep chip readable on both dark and light scenes
+const colors = { ...c, paper: c.navy2, ink: c.inkOnDark, line: 'rgba(148,163,184,.2)', brick: c.cyan };
 
 /**
  * Pill used for profile / category labels (BIM, Finance, RH…).

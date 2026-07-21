@@ -1,128 +1,122 @@
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
+import { AbsoluteFill, useCurrentFrame, interpolate, useVideoConfig } from 'remotion';
 import { PaperBackground } from '../components/PaperBackground';
-import { Panel, SubPanel } from '../components/Panel';
-import { FileRow } from '../components/FileRow';
 import { colors, fonts } from '../lib/tokens';
-import { liftIn } from '../lib/easing';
+import { easeOutCubic, softSpring } from '../lib/easing';
 
-const MESSY_FILES = [
-  'plan final.pdf',
-  'copie rapport.docx',
-  'scan client 2.pdf',
-  'facade été.dwg',
-  'DOE_v3_final.zip',
-  'IMG_2049 - Copy (3).jpg',
-  'sans titre 4.xlsx',
+const MESSY = [
+  'acte cession final v2.pdf',
+  'piece 3 signee.pdf',
+  'CR reunion 0507.docx',
+  'plan rdc copie.dwg',
+  'rapport - client A FINAL.pdf',
+  'maquette structure ifc export.ifc',
 ];
 
-/**
- * Scene 1 — Problème (0–10 s).
- * Messy desktop pile of badly named files.
- */
 export function SceneProblem() {
   const frame = useCurrentFrame();
-  const headline = liftIn({ frame, start: 6 });
+  const { fps } = useVideoConfig();
+  const titleIn = softSpring({ frame, fps, delay: 4 });
+
   return (
     <AbsoluteFill>
       <PaperBackground>
-        <AbsoluteFill style={{ padding: '90px 110px', display: 'flex', flexDirection: 'row', gap: 80, alignItems: 'center' }}>
-          <div style={{ flex: 1, opacity: headline.opacity, transform: `translateY(${headline.translateY}px)` }}>
-            <span
+        <AbsoluteFill
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            padding: '80px 120px',
+            gap: 40,
+          }}
+        >
+          <div style={{ opacity: titleIn, transform: `translateY(${(1 - titleIn) * 24}px)` }}>
+            <p
               style={{
+                margin: 0,
+                color: colors.cyan,
                 fontFamily: fonts.sans,
-                color: colors.brick,
-                fontSize: 18,
-                fontWeight: 720,
+                fontSize: 16,
+                fontWeight: 700,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
               }}
             >
-              Le problème
-            </span>
+              Le vrai problème
+            </p>
             <h1
               style={{
                 margin: '14px 0 0',
                 fontFamily: fonts.sans,
-                color: colors.ink,
-                fontSize: 86,
-                fontWeight: 540,
-                lineHeight: 0.95,
-                letterSpacing: '-0.045em',
-                maxWidth: 720,
-              }}
-            >
-              Des fichiers mal nommés{' '}
-              <em
-                style={{
-                  fontFamily: fonts.serif,
-                  fontStyle: 'italic',
-                  color: colors.brick,
-                  fontWeight: 460,
-                }}
-              >
-                ralentissent vos projets.
-              </em>
-            </h1>
-            <p
-              style={{
-                marginTop: 24,
-                maxWidth: 620,
-                fontFamily: fonts.sans,
-                color: colors.inkSoft,
-                fontSize: 22,
-                lineHeight: 1.5,
-              }}
-            >
-              Perte de temps, doublons, livrables difficiles à contrôler.
-            </p>
-          </div>
-          <div style={{ flexBasis: 700, flexShrink: 0, position: 'relative' }}>
-            <Panel traffic style={{ height: 540 }}>
-              <SubPanel title="Mes documents — désordre">
-                {MESSY_FILES.map((name, i) => {
-                  // Deterministic pseudo-random tilt per row (no Math.random — would jitter each frame).
-                  const tiltMag = (i * 37) % 100 < 50 ? 0.4 : 0.8;
-                  const rotation = (i % 2 === 0 ? -1 : 1) * tiltMag;
-                  const a = liftIn({ frame, start: 10 + i * 6, duration: 14, distance: 22 });
-                  return (
-                    <div
-                      key={name}
-                      style={{
-                        transform: `translateY(${a.translateY}px) rotate(${rotation * a.opacity}deg)`,
-                        opacity: a.opacity,
-                      }}
-                    >
-                      <FileRow name={name} kind="old" />
-                    </div>
-                  );
-                })}
-              </SubPanel>
-            </Panel>
-            {/* Subtle "X" mark on the pile to show frustration */}
-            <div
-              style={{
-                position: 'absolute',
-                top: 38,
-                right: -28,
-                width: 96,
-                height: 96,
-                borderRadius: 999,
-                background: colors.brick,
-                color: '#FFF',
-                display: 'grid',
-                placeItems: 'center',
-                fontFamily: fonts.serif,
-                fontStyle: 'italic',
+                fontWeight: 800,
                 fontSize: 64,
-                fontWeight: 700,
-                boxShadow: '0 18px 42px -22px rgba(165, 72, 53, 0.7)',
-                transform: `scale(${interpolate(frame, [30, 50], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })})`,
+                letterSpacing: '-0.04em',
+                lineHeight: 1.05,
+                color: colors.inkOnDark,
+                maxWidth: 900,
               }}
             >
-              ?
-            </div>
+              Chacun renomme{' '}
+              <span style={{ color: colors.cyan }}>à sa façon.</span>
+            </h1>
           </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 14,
+              maxWidth: 1100,
+            }}
+          >
+            {MESSY.map((name, i) => {
+              const t = softSpring({ frame, fps, delay: 18 + i * 6 });
+              const shake = interpolate(
+                Math.sin((frame + i * 9) / 7),
+                [-1, 1],
+                [-1.5, 1.5],
+              );
+              return (
+                <div
+                  key={name}
+                  style={{
+                    opacity: t,
+                    transform: `translateY(${(1 - t) * 18}px) translateX(${shake}px)`,
+                    background: colors.navy2,
+                    border: '1px solid rgba(148,163,184,.16)',
+                    borderRadius: 12,
+                    padding: '16px 18px',
+                    fontFamily: fonts.mono,
+                    fontSize: 20,
+                    color: '#FCA5A5',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                  }}
+                >
+                  <span style={{ color: colors.danger, fontWeight: 700 }}>✗</span>
+                  {name}
+                </div>
+              );
+            })}
+          </div>
+
+          <p
+            style={{
+              margin: 0,
+              opacity: interpolate(frame, [90, 120], [0, 1], {
+                extrapolateLeft: 'clamp',
+                extrapolateRight: 'clamp',
+                easing: easeOutCubic,
+              }),
+              color: colors.inkSoftOnDark,
+              fontFamily: fonts.sans,
+              fontSize: 22,
+              maxWidth: 720,
+            }}
+          >
+            Temps perdu, erreurs avant dépôt, image désordonnée auprès des clients.
+          </p>
         </AbsoluteFill>
       </PaperBackground>
     </AbsoluteFill>
