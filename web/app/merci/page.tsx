@@ -3,19 +3,21 @@ import Link from 'next/link';
 import { CONTACT_EMAIL } from '@/lib/contact';
 import { HAS_DIRECT_CHECKOUT, PAID_PILOT_PRICE_LABEL } from '@/lib/pricing';
 import { PAID_ACCOUNTS_ENABLED } from '@/lib/features';
+import { MerciActivation } from '@/components/commercial/MerciActivation';
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 
 export const metadata: Metadata = {
   title: 'Merci — BIMCHECK-Rename',
-  description: 'Confirmation et prochaines étapes BIMCHECK-Rename.',
+  description: 'Confirmation de paiement et activation automatique de licence BIMCHECK-Rename.',
   robots: { index: false, follow: false },
 };
 
 /**
- * Post-checkout landing (Stripe success URL or manual confirmation).
- * V1 provisioning is human-in-the-loop within 1 business day.
+ * Post-checkout landing. Stripe success URL must include:
+ *   https://rename.bimcheck-consulting.com/merci?session_id={CHECKOUT_SESSION_ID}
+ * License is activated automatically (webhook + optional Stripe session verify).
  */
 export default function MerciPage() {
   return (
@@ -36,17 +38,17 @@ export default function MerciPage() {
       <Container size="md" className="py-16">
         <Card variant="elevated" padding="lg" className="mx-auto max-w-xl text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-success">
-            Prochaine étape
+            Paiement
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-            Merci — préparons la suite.
+            Merci — activation en cours.
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-ink-soft">
             {HAS_DIRECT_CHECKOUT ? (
               <>
-                Si votre règlement vient d’être confirmé, BIMCHECK-Rename provisionne les plans
-                payants sous <strong className="text-ink">1 jour ouvré</strong>. Vous recevrez un
-                email avec la suite.
+                Votre licence est <strong className="text-ink">activée automatiquement</strong> dès
+                confirmation du paiement Stripe. Aucune action manuelle de notre part n’est
+                requise pour débloquer les lots illimités sur ce navigateur.
               </>
             ) : (
               <>
@@ -55,21 +57,25 @@ export default function MerciPage() {
               </>
             )}
           </p>
+
+          {HAS_DIRECT_CHECKOUT && <MerciActivation />}
+
           <ul className="mt-6 space-y-2 text-left text-sm text-ink-soft">
-            <li>• En attendant, le plan Free reste utilisable sur <Link className="text-primary underline" href="/app">/app</Link>.</li>
-            {PAID_ACCOUNTS_ENABLED && <li>• Créez un compte pour préparer la synchronisation des conventions.</li>}
-            <li>• Pilote {PAID_PILOT_PRICE_LABEL} : nous vous contactons pour le créneau d’onboarding.</li>
-          </ul>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild size="lg">
-              <Link href="/app">Ouvrir l’atelier</Link>
-            </Button>
+            <li>• Team / Cabinet : lots illimités dès activation (ce navigateur).</li>
+            <li>• Pilote {PAID_PILOT_PRICE_LABEL} : accès illimité 14 jours + onboarding sur demande.</li>
             {PAID_ACCOUNTS_ENABLED && (
-              <Button asChild variant="secondary" size="lg">
-                <Link href="/login">Se connecter</Link>
-              </Button>
+              <li>• Créez un compte pour synchroniser les conventions cloud (optionnel).</li>
             )}
-          </div>
+          </ul>
+
+          {!HAS_DIRECT_CHECKOUT && (
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Button asChild size="lg">
+                <Link href="/app">Ouvrir l’atelier</Link>
+              </Button>
+            </div>
+          )}
+
           <p className="mt-8 text-xs text-ink-mute">
             Question ?{' '}
             <a className="text-primary underline" href={`mailto:${CONTACT_EMAIL}`}>

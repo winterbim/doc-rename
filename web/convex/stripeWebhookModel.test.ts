@@ -47,6 +47,7 @@ describe('Stripe webhook boundary', () => {
       livemode: false,
       data: {
         object: {
+          id: 'cs_test_session',
           customer: 'cus_test',
           subscription: 'sub_test',
           payment_link: 'plink_team',
@@ -62,6 +63,7 @@ describe('Stripe webhook boundary', () => {
       eventType: 'checkout.session.completed',
       created: 1_800_000_000,
       livemode: false,
+      sessionId: 'cs_test_session',
       customerId: 'cus_test',
       subscriptionId: 'sub_test',
       paymentLinkId: 'plink_team',

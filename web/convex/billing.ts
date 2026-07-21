@@ -1,6 +1,6 @@
 import { v } from 'convex/values';
 import { auth } from './auth';
-import { internalMutation, mutation, type MutationCtx } from './_generated/server';
+import { internalMutation, internalQuery, mutation, type MutationCtx } from './_generated/server';
 import {
   isActiveSubscriptionStatus,
   isStripeEventModeAllowed,
@@ -8,7 +8,9 @@ import {
   type NormalizedStripeEvent,
   type PaidPlan,
 } from './stripeWebhookModel';
-import { isPaidSaasEnabled, requirePaidSaasEnabled } from './paidFeature';
+import { isPaidSaasEnabled, isStripeBillingEnabled, requireStripeBillingEnabled } from './paidFeature';
+
+const PILOT_DURATION_MS = 14 * 24 * 60 * 60 * 1_000;
 
 const normalizedEventArgs = {
   eventId: v.string(),
@@ -23,6 +25,7 @@ const normalizedEventArgs = {
   livemode: v.boolean(),
   customerId: v.optional(v.string()),
   subscriptionId: v.optional(v.string()),
+  sessionId: v.optional(v.string()),
   paymentLinkId: v.optional(v.string()),
   email: v.optional(v.string()),
   paymentStatus: v.optional(v.string()),
@@ -37,10 +40,22 @@ function configuredLinks() {
   };
 }
 
-async function findUserForBilling(
-  ctx: MutationCtx,
-  event: NormalizedStripeEvent,
-) {
+function generateLicenseKey(): string {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  return `bcr_${Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')}`;
+}
+
+function isLicenseActive(
+  status: string,
+  expiresAt: number | undefined,
+  now = Date.now(),
+): boolean {
+  if (expiresAt !== undefined && expiresAt <= now) return false;
+  return status === 'active' || status === 'trialing' || status === 'paid';
+}
+
+async function findUserForBilling(ctx: MutationCtx, event: NormalizedStripeEvent) {
   if (event.subscriptionId) {
     const bySubscription = await ctx.db
       .query('users')
@@ -88,6 +103,73 @@ async function upsertPendingEntitlement(
   else await ctx.db.insert('pendingEntitlements', value);
 }
 
+async function upsertLicenseFromCheckout(
+  ctx: MutationCtx,
+  event: NormalizedStripeEvent,
+  plan: PaidPlan | 'pilot',
+): Promise<'created' | 'updated'> {
+  if (!event.sessionId || !event.email) {
+    throw new Error('missing_session_or_email');
+  }
+  const now = Date.now();
+  const existing = await ctx.db
+    .query('licenses')
+    .withIndex('by_session', (q) => q.eq('sessionId', event.sessionId as string))
+    .unique();
+
+  const expiresAt = plan === 'pilot' ? now + PILOT_DURATION_MS : undefined;
+  const payload = {
+    sessionId: event.sessionId,
+    email: event.email,
+    plan,
+    stripeCustomerId: event.customerId,
+    stripeSubscriptionId: event.subscriptionId,
+    status: 'active' as const,
+    expiresAt,
+    updatedAt: now,
+  };
+
+  if (existing) {
+    await ctx.db.patch(existing._id, payload);
+    return 'updated';
+  }
+
+  await ctx.db.insert('licenses', {
+    ...payload,
+    licenseKey: generateLicenseKey(),
+    createdAt: now,
+  });
+  return 'created';
+}
+
+async function deactivateLicenses(
+  ctx: MutationCtx,
+  event: NormalizedStripeEvent,
+  status: string,
+) {
+  const now = Date.now();
+  if (event.subscriptionId) {
+    const bySub = await ctx.db
+      .query('licenses')
+      .withIndex('by_subscription', (q) => q.eq('stripeSubscriptionId', event.subscriptionId))
+      .collect();
+    for (const license of bySub) {
+      await ctx.db.patch(license._id, { status, updatedAt: now });
+    }
+  }
+  if (event.email) {
+    const byEmail = await ctx.db
+      .query('licenses')
+      .withIndex('by_email', (q) => q.eq('email', event.email as string))
+      .collect();
+    for (const license of byEmail) {
+      if (license.plan === 'pilot') continue;
+      if (event.subscriptionId && license.stripeSubscriptionId !== event.subscriptionId) continue;
+      await ctx.db.patch(license._id, { status, updatedAt: now });
+    }
+  }
+}
+
 /** Atomic, internal-only Stripe event application. */
 export const processStripeEvent = internalMutation({
   args: normalizedEventArgs,
@@ -100,8 +182,8 @@ export const processStripeEvent = internalMutation({
 
     let outcome = 'ignored';
 
-    if (!isPaidSaasEnabled()) {
-      outcome = 'ignored_paid_saas_disabled';
+    if (!isStripeBillingEnabled()) {
+      outcome = 'ignored_billing_disabled';
     } else if (!isStripeEventModeAllowed(event.livemode, process.env.STRIPE_MODE?.trim())) {
       outcome = 'ignored_wrong_or_disabled_mode';
     } else if (event.eventType === 'checkout.session.completed') {
@@ -110,23 +192,30 @@ export const processStripeEvent = internalMutation({
         outcome = 'ignored_unknown_payment_link';
       } else if (event.paymentStatus !== 'paid' && event.paymentStatus !== 'no_payment_required') {
         outcome = 'ignored_unpaid_checkout';
-      } else if (mappedPlan === 'pilot') {
-        outcome = 'pilot_payment_recorded';
-      } else if (!event.subscriptionId || !event.email) {
+      } else if (!event.sessionId || !event.email) {
         outcome = 'ignored_missing_identity';
       } else {
-        const user = await findUserForBilling(ctx, event);
-        if (user) {
-          await ctx.db.patch(user._id, {
-            plan: mappedPlan,
-            stripeCustomerId: event.customerId,
-            stripeSubscriptionId: event.subscriptionId,
-            stripeSubscriptionStatus: 'active',
-          });
-          outcome = `${mappedPlan}_activated`;
-        } else {
-          await upsertPendingEntitlement(ctx, event, mappedPlan, 'active');
-          outcome = `${mappedPlan}_pending_account`;
+        const licenseOutcome = await upsertLicenseFromCheckout(ctx, event, mappedPlan);
+        outcome =
+          mappedPlan === 'pilot'
+            ? `pilot_license_${licenseOutcome}`
+            : `${mappedPlan}_license_${licenseOutcome}`;
+
+        // Optional cloud user plan sync (OAuth) — best effort, not required for browser unlock.
+        if (mappedPlan !== 'pilot' && event.subscriptionId) {
+          const user = await findUserForBilling(ctx, event);
+          if (user) {
+            await ctx.db.patch(user._id, {
+              plan: mappedPlan,
+              stripeCustomerId: event.customerId,
+              stripeSubscriptionId: event.subscriptionId,
+              stripeSubscriptionStatus: 'active',
+            });
+            outcome = `${mappedPlan}_activated`;
+          } else {
+            await upsertPendingEntitlement(ctx, event, mappedPlan, 'active');
+            outcome = `${mappedPlan}_license_pending_account`;
+          }
         }
       }
     } else {
@@ -134,7 +223,9 @@ export const processStripeEvent = internalMutation({
       const pending = event.subscriptionId
         ? await ctx.db
             .query('pendingEntitlements')
-            .withIndex('by_subscription', (q) => q.eq('stripeSubscriptionId', event.subscriptionId as string))
+            .withIndex('by_subscription', (q) =>
+              q.eq('stripeSubscriptionId', event.subscriptionId as string),
+            )
             .unique()
         : null;
       const shouldDeactivate =
@@ -142,6 +233,23 @@ export const processStripeEvent = internalMutation({
         event.eventType === 'customer.subscription.deleted' ||
         (event.eventType === 'customer.subscription.updated' &&
           !isActiveSubscriptionStatus(event.subscriptionStatus));
+
+      if (shouldDeactivate) {
+        await deactivateLicenses(ctx, event, event.subscriptionStatus ?? 'canceled');
+      } else if (event.subscriptionId) {
+        const licenses = await ctx.db
+          .query('licenses')
+          .withIndex('by_subscription', (q) =>
+            q.eq('stripeSubscriptionId', event.subscriptionId as string),
+          )
+          .collect();
+        for (const license of licenses) {
+          await ctx.db.patch(license._id, {
+            status: event.subscriptionStatus ?? 'active',
+            updatedAt: Date.now(),
+          });
+        }
+      }
 
       if (user) {
         await ctx.db.patch(user._id, {
@@ -160,7 +268,7 @@ export const processStripeEvent = internalMutation({
         });
         outcome = shouldDeactivate ? 'pending_deactivated' : 'pending_confirmed';
       } else {
-        outcome = 'ignored_unknown_subscription';
+        outcome = shouldDeactivate ? 'license_deactivated' : 'license_confirmed';
       }
     }
 
@@ -181,7 +289,9 @@ export const processStripeEvent = internalMutation({
 export const claimPendingEntitlement = mutation({
   args: {},
   handler: async (ctx) => {
-    requirePaidSaasEnabled();
+    if (!isStripeBillingEnabled() && !isPaidSaasEnabled()) {
+      return { claimed: false };
+    }
     const userId = await auth.getUserId(ctx);
     if (!userId) throw new Error('Authentication required');
     const user = await ctx.db.get(userId);
@@ -203,5 +313,103 @@ export const claimPendingEntitlement = mutation({
     });
     await ctx.db.delete(pending._id);
     return { claimed: true, plan: pending.plan };
+  },
+});
+
+export const getLicenseBySession = internalQuery({
+  args: { sessionId: v.string() },
+  handler: async (ctx, { sessionId }) => {
+    const license = await ctx.db
+      .query('licenses')
+      .withIndex('by_session', (q) => q.eq('sessionId', sessionId))
+      .unique();
+    if (!license) return null;
+    const active = isLicenseActive(license.status, license.expiresAt);
+    return {
+      email: license.email,
+      plan: license.plan,
+      licenseKey: license.licenseKey,
+      status: license.status,
+      expiresAt: license.expiresAt ?? null,
+      active,
+    };
+  },
+});
+
+export const getLicenseByKey = internalQuery({
+  args: { licenseKey: v.string() },
+  handler: async (ctx, { licenseKey }) => {
+    const license = await ctx.db
+      .query('licenses')
+      .withIndex('by_license_key', (q) => q.eq('licenseKey', licenseKey))
+      .unique();
+    if (!license) return null;
+    const active = isLicenseActive(license.status, license.expiresAt);
+    return {
+      email: license.email,
+      plan: license.plan,
+      status: license.status,
+      expiresAt: license.expiresAt ?? null,
+      active,
+    };
+  },
+});
+
+/**
+ * Create a license from a server-verified Stripe Checkout Session
+ * (covers the race where /merci loads before the webhook).
+ */
+export const upsertLicenseFromVerifiedSession = internalMutation({
+  args: {
+    sessionId: v.string(),
+    email: v.string(),
+    plan: v.union(v.literal('team'), v.literal('cabinet'), v.literal('pilot')),
+    customerId: v.optional(v.string()),
+    subscriptionId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    requireStripeBillingEnabled();
+    const email = args.email.trim().toLowerCase();
+    if (!email.includes('@') || !args.sessionId.startsWith('cs_')) {
+      throw new Error('INVALID_SESSION');
+    }
+    const now = Date.now();
+    const existing = await ctx.db
+      .query('licenses')
+      .withIndex('by_session', (q) => q.eq('sessionId', args.sessionId))
+      .unique();
+    const expiresAt = args.plan === 'pilot' ? now + PILOT_DURATION_MS : undefined;
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        email,
+        plan: args.plan,
+        stripeCustomerId: args.customerId,
+        stripeSubscriptionId: args.subscriptionId,
+        status: 'active',
+        expiresAt,
+        updatedAt: now,
+      });
+      return {
+        licenseKey: existing.licenseKey,
+        plan: args.plan,
+        email,
+        expiresAt: expiresAt ?? null,
+        active: true,
+      };
+    }
+    const licenseKey = generateLicenseKey();
+    await ctx.db.insert('licenses', {
+      sessionId: args.sessionId,
+      email,
+      plan: args.plan,
+      licenseKey,
+      stripeCustomerId: args.customerId,
+      stripeSubscriptionId: args.subscriptionId,
+      status: 'active',
+      expiresAt,
+      createdAt: now,
+      updatedAt: now,
+    });
+    return { licenseKey, plan: args.plan, email, expiresAt: expiresAt ?? null, active: true };
   },
 });

@@ -91,6 +91,131 @@ http.route({
   }),
 });
 
+function licenseApiSecret(): string | null {
+  const dedicated = process.env.LICENSE_API_SECRET?.trim();
+  if (dedicated && dedicated.length >= 32) return dedicated;
+  const fallback = process.env.PILOT_REQUEST_INGEST_SECRET?.trim();
+  if (fallback && fallback.length >= 32) return fallback;
+  return null;
+}
+
+function authorizeLicenseApi(request: Request): boolean {
+  const secret = licenseApiSecret();
+  if (!secret) return false;
+  const authorization = request.headers.get('authorization');
+  const supplied = authorization?.startsWith('Bearer ')
+    ? authorization.slice('Bearer '.length)
+    : '';
+  return constantTimeEqual(supplied, secret);
+}
+
+http.route({
+  path: '/license/by-session',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    if (!authorizeLicenseApi(request)) return new Response('Unauthorized', { status: 401 });
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return new Response('Invalid payload', { status: 400 });
+    }
+    const sessionId =
+      body && typeof body === 'object' && typeof (body as { sessionId?: unknown }).sessionId === 'string'
+        ? (body as { sessionId: string }).sessionId.trim()
+        : '';
+    if (!sessionId.startsWith('cs_')) return new Response('Invalid session', { status: 400 });
+    const license = await ctx.runQuery(internal.billing.getLicenseBySession, { sessionId });
+    if (!license || !license.active) {
+      return Response.json({ found: false }, { status: 404, headers: { 'cache-control': 'no-store' } });
+    }
+    return Response.json(
+      {
+        found: true,
+        licenseKey: license.licenseKey,
+        plan: license.plan,
+        email: license.email,
+        expiresAt: license.expiresAt,
+        active: true,
+      },
+      { headers: { 'cache-control': 'no-store' } },
+    );
+  }),
+});
+
+http.route({
+  path: '/license/by-key',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    if (!authorizeLicenseApi(request)) return new Response('Unauthorized', { status: 401 });
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return new Response('Invalid payload', { status: 400 });
+    }
+    const licenseKey =
+      body && typeof body === 'object' && typeof (body as { licenseKey?: unknown }).licenseKey === 'string'
+        ? (body as { licenseKey: string }).licenseKey.trim()
+        : '';
+    if (!licenseKey.startsWith('bcr_') || licenseKey.length < 20) {
+      return new Response('Invalid key', { status: 400 });
+    }
+    const license = await ctx.runQuery(internal.billing.getLicenseByKey, { licenseKey });
+    if (!license || !license.active) {
+      return Response.json({ found: false, active: false }, { status: 404, headers: { 'cache-control': 'no-store' } });
+    }
+    return Response.json(
+      {
+        found: true,
+        plan: license.plan,
+        email: license.email,
+        expiresAt: license.expiresAt,
+        active: true,
+      },
+      { headers: { 'cache-control': 'no-store' } },
+    );
+  }),
+});
+
+http.route({
+  path: '/license/upsert-verified',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    if (!authorizeLicenseApi(request)) return new Response('Unauthorized', { status: 401 });
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return new Response('Invalid payload', { status: 400 });
+    }
+    if (!body || typeof body !== 'object') return new Response('Invalid payload', { status: 400 });
+    const source = body as Record<string, unknown>;
+    const sessionId = typeof source.sessionId === 'string' ? source.sessionId.trim() : '';
+    const email = typeof source.email === 'string' ? source.email.trim().toLowerCase() : '';
+    const plan = source.plan;
+    if (!sessionId.startsWith('cs_') || !email.includes('@')) {
+      return new Response('Invalid payload', { status: 400 });
+    }
+    if (plan !== 'team' && plan !== 'cabinet' && plan !== 'pilot') {
+      return new Response('Invalid plan', { status: 400 });
+    }
+    try {
+      const result = await ctx.runMutation(internal.billing.upsertLicenseFromVerifiedSession, {
+        sessionId,
+        email,
+        plan,
+        customerId: typeof source.customerId === 'string' ? source.customerId : undefined,
+        subscriptionId:
+          typeof source.subscriptionId === 'string' ? source.subscriptionId : undefined,
+      });
+      return Response.json(result, { headers: { 'cache-control': 'no-store' } });
+    } catch {
+      return new Response('Processing failed', { status: 502 });
+    }
+  }),
+});
+
 http.route({
   path: '/pilot-requests',
   method: 'POST',

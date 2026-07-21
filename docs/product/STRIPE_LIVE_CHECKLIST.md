@@ -49,9 +49,33 @@ Puis **redéployer** (les `NEXT_PUBLIC_*` sont figées au build).
 - Utiliser des cartes de test pour un client réel
 - Attendre OAuth/org pour encaisser (fulfillment manuel OK)
 
+## Success URL obligatoire (activation auto)
+
+Sur **chaque** Payment Link Live, la redirection de succès doit être :
+
+```text
+https://rename.bimcheck-consulting.com/merci?session_id={CHECKOUT_SESSION_ID}
+```
+
+Sans `session_id`, la licence ne peut pas s’activer dans le navigateur.
+
+## Webhook + secrets (activation auto)
+
+1. Stripe → Developers → Webhooks → Add endpoint  
+   URL : `https://rename.bimcheck-consulting.com/api/stripe/webhook`  
+   Events : `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated`, `customer.subscription.deleted`
+2. Vercel Production + Convex :
+   - `STRIPE_MODE=live`
+   - `STRIPE_WEBHOOK_SECRET=whsec_…`
+   - `STRIPE_PAYMENT_LINK_*_ID=plink_…`
+   - `STRIPE_SECRET_KEY=sk_live_…` (recommandé pour activation instantanée)
+   - `PILOT_REQUEST_INGEST_SECRET` ou `LICENSE_API_SECRET` (≥ 32 chars) sur **Vercel et Convex**
+3. Redéployer Vercel + `npx convex deploy` si le schéma licences a changé
+
 ## Après un vrai paiement
 
-1. Stripe Dashboard → paiement visible
-2. Client atterrit sur `/merci`
-3. Toi : activer les droits (e-mail + provision manuelle) sous **1 jour ouvré**
-4. (Plus tard) automatiser via webhook + comptes
+1. Stripe Dashboard → paiement visible  
+2. Client atterrit sur `/merci?session_id=cs_…`  
+3. Licence **activée automatiquement** (localStorage `bimcheck_license_v1`)  
+4. `/app` : lots illimités sans compte  
+5. Annulation / impayé → webhook désactive la licence

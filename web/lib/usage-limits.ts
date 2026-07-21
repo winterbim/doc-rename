@@ -7,10 +7,10 @@ export const FREE_DAILY_RENAME_LIMIT = FREE_DAILY_LOTS;
 /**
  * Access plan for rename quota.
  * - free: daily lot cap
- * - team | cabinet: unlimited
+ * - team | cabinet | pilot: unlimited (pilot expires client-side via license)
  * - pro: legacy alias for team (env / old deploys)
  */
-export type AccessPlan = 'free' | 'pro' | 'team' | 'cabinet';
+export type AccessPlan = 'free' | 'pro' | 'team' | 'cabinet' | 'pilot';
 
 const STORAGE_KEY = 'bimcheck_rename_daily_usage_v1';
 /** Previous key — still read for seamless migration. */
@@ -38,7 +38,9 @@ function safeLocalStorage(): Storage | null {
 
 export function normalizeAccessPlan(raw: string | null | undefined): AccessPlan {
   const value = raw?.trim().toLowerCase();
-  if (value === 'pro' || value === 'team' || value === 'cabinet') return value;
+  if (value === 'pro' || value === 'team' || value === 'cabinet' || value === 'pilot') {
+    return value;
+  }
   return 'free';
 }
 
@@ -51,7 +53,7 @@ export function getConfiguredAccessPlan(): AccessPlan {
 }
 
 export function isPaidPlan(plan: AccessPlan): boolean {
-  return plan === 'pro' || plan === 'team' || plan === 'cabinet';
+  return plan === 'pro' || plan === 'team' || plan === 'cabinet' || plan === 'pilot';
 }
 
 export function isUsageLimitEnabled(plan: AccessPlan = getConfiguredAccessPlan()): boolean {
@@ -60,6 +62,7 @@ export function isUsageLimitEnabled(plan: AccessPlan = getConfiguredAccessPlan()
 
 export function getAccessPlanLabel(plan: AccessPlan = getConfiguredAccessPlan()): string {
   if (plan === 'cabinet') return 'Cabinet';
+  if (plan === 'pilot') return 'Pilote';
   if (plan === 'team' || plan === 'pro') return 'Team';
   return 'Free';
 }
@@ -121,13 +124,16 @@ export function clearDailyRenameUsage(): void {
 }
 
 /**
- * Resolve effective plan: deploy override wins, else cloud user plan, else free.
+ * Resolve effective plan:
+ * deploy override → browser Stripe license → cloud user plan → free.
  */
 export function resolveAccessPlan(
   envPlan: AccessPlan,
   cloudPlan: AccessPlan | null | undefined,
+  licensePlan?: AccessPlan | null,
 ): AccessPlan {
   if (isPaidPlan(envPlan)) return envPlan;
+  if (licensePlan && isPaidPlan(licensePlan)) return licensePlan;
   if (cloudPlan && isPaidPlan(cloudPlan)) return cloudPlan;
   return 'free';
 }

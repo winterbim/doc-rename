@@ -47,8 +47,8 @@ const faqs = [
   {
     q: 'Comment l’accès payant est-il activé ?',
     a: HAS_DIRECT_CHECKOUT
-      ? `Paiement Stripe live, puis activation manuelle sous 1 jour ouvré (e-mail du paiement). Pilote guidé : ${PILOT_PRICE_EUR} € (paiement unique).`
-      : `Dès que le paiement Stripe live est branché sur ce site, vous payez en ligne puis les droits sont activés sous 1 jour ouvré. En attendant : demande via /pilot.`,
+      ? `Paiement Stripe live, puis activation automatique de la licence (lots illimités) sur la page de confirmation. Pilote guidé : ${PILOT_PRICE_EUR} € (paiement unique, 14 jours).`
+      : `Dès que le paiement Stripe live est branché, l’activation de licence est automatique après paiement. En attendant : demande via /pilot.`,
   },
 ];
 

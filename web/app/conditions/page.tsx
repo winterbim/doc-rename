@@ -147,8 +147,9 @@ export default function ConditionsPage() {
                   Les paiements sont traités par notre prestataire <strong>Stripe</strong> en
                   mode production ; l’éditeur n’a pas accès à vos données de carte. Les
                   abonnements mensuels sont reconduits tacitement à chaque échéance jusqu’à
-                  résiliation. L’activation des droits payants (lots illimités, support) est
-                  réalisée sous <strong>1 jour ouvré</strong> après confirmation du paiement.
+                  résiliation. L’activation de la licence (lots illimités) est{' '}
+                  <strong>automatique</strong> dès confirmation du paiement, sur le navigateur
+                  qui ouvre la page de confirmation.
                 </p>
                 <p>
                   Vous pouvez résilier à tout moment ; la résiliation prend effet à la fin de la

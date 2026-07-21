@@ -51,6 +51,27 @@ export default defineSchema({
     .index('by_subscription', ['stripeSubscriptionId']),
 
   /**
+   * Browser license issued after Stripe checkout (automatic activation).
+   * Unlocks local Free quota without requiring OAuth. Revoked on cancel/failure.
+   */
+  licenses: defineTable({
+    sessionId: v.string(),
+    email: v.string(),
+    plan: v.union(v.literal('team'), v.literal('cabinet'), v.literal('pilot')),
+    licenseKey: v.string(),
+    stripeCustomerId: v.optional(v.string()),
+    stripeSubscriptionId: v.optional(v.string()),
+    status: v.string(),
+    expiresAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_session', ['sessionId'])
+    .index('by_license_key', ['licenseKey'])
+    .index('by_email', ['email'])
+    .index('by_subscription', ['stripeSubscriptionId']),
+
+  /**
    * Commercial requests submitted from the public site. Document contents and
    * filenames are deliberately absent: this table only holds contact details.
    */

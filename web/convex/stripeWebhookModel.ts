@@ -17,6 +17,7 @@ export interface NormalizedStripeEvent {
   livemode: boolean;
   customerId?: string;
   subscriptionId?: string;
+  sessionId?: string;
   paymentLinkId?: string;
   email?: string;
   paymentStatus?: string;
@@ -98,6 +99,7 @@ export function normalizeStripeEvent(value: unknown): NormalizedStripeEvent | nu
 
   if (eventType === 'checkout.session.completed') {
     const customerDetails = asRecord(object.customer_details);
+    normalized.sessionId = asString(object.id);
     normalized.customerId = expandableId(object.customer);
     normalized.subscriptionId = expandableId(object.subscription);
     normalized.paymentLinkId = expandableId(object.payment_link);

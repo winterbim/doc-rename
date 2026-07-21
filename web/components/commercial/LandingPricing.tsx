@@ -48,7 +48,7 @@ export function LandingPricing() {
         )}
         {HAS_DIRECT_CHECKOUT && (
           <p className="small-note" style={{ margin: 0, textAlign: 'center', maxWidth: 520 }}>
-            Paiement sécurisé Stripe · activation des droits sous 1 jour ouvré · résiliation à tout moment.
+            Paiement sécurisé Stripe · licence activée automatiquement · résiliation à tout moment.
           </p>
         )}
       </div>
@@ -85,7 +85,7 @@ export function LandingPricing() {
           </p>
           <p className="muted">
             {HAS_DIRECT_CHECKOUT
-              ? 'Lots illimités — paiement en ligne, activation sous 1 jour ouvré.'
+              ? 'Lots illimités — paiement en ligne, licence automatique.'
               : 'Lots illimités dès paiement Stripe live.'}
           </p>
           <ul>

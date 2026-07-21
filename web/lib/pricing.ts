@@ -337,12 +337,12 @@ export function getTeamPlan(currency: CurrencyCode = DEFAULT_CURRENCY): PricingP
     currency,
     billing: '/mois',
     description: selling
-      ? 'Lots illimités pour l’équipe — activation sous 1 jour ouvré après paiement.'
+      ? 'Lots illimités pour l’équipe — licence activée automatiquement après paiement.'
       : 'Offre Team — ouverture commerciale dès encaissement Stripe live.',
     features: selling
       ? [
           'Tout Free + lots de renommage illimités',
-          'Activation manuelle sous 1 jour ouvré (e-mail de paiement)',
+          'Activation automatique de licence après paiement',
           'Support email',
           PAID_ACCOUNTS_AVAILABLE
             ? 'Compte + sync cloud des conventions (JSON)'
@@ -374,7 +374,7 @@ export function getCabinetPlan(currency: CurrencyCode = DEFAULT_CURRENCY): Prici
     currency,
     billing: '/mois',
     description: selling
-      ? 'Volume et support prioritaire — activation sous 1 jour ouvré après paiement.'
+      ? 'Volume et support prioritaire — licence activée automatiquement après paiement.'
       : 'Offre Cabinet — ouverture commerciale dès encaissement Stripe live.',
     features: selling
       ? [
@@ -383,7 +383,7 @@ export function getCabinetPlan(currency: CurrencyCode = DEFAULT_CURRENCY): Prici
           'Onboarding assisté sur demande',
           PAID_ACCOUNTS_AVAILABLE
             ? 'Jusqu’à 1 000 utilisateurs et projets'
-            : 'Périmètre multi-équipes (activation manuelle)',
+            : 'Périmètre multi-équipes (activation auto de licence)',
           'Facture Stripe / devis possible',
         ]
       : [
