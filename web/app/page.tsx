@@ -484,50 +484,56 @@ const SOFTWARE_APPLICATION_JSONLD = {
 
 const faqs = [
   {
-    question: 'BIMCHECK-Rename remplace-t-il Autodesk Docs ou Plannerly ?',
+    question: 'À qui s’adresse BIMCHECK-Rename ?',
     answer:
-      "Non. C’est l’outil qui prépare proprement vos lots de livrables avant dépôt dans votre CDE existant. Il est compatible Autodesk Docs / ACC, Trimble Connect, Kroqi et ProjectWise — il n’essaie pas de les remplacer.",
+      'À toute équipe qui standardise des noms de fichiers avant dépôt, archivage ou partage : juridique, finance, RH, santé, industrie, immobilier, BIM / construction, et plus. Des profils métier prêts à l’emploi sont inclus ; vous les adaptez à votre convention interne.',
   },
   {
-    question: 'Le modèle ISO 19650 est-il « certifié » ?',
+    question: 'Remplace-t-il notre GED, Drive ou outil métier ?',
     answer:
-      "ISO 19650 n’a pas de certification produit, seulement des certifications organisation. Notre modèle suit le National Annex UK informatif et reste paramétrable champ par champ pour s’adapter à votre BEP / EIR.",
+      'Non. BIMCHECK-Rename prépare un lot propre (noms + ZIP) que vous déposez ensuite où vous travaillez déjà : GED, Drive, boîte mail, plateforme projet. Il ne remplace ni le stockage ni le workflow d’approbation.',
   },
   {
-    question: 'Mes fichiers restent vraiment dans mon navigateur ?',
+    question: 'Mes fichiers restent-ils vraiment dans mon navigateur ?',
     answer:
-      "Oui, et c’est vérifiable. Ouvrez l’onglet Réseau de votre DevTools pendant un renommage : aucune requête sortante ne contient vos fichiers. Voir la page /security pour l’audit complet (CSP, headers HTTP, scans CodeQL / OWASP ZAP).",
+      'Oui, et c’est vérifiable. Pendant un renommage, le contenu des fichiers n’est pas envoyé au serveur. Ouvrez DevTools → Réseau pour le contrôler. Détails techniques sur la page Sécurité.',
   },
   {
-    question: 'Peut-on importer notre table d’entreprises et de lots existante ?',
+    question: 'Quels formats puis-je renommer ?',
     answer:
-      "Oui — CSV, Excel, ODS, ou copier-coller depuis un tableur. 201 entreprises françaises et suisses ainsi que 41 lots sont fournis par défaut, puis restent personnalisables.",
+      'PDF, Word, Excel, images, archives ZIP et de nombreux formats métier (plans, maquettes, tableurs, etc.). L’outil renomme les fichiers : il ne modifie pas le contenu interne des documents.',
   },
   {
-    question: 'Et le RVT / DWG / IFC ?',
+    question: 'Puis-je importer ma propre liste d’entités (clients, sociétés, codes) ?',
     answer:
-      "BIMCHECK-Rename renomme les fichiers, il ne modifie pas leur contenu interne. Un .rvt ou un .ifc reste valide après renommage. Pour renommer des objets à l’intérieur d’un fichier Revit, il faut Naviate, pyRevit ou Dynamo.",
+      'Oui — CSV, Excel, ODS, ou copier-coller depuis un tableur. Des listes de départ sont fournies, puis tout reste personnalisable champ par champ.',
   },
   {
-    question: 'Quelle conformité RGPD ?',
-    answer:
-      "Le renommage n’envoie pas vos documents au serveur. Le paiement est traité par Stripe. Une demande pilote peut transmettre des coordonnées à Vercel puis Convex ; détails dans la politique de confidentialité.",
+    question: 'Free, Team, Cabinet : que paie-t-on vraiment ?',
+    answer: HAS_DIRECT_CHECKOUT
+      ? 'Free : 5 lots par jour, sans compte. Team (19 €/mois) et Cabinet (49 €/mois) : lots illimités après paiement Stripe, licence activée automatiquement sur le navigateur. Le pilote 14 jours est un paiement unique avec onboarding.'
+      : 'Free : 5 lots par jour, sans compte. Les offres payantes lèvent la limite quotidienne dès que le paiement en ligne est disponible.',
   },
   {
     question: 'Comment la licence payante s’active-t-elle ?',
     answer: HAS_DIRECT_CHECKOUT
-      ? 'Après paiement Stripe, vous êtes redirigé vers /merci. La licence (lots illimités) s’active automatiquement sur ce navigateur — sans compte obligatoire et sans attente manuelle.'
+      ? 'Après paiement Stripe, la page /merci active automatiquement la licence (lots illimités) sur ce navigateur — sans compte obligatoire et sans validation manuelle de notre part.'
       : 'Dès que le paiement en ligne est ouvert, l’activation est automatique après confirmation Stripe.',
   },
   {
-    question: 'Que se passe-t-il si vous arrêtez le service ?',
+    question: 'Et le RGPD / la confidentialité ?',
     answer:
-      "Vos conventions sont exportables en JSON ou CSV à tout moment. Vous gardez votre travail, même si le SaaS s’arrête. C’est volontaire — pas de verrou propriétaire.",
+      'Le renommage ne s’appuie pas sur un upload de vos documents. Le paiement est traité par Stripe. Une demande commerciale (formulaire pilote) ne contient que les coordonnées et le besoin saisis — jamais le contenu de vos fichiers. Voir la politique de confidentialité.',
   },
   {
-    question: 'Vous travaillez avec des grands comptes ?',
+    question: 'Que se passe-t-il si le service s’arrête un jour ?',
     answer:
-      "SSO, DPA ou on-premise ne sont pas des formules self-serve aujourd’hui. Décrivez votre besoin via le pilote ; toute option dédiée se confirme par écrit.",
+      'Vos conventions sont exportables en JSON ou CSV à tout moment. Vous gardez vos règles et vos fichiers. Pas de verrou propriétaire sur votre travail.',
+  },
+  {
+    question: 'Besoin d’un déploiement dédié ou d’un grand compte ?',
+    answer:
+      'SSO, DPA ou on-premise ne sont pas en self-serve aujourd’hui. Décrivez le besoin via le pilote ou le contact : toute option spécifique se confirme par écrit.',
   },
 ];
 
@@ -942,11 +948,11 @@ export default function LandingPage() {
             <div className="section-head">
               <div>
                 <span className="kicker">FAQ</span>
-                <h2>Les questions qu’on nous pose en premier.</h2>
+                <h2>Les questions les plus fréquentes.</h2>
               </div>
               <p className="section-copy">
-                Réponses honnêtes. Si une question manque, écrivez-nous —
-                on l’ajoute publiquement ici.
+                Réponses directes, multi-métiers. Une question manque ?
+                Écrivez-nous — on l’ajoute ici.
               </p>
             </div>
 
