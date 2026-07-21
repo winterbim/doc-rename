@@ -2,15 +2,15 @@ import { expect, test } from '@playwright/test';
 
 test('loads the marketing and privacy pages', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/BimDoc Renamer/i);
-  await expect(page.getByRole('link', { name: /BimDoc Renamer.*accueil/i }).first()).toBeVisible();
+  await expect(page).toHaveTitle(/BIMCHECK-Rename/i);
+  await expect(page.getByRole('link', { name: /BIMCHECK-Rename.*accueil|BIMCHECK.*Rename/i }).first()).toBeVisible();
 
   await page.goto('/privacy');
-  await expect(page.getByRole('heading', { name: /BimDoc Renamer garde vos fichiers/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /BIMCHECK-Rename garde vos fichiers/i })).toBeVisible();
 
   await page.goto('/pilot');
-  await expect(page.getByRole('heading', { name: /Pilote BIM 14 jours/i })).toBeVisible();
-  await expect(page.getByText(/149 CHF/i).first()).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: /Pilote 14 jours/i })).toBeVisible();
+  await expect(page.getByText(/49\s*€/i).first()).toBeVisible();
   await expect(page.getByLabel(/Email pro/i)).toBeVisible();
 });
 
@@ -27,7 +27,7 @@ test('accepts a local file without uploading to a server', async ({ page }) => {
     .setInputFiles({
       name: 'DOE-PLAN-A101.pdf',
       mimeType: 'application/pdf',
-      buffer: Buffer.from('%PDF-1.4\n% BimDoc Renamer smoke fixture\n'),
+      buffer: Buffer.from('%PDF-1.4\n% BIMCHECK-Rename smoke fixture\n'),
     });
 
   await expect(page.getByText('DOE-PLAN-A101.pdf', { exact: true })).toBeVisible();
@@ -45,26 +45,24 @@ test('loads a BIM demo lot without customer files', async ({ page }) => {
   await expect(page.getByRole('button', { name: /Renommer tout/i })).toBeEnabled();
 });
 
-test('enforces the Free quota and exposes the Pro upgrade path', async ({ page }) => {
+test('enforces the Free quota and exposes the Team upgrade path', async ({ page }) => {
   await page.goto('/app');
 
-  await expect(page.getByText(/3 lot\(s\) restant\(s\)/i)).toBeVisible();
+  await expect(page.getByText(/5 lot\(s\) restant\(s\)/i)).toBeVisible();
   await page.getByRole('button', { name: /Charger un lot exemple/i }).click();
 
   const renameButton = page.getByRole('button', {
     name: /Renommer tout selon la nomenclature active/i,
   });
 
-  await renameButton.click();
-  await expect(page.getByText(/2 lot\(s\) restant\(s\)/i)).toBeVisible();
+  // Burn the free daily quota (5 lots)
+  for (let remaining = 4; remaining >= 0; remaining -= 1) {
+    await renameButton.click();
+    await expect(page.getByText(new RegExp(`${remaining} lot\\(s\\) restant`, 'i'))).toBeVisible();
+  }
 
-  await renameButton.click();
-  await expect(page.getByText(/1 lot\(s\) restant\(s\)/i)).toBeVisible();
-
-  await renameButton.click();
-  await expect(page.getByText(/0 lot\(s\) restant\(s\)/i)).toBeVisible();
   await expect(page.getByRole('button', { name: /Limite Free atteinte/i })).toBeDisabled();
-  await expect(page.getByRole('link', { name: /Passer Pro/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Passer Team/i }).last()).toBeVisible();
 });
 
 test('completes a real BIM renaming journey and downloads the ZIP', async ({ page, isMobile }) => {

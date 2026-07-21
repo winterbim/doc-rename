@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 
 const ImageLightbox = dynamic(
   () => import('./ImageLightbox').then((m) => ({ default: m.ImageLightbox })),
@@ -10,7 +10,7 @@ const ImageLightbox = dynamic(
 );
 
 interface ImagePreviewProps {
-  file: BimFile;
+  file: WorkspaceFile;
 }
 
 export function ImagePreview({ file }: ImagePreviewProps) {
@@ -42,7 +42,7 @@ export function ImagePreview({ file }: ImagePreviewProps) {
           type="button"
           onClick={() => setLightboxOpen(true)}
           aria-label={`Ouvrir l'aperçu plein écran de ${file.original}`}
-          className="group relative overflow-hidden rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+          className="group relative overflow-hidden rounded-lg border border-line shadow-sm hover:shadow-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -51,10 +51,10 @@ export function ImagePreview({ file }: ImagePreviewProps) {
             className="block max-h-[calc(100vh-280px)] max-w-full object-contain"
           />
           <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors">
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full bg-white/90 p-2">
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full bg-paper/90 p-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-gray-800"
+                className="h-5 w-5 text-ink"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -70,7 +70,7 @@ export function ImagePreview({ file }: ImagePreviewProps) {
             </div>
           </div>
         </button>
-        <p className="text-xs text-gray-400">Cliquez pour agrandir</p>
+        <p className="text-xs text-ink-mute">Cliquez pour agrandir</p>
       </div>
 
       {lightboxOpen && objectUrl && (

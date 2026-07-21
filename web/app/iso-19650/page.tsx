@@ -5,7 +5,7 @@ import { CONTACT_EMAIL } from '@/lib/contact';
 export const metadata: Metadata = {
   title: 'Convention de nommage ISO 19650 — guide + modèle prêt à importer',
   description:
-    "Guide pratique de la convention de nommage ISO 19650 (UK National Annex). Champs, exemples, FAQ. Modèle JSON prêt à importer dans BimDoc Renamer.",
+    "Guide pratique de la convention de nommage ISO 19650 (UK National Annex). Champs, exemples, FAQ. Modèle JSON prêt à importer dans BIMCHECK-Rename.",
   alternates: {
     canonical: '/iso-19650',
   },
@@ -40,7 +40,7 @@ const faq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Que faire si mon BEP impose un autre ordre de champs ?',
-    a: "Le modèle ci-dessous est un point de départ. Dans BimDoc Renamer, vous pouvez réorganiser, ajouter ou supprimer des champs librement — la convention résultante reste exportable en JSON pour archivage.",
+    a: "Le modèle ci-dessous est un point de départ. Dans BIMCHECK-Rename, vous pouvez réorganiser, ajouter ou supprimer des champs librement — la convention résultante reste exportable en JSON pour archivage.",
   },
   {
     q: 'Quelle différence entre P02 et S2 ?',
@@ -48,11 +48,11 @@ const faq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Est-ce compatible avec Autodesk Docs / ACC ?',
-    a: "Oui. Depuis 2021, Autodesk Docs supporte les modèles de nommage ISO 19650 nativement. Vous pouvez préparer vos lots dans BimDoc Renamer puis les déposer dans ACC sans retouche.",
+    a: "Oui. Depuis 2021, Autodesk Docs supporte les modèles de nommage ISO 19650 nativement. Vous pouvez préparer vos lots dans BIMCHECK-Rename puis les déposer dans ACC sans retouche.",
   },
   {
     q: 'Quid de la Suisse ?',
-    a: "Pour les projets SIA, la convention SIA 2051 prévaut. Elle est plus souple que la 19650 et nécessite un autre modèle — disponible aussi dans BimDoc Renamer.",
+    a: "Pour les projets SIA, la convention SIA 2051 prévaut. Elle est plus souple que la 19650 et nécessite un autre modèle — disponible aussi dans BIMCHECK-Rename.",
   },
 ];
 
@@ -64,7 +64,7 @@ export default function Iso19650Page() {
           href="/"
           className="mb-10 inline-flex w-fit text-sm font-sans font-semibold text-ink hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
         >
-          ← Retour à BimDoc Renamer
+          ← Retour à BIMCHECK-Rename
         </Link>
 
         <header className="border-b border-line pb-10">
@@ -133,7 +133,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
             Modèle JSON prêt à importer
           </h2>
           <p className="mt-4 max-w-3xl text-base text-ink-soft">
-            Téléchargez le modèle ci-dessous et importez-le dans BimDoc
+            Téléchargez le modèle ci-dessous et importez-le dans BIMCHECK-Rename
             Renamer (bouton « ↑ Fichier » du panneau Nomenclature). Vous
             pouvez ensuite réorganiser les champs ou ajuster les exemples
             pour coller à votre BEP.
@@ -151,7 +151,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
               href="/app"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-ink px-5 py-3 text-sm font-semibold text-ink transition-colors hover:bg-ink hover:text-paper"
             >
-              Ouvrir BimDoc Renamer pour l’importer →
+              Ouvrir BIMCHECK-Rename pour l’importer →
             </Link>
           </div>
 
@@ -194,7 +194,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
               ['rapport synthese v3.docx', 'PRJ01-AGC-ZZ-XX-RP-S-0003-P03.docx'],
               ['DOE structure.zip', 'PRJ01-AGC-ZZ-XX-ZZ-S-DOE-P01.zip'],
             ].map(([before, after]) => (
-              <div key={before} className="grid gap-2 rounded-lg border border-line bg-white p-4 sm:grid-cols-2 sm:gap-6">
+              <div key={before} className="grid gap-2 rounded-lg border border-line bg-surface p-4 sm:grid-cols-2 sm:gap-6 dark:bg-paper-2">
                 <code className="font-mono text-xs text-ink-mute line-through decoration-brick">{before}</code>
                 <code className="font-mono text-xs font-semibold text-olive">{after}</code>
               </div>
@@ -219,7 +219,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
               'ZIP final exporté avec l’arborescence attendue.',
               'Aucun contenu fichier envoyé à un service externe pendant le renommage.',
             ].map((item) => (
-              <li key={item} className="flex gap-2 rounded-lg border border-line bg-white p-3">
+              <li key={item} className="flex gap-2 rounded-lg border border-line bg-surface p-3 dark:bg-paper-2">
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-olive" aria-hidden="true" />
                 <span>{item}</span>
               </li>
@@ -255,7 +255,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
                 className="inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink transition-transform hover:scale-[1.02]"
                 style={{ background: '#C0913F' }}
               >
-                Ouvrir BimDoc Renamer →
+                Ouvrir BIMCHECK-Rename →
               </Link>
               <Link
                 href="/pilot"
@@ -269,7 +269,7 @@ PRJ01    -AGC -ZZ -GF -DR -A -0001    -P02   .pdf
 
         <footer className="mt-8 border-t border-line py-8 text-sm text-ink-mute">
           <p>
-            BimDoc Renamer — guide ISO 19650 ·{' '}
+            BIMCHECK-Rename — guide ISO 19650 ·{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-brick font-semibold underline underline-offset-2">
               {CONTACT_EMAIL}
             </a>

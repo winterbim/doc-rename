@@ -9,7 +9,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { useAppContext } from '@/lib/app-state';
 import { getInactiveFieldsForProfile } from '@/lib/profiles';
-import type { FieldDefinition } from '@/lib/bim/types';
+import type { FieldDefinition } from '@/lib/rename-engine/types';
 
 // ---------------------------------------------------------------------------
 // DraggableAvailableItem

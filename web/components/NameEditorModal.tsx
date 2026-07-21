@@ -18,10 +18,10 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 import { useEscapeKey } from '@/lib/hooks/useEscapeKey';
 import { useFocusTrap } from '@/lib/hooks/useFocusTrap';
-import { normalizeOutputName } from '@/lib/bim/nomenclature';
+import { normalizeOutputName } from '@/lib/rename-engine/nomenclature';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -93,7 +93,7 @@ function SortableSegment({
     <li
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-2 rounded-md border border-line bg-white px-2 py-1.5 shadow-xs"
+      className="flex items-center gap-2 rounded-md border border-line bg-surface px-2 py-1.5 shadow-xs dark:bg-paper-2"
     >
       {/* Drag handle */}
       <button
@@ -159,7 +159,7 @@ function SortableSegment({
 
 function SegmentOverlayCard({ segment, index }: { segment: Segment; index: number }) {
   return (
-    <div className="flex items-center gap-2 rounded-md border border-brick/40 bg-white px-2 py-1.5 shadow-lg opacity-95 cursor-grabbing">
+    <div className="flex items-center gap-2 rounded-md border border-brick/40 bg-surface px-2 py-1.5 shadow-lg opacity-95 cursor-grabbing dark:bg-paper-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="h-4 w-4 shrink-0 text-ink-mute"
@@ -175,7 +175,7 @@ function SegmentOverlayCard({ segment, index }: { segment: Segment; index: numbe
         {index + 1}
       </span>
       <span className="flex-1 min-w-0 truncate text-sm font-mono text-ink px-2">
-        {segment.text || <em className="text-gray-400">vide</em>}
+        {segment.text || <em className="text-ink-mute">vide</em>}
       </span>
     </div>
   );
@@ -186,7 +186,7 @@ function SegmentOverlayCard({ segment, index }: { segment: Segment; index: numbe
 // ---------------------------------------------------------------------------
 
 interface NameEditorModalProps {
-  file: BimFile;
+  file: WorkspaceFile;
   defaultSeparator: string;
   onApply: (newName: string) => void;
   onClose: () => void;
@@ -369,7 +369,7 @@ export function NameEditorModal({
                   className={`flex-1 flex items-center justify-center gap-1.5 rounded-md border px-2 py-1.5 text-sm cursor-pointer transition-colors select-none ${
                     separator === opt.value
                       ? 'border-brick/50 bg-gold/10 text-brick-deep font-medium'
-                      : 'border-line bg-white text-ink-soft hover:border-line-2 hover:bg-paper-2/40'
+                      : 'border-line bg-surface text-ink-soft hover:border-line-2 hover:bg-paper-2/40 dark:bg-paper-2'
                   }`}
                 >
                   <input
@@ -473,7 +473,7 @@ export function NameEditorModal({
               Aperçu
             </p>
             <p
-              className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-mono text-ink truncate dark:bg-paper-2"
+              className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-mono text-ink truncate dark:bg-paper-2"
               title={preview}
               aria-live="polite"
               aria-label={`Aperçu du nouveau nom: ${preview}`}
@@ -488,7 +488,7 @@ export function NameEditorModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-line bg-white px-4 py-2 text-sm font-sans font-medium text-ink-soft hover:bg-paper-2 hover:border-line-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick transition-colors"
+            className="rounded-full border border-line bg-surface px-4 py-2 text-sm font-sans font-medium text-ink-soft hover:bg-paper-2 hover:border-line-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick transition-colors dark:bg-paper-2"
           >
             Annuler
           </button>

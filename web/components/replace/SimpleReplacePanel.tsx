@@ -94,7 +94,7 @@ export function SimpleReplacePanel() {
           value={find}
           onChange={(e) => setFind(e.target.value)}
           placeholder="Texte à trouver…"
-          className="rounded-md border border-line bg-white px-2.5 py-1.5 text-sm text-ink placeholder-ink-mute focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition"
+          className="rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm text-ink placeholder-ink-mute focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition dark:bg-paper-2"
         />
       </div>
 
@@ -109,7 +109,7 @@ export function SimpleReplacePanel() {
           value={replaceWith}
           onChange={(e) => setReplaceWith(e.target.value)}
           placeholder="(vide = supprimer)"
-          className="rounded-md border border-line bg-white px-2.5 py-1.5 text-sm text-ink placeholder-ink-mute focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition"
+          className="rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm text-ink placeholder-ink-mute focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition dark:bg-paper-2"
         />
       </div>
 

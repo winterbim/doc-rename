@@ -11,7 +11,7 @@ const SIZES: Record<Size, { box: number; type: number; gap: number; brand: numbe
 };
 
 /**
- * The "DR" tile + DOC-RENAME wordmark, reproducing the landing header.
+ * The "BC" tile + BIMCHECK-Rename wordmark, reproducing the landing header.
  */
 export function BrandMark({
   size = 'md',
@@ -53,7 +53,7 @@ export function BrandMark({
           border: `1px solid ${inverted ? colors.lineStrong : colors.ink}`,
         }}
       >
-        DR
+        BC
       </div>
       {showWordmark && (
         <span
@@ -65,7 +65,7 @@ export function BrandMark({
             color: inverted ? colors.paper : colors.ink,
           }}
         >
-          DOC-RENAME
+          BIMCHECK-Rename
         </span>
       )}
     </div>

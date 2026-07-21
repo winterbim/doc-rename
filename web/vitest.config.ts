@@ -10,7 +10,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov', 'json-summary'],
-      include: ['lib/bim/**/*.ts'],
+      include: ['lib/rename-engine/**/*.ts'],
       exclude: ['**/*.test.ts', '**/__tests__/**', '**/*.d.ts'],
       thresholds: {
         lines: 80,

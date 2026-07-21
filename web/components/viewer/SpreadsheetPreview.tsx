@@ -2,9 +2,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { getSpreadsheetCache, setSpreadsheetCache } from '@/lib/viewer-cache';
 import { sanitizeDocumentHtml } from '@/lib/sanitize-html';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 
-interface Props { readonly file: BimFile }
+interface Props { readonly file: WorkspaceFile }
 
 interface SheetData {
   name: string;
@@ -147,7 +147,7 @@ export function SpreadsheetPreview({ file }: Props) {
           ))}
         </div>
       )}
-      <div className="flex-1 overflow-auto bg-white">
+      <div className="flex-1 overflow-auto bg-doc-surface">
         {activeHtml === undefined ? (
           <div className="flex items-center justify-center p-8">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-brick border-t-transparent" />

@@ -3,20 +3,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
 import { useAppContext } from '@/lib/app-state';
-import { batchGenerate, normalizeOutputName } from '@/lib/bim/nomenclature';
+import { batchGenerate, normalizeOutputName } from '@/lib/rename-engine/nomenclature';
 import { getActiveFieldsForProfile, normalizeFieldValuesForGeneration } from '@/lib/profiles';
-import { normalizeZipArchiveName, writeZip } from '@/lib/bim/zip-io';
+import { normalizeZipArchiveName, writeZip } from '@/lib/rename-engine/zip-io';
 import { useFileIngestion } from '@/lib/hooks/useFileIngestion';
-import { proCta } from '@/lib/pricing';
 import {
   FREE_DAILY_RENAME_LIMIT,
-  getAccessPlanLabel,
-  getConfiguredAccessPlan,
   getRemainingFreeRenames,
-  isUsageLimitEnabled,
   readDailyRenameUsage,
   recordFreeRenames,
 } from '@/lib/usage-limits';
+import { useAccessPlan } from '@/lib/hooks/useAccessPlan';
 import { Button } from './ui/Button';
 
 function normalizeZipFolder(folder: string): string {
@@ -35,9 +32,7 @@ export function ActionBar() {
   const [remainingFreeRenames, setRemainingFreeRenames] = useState(FREE_DAILY_RENAME_LIMIT);
   const { processFiles } = useFileIngestion();
   const addInputRef = useRef<HTMLInputElement | null>(null);
-  const accessPlan = getConfiguredAccessPlan();
-  const accessPlanLabel = getAccessPlanLabel(accessPlan);
-  const usageLimitEnabled = isUsageLimitEnabled(accessPlan);
+  const { label: accessPlanLabel, usageLimitEnabled } = useAccessPlan();
 
   const refreshUsage = useCallback(() => {
     setRemainingFreeRenames(getRemainingFreeRenames());
@@ -226,11 +221,10 @@ export function ActionBar() {
               {remainingFreeRenames} lot(s) restant(s) aujourd’hui
             </span>
             <a
-              href={proCta.href}
-              {...(proCta.checkout ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              href="/pricing"
               className="font-semibold text-brick underline underline-offset-2 hover:text-brick-deep"
             >
-              Passer Pro
+              Passer Team
             </a>
           </>
         ) : (
@@ -378,7 +372,7 @@ export function ActionBar() {
             value={zipName}
             onChange={(event) => setZipName(event.target.value)}
             placeholder="FICHIERS_RENOMMES"
-            className="w-36 rounded-md border border-line bg-white px-2 py-1 text-xs text-ink placeholder:text-ink-mute focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick"
+            className="w-36 rounded-md border border-line bg-surface px-2 py-1 text-xs text-ink placeholder:text-ink-mute focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick dark:bg-paper-2"
             aria-label="Nom du fichier ZIP"
           />
         </label>

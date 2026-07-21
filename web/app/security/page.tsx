@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { CONTACT_EMAIL, buildContactMailto } from '@/lib/contact';
 
 export const metadata: Metadata = {
-  title: 'Sécurité — BimDoc Renamer',
+  title: 'Sécurité — BIMCHECK-Rename',
   description:
-    "Audit sécurité de BimDoc Renamer : architecture local-first, CSP stricte, headers HTTP audités, scans CodeQL et OWASP ZAP en CI. Vérifiable dans DevTools > Réseau.",
+    "Audit sécurité de BIMCHECK-Rename : architecture local-first, CSP stricte, headers HTTP audités, scans CodeQL et OWASP ZAP en CI. Vérifiable dans DevTools > Réseau.",
   alternates: {
     canonical: '/security',
   },
@@ -84,7 +84,7 @@ const ciChecks: Array<{ name: string; what: string; when: string }> = [
 ];
 
 const auditSteps: string[] = [
-  "Ouvrez https://doc-rename-saas.vercel.app/app dans un onglet vierge.",
+  "Ouvrez https://bimcheck-rename.vercel.app/app dans un onglet vierge.",
   'Ouvrez les DevTools du navigateur (F12 ou ⌘⌥I).',
   "Allez dans l’onglet Réseau (Network), filtre « Fetch / XHR ».",
   'Glissez 10 fichiers PDF/DWG/IFC sur la zone de dépôt.',
@@ -101,7 +101,7 @@ export default function SecurityPage() {
           href="/"
           className="mb-10 inline-flex w-fit text-sm font-sans font-semibold text-ink hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
         >
-          ← Retour à BimDoc Renamer
+          ← Retour à BIMCHECK-Rename
         </Link>
 
         <header className="border-b border-line pb-10">
@@ -112,7 +112,7 @@ export default function SecurityPage() {
             Vérifiez vous-même. <em className="font-serif italic font-normal text-brick">Ouvrez l’onglet Réseau.</em>
           </h1>
           <p className="mt-5 max-w-3xl font-sans text-xl leading-8 text-ink-soft">
-            BimDoc Renamer traite les fichiers à 100 % dans votre navigateur.
+            BIMCHECK-Rename traite les fichiers à 100 % dans votre navigateur.
             Aucune requête sortante de contenu pendant un renommage — c’est
             mesurable, et c’est notre première ligne de défense.
             Cette page documente tout ce que vous pouvez auditer.
@@ -130,7 +130,7 @@ export default function SecurityPage() {
             <a
               key={s.href}
               href={s.href}
-              className="rounded-full border border-line bg-white px-3 py-1 font-medium text-ink-soft transition-colors hover:border-brick hover:text-brick"
+              className="rounded-full border border-line bg-surface px-3 py-1 font-medium text-ink-soft transition-colors hover:border-brick hover:text-brick dark:bg-paper-2"
             >
               {s.label}
             </a>
@@ -142,13 +142,13 @@ export default function SecurityPage() {
             1. Architecture local-first
           </h2>
           <p className="mt-4 max-w-3xl text-base text-ink-soft">
-            Le cœur de BimDoc Renamer est une application Next.js statique +
+            Le cœur de BIMCHECK-Rename est une application Next.js statique +
             React qui lit, parse, renomme et empaquette vos fichiers entièrement
             côté client. Le serveur ne voit ni le contenu, ni les noms d’origine,
             ni les noms générés.
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-lg border border-line bg-white p-5">
+            <div className="rounded-lg border border-line bg-surface p-5 dark:bg-paper-2">
               <p className="text-xs font-mono uppercase tracking-wide text-brick">Côté navigateur</p>
               <ul className="mt-3 space-y-1.5 text-sm text-ink-soft">
                 <li>• Lecture File API</li>
@@ -158,11 +158,11 @@ export default function SecurityPage() {
                 <li>• Empaquetage ZIP de sortie</li>
               </ul>
             </div>
-            <div className="rounded-lg border border-line bg-white p-5">
+            <div className="rounded-lg border border-line bg-surface p-5 dark:bg-paper-2">
               <p className="text-xs font-mono uppercase tracking-wide text-muted">Côté serveur</p>
               <ul className="mt-3 space-y-1.5 text-sm text-ink-soft">
                 <li>• Servir les fichiers statiques Next.js</li>
-                <li>• (Optionnel) gérer l’authentification compte Pro</li>
+                <li>• (Optionnel) gérer l’authentification compte Team / Cabinet</li>
                 <li>• <strong className="text-ink">Aucun upload de fichier utilisateur</strong></li>
                 <li>• <strong className="text-ink">Aucun stockage de contenu document</strong></li>
               </ul>
@@ -240,7 +240,7 @@ upgrade-insecure-requests;`}
           </p>
           <div className="mt-6 grid gap-3">
             {ciChecks.map((c) => (
-              <div key={c.name} className="rounded-lg border border-line bg-white p-4 sm:flex sm:items-start sm:gap-4">
+              <div key={c.name} className="rounded-lg border border-line bg-surface p-4 sm:flex sm:items-start sm:gap-4 dark:bg-paper-2">
                 <div className="sm:w-48 sm:shrink-0">
                   <p className="font-mono text-sm font-semibold text-brick">{c.name}</p>
                   <p className="mt-1 text-xs text-muted">{c.when}</p>
@@ -305,7 +305,7 @@ upgrade-insecure-requests;`}
             <li>Évaluation gravité : critique (24 h), élevée (72 h), moyenne (7 j), faible (sprint).</li>
             <li>Correctif déployé via Vercel sans coupure de service.</li>
             <li>Communication publique sur <code className="rounded bg-paper-2 px-1 font-mono text-xs">/changelog</code> (à venir) pour les incidents critiques et élevés.</li>
-            <li>Notification email aux clients Pro / Team / Entreprise impactés.</li>
+            <li>Notification email aux clients Team / Cabinet impactés.</li>
           </ol>
           <p className="mt-5 text-sm">
             Pour signaler une faille de manière confidentielle :{' '}
@@ -326,7 +326,7 @@ upgrade-insecure-requests;`}
             elles correspondent à votre cas — votre demande nourrit la roadmap.
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-lg border border-line bg-white p-5">
+            <div className="rounded-lg border border-line bg-surface p-5 dark:bg-paper-2">
               <p className="font-sans font-semibold text-ink">Mode SaaS Entreprise</p>
               <ul className="mt-2 space-y-1 text-sm text-ink-soft">
                 <li>• SSO SAML 2.0 + OIDC (Entra ID, Okta, Google Workspace)</li>
@@ -337,7 +337,7 @@ upgrade-insecure-requests;`}
                 <li>• Branding personnalisable (logo, couleurs)</li>
               </ul>
             </div>
-            <div className="rounded-lg border border-line bg-white p-5">
+            <div className="rounded-lg border border-line bg-surface p-5 dark:bg-paper-2">
               <p className="font-sans font-semibold text-ink">Mode on-premise</p>
               <ul className="mt-2 space-y-1 text-sm text-ink-soft">
                 <li>• Image Docker / Helm chart</li>
@@ -371,7 +371,7 @@ upgrade-insecure-requests;`}
           </p>
           <ol className="mt-6 grid gap-3 text-sm text-ink-soft">
             {auditSteps.map((step, i) => (
-              <li key={step} className="flex gap-3 rounded-lg border border-line bg-white p-4">
+              <li key={step} className="flex gap-3 rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <span className="font-serif text-2xl italic text-brick">{String(i + 1).padStart(2, '0')}</span>
                 <span className="pt-1">{step}</span>
               </li>
@@ -396,7 +396,7 @@ upgrade-insecure-requests;`}
 
         <footer className="mt-16 border-t border-line py-8 text-sm text-ink-mute">
           <p>
-            BimDoc Renamer — sécurité contact :{' '}
+            BIMCHECK-Rename — sécurité contact :{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-brick font-semibold underline underline-offset-2">
               {CONTACT_EMAIL}
             </a>

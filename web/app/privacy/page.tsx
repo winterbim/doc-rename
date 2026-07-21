@@ -5,7 +5,7 @@ import { CONTACT_EMAIL } from "@/lib/contact";
 export const metadata: Metadata = {
   title: "Confidentialité, sécurité et conditions",
   description:
-    "Politique de confidentialité BimDoc Renamer : traitement local des fichiers, migration SaaS, RGPD, CNIL, sécurité, cookies et conditions d'utilisation.",
+    "Politique de confidentialité BIMCHECK-Rename : traitement local des fichiers, migration SaaS, RGPD, CNIL, sécurité, cookies et conditions d'utilisation.",
   alternates: {
     canonical: "/privacy",
   },
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
           href="/"
           className="mb-10 inline-flex w-fit text-sm font-sans font-semibold text-ink hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
         >
-          ← Retour à BimDoc Renamer
+          ← Retour à BIMCHECK-Rename
         </Link>
 
         <header className="border-b border-line pb-10">
@@ -36,16 +36,16 @@ export default function PrivacyPage() {
             Confidentialité · Sécurité · Conditions
           </p>
           <h1 className="max-w-3xl font-sans text-5xl font-semibold leading-tight tracking-tight text-ink sm:text-6xl">
-            BimDoc Renamer garde vos fichiers dans le navigateur.
+            BIMCHECK-Rename garde vos fichiers dans le navigateur.
           </h1>
           <p className="mt-5 max-w-3xl font-sans text-xl leading-8 text-ink-soft">
-            BimDoc Renamer devient un service Free / Pro / Team, mais le principe central ne
+            BIMCHECK-Rename est un service Free / Team / Cabinet, mais le principe central ne
             change pas : le renommage, la prévisualisation et l’export ZIP se font dans votre
             navigateur lorsque la fonctionnalité le permet. Le contenu de vos fichiers n’est pas
-            envoyé à BimDoc Renamer pour être renommé.
+            envoyé à BIMCHECK-Rename pour être renommé.
           </p>
           <p className="mt-5 text-sm font-sans text-ink-mute">
-            Dernière mise à jour: 17 mai 2026.
+            Dernière mise à jour: 21 juillet 2026.
           </p>
         </header>
 
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
             <a
               key={section.href}
               href={section.href}
-              className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:border-brick hover:text-brick"
+              className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:border-brick hover:text-brick dark:bg-paper-2"
             >
               {section.label}
             </a>
@@ -67,18 +67,18 @@ export default function PrivacyPage() {
               Résumé clair
             </h2>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-base font-semibold text-ink">Ce qui reste local</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
                   Fichiers déposés, contenu des documents, prévisualisation, génération des noms et
                   ZIP de sortie restent traités côté navigateur pour le flux de renommage.
                 </p>
               </div>
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-base font-semibold text-ink">Ce qui peut être traité côté SaaS</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
-                  Compte, email, plan Free/Pro/Team, facturation, support, télémétrie minimale et
-                  journaux d’erreur si ces services sont activés.
+                  Compte, email, plan Free/Team/Cabinet, JSON de convention, facturation, support,
+                  télémétrie minimale et journaux d’erreur si ces services sont activés.
                 </p>
               </div>
             </div>
@@ -89,7 +89,7 @@ export default function PrivacyPage() {
               Données traitées
             </h2>
 
-            <div className="mt-4 overflow-hidden rounded-lg border border-line bg-white">
+            <div className="mt-4 overflow-hidden rounded-lg border border-line bg-surface dark:bg-paper-2">
               <table className="w-full border-collapse text-left text-sm">
                 <thead className="bg-paper-2 text-ink">
                   <tr>
@@ -141,7 +141,7 @@ export default function PrivacyPage() {
             </div>
 
             <p className="mt-4 max-w-3xl text-ink-soft">
-              BimDoc Renamer ne doit pas recevoir vos fichiers pour renommer un lot. Si vous envoyez
+              BIMCHECK-Rename ne doit pas recevoir vos fichiers pour renommer un lot. Si vous envoyez
               volontairement un fichier au support, il sera traité uniquement pour résoudre votre
               demande.
             </p>
@@ -185,16 +185,16 @@ export default function PrivacyPage() {
             </p>
 
             <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-lg font-semibold text-ink">Responsable du traitement</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
-                  BimDoc Renamer, représenté par Jawani Fernandes, détermine les finalités et moyens des
+                  BIMCHECK-Rename, représenté par Jawani Fernandes, détermine les finalités et moyens des
                   traitements nécessaires au service SaaS. Pour les documents que vous traitez
                   localement, vous restez responsable de leur contenu et des personnes concernées
                   dans vos propres fichiers.
                 </p>
               </div>
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-lg font-semibold text-ink">Sous-traitants</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
                   Des prestataires peuvent intervenir pour l’hébergement, les emails, le paiement,
@@ -228,7 +228,7 @@ export default function PrivacyPage() {
               Sécurité et confidentialité opérationnelle
             </h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-lg font-semibold text-ink">Mesures applicatives</h3>
                 <ul className="mt-2 list-disc space-y-2 pl-5 text-sm leading-6 text-ink-soft">
                   <li>Traitement local prioritaire pour les fichiers.</li>
@@ -237,7 +237,7 @@ export default function PrivacyPage() {
                   <li>Pas d’envoi volontaire de contenu de fichiers à l’analytics ou au monitoring.</li>
                 </ul>
               </div>
-              <div className="rounded-lg border border-line bg-white p-4">
+              <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-lg font-semibold text-ink">Limites</h3>
                 <ul className="mt-2 list-disc space-y-2 pl-5 text-sm leading-6 text-ink-soft">
                   <li>Vous devez vérifier les noms générés avant diffusion.</li>
@@ -257,21 +257,21 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="font-sans text-lg font-semibold text-ink">Objet du service</h3>
                 <p className="mt-2 max-w-3xl text-ink-soft">
-                  BimDoc Renamer aide à appliquer une convention de nommage BIM
-                  (ISO 19650, SIA 2051 ou convention maison) à des lots de
-                  livrables avant dépôt CDE. Le service ne remplace pas une
-                  CDE, une GED, ni une certification réglementaire.
+                  BIMCHECK-Rename aide les équipes professionnelles (BIM, juridique,
+                  finance, RH, santé, industrie, immobilier…) à appliquer une convention
+                  de nommage à des lots de fichiers avant dépôt, archivage ou partage.
+                  Le service ne remplace pas une CDE, une GED, ni une certification réglementaire.
                 </p>
               </div>
               <div>
-                <h3 className="font-sans text-lg font-semibold text-ink">Offres Free, Pro et Team</h3>
+                <h3 className="font-sans text-lg font-semibold text-ink">Offres Free, Team et Cabinet</h3>
                 <p className="mt-2 max-w-3xl text-ink-soft">
-                  Pendant la phase d’accès privé, le quota local de 3 fichiers par jour est
-                  désactivé. L’offre Pro vise un usage individuel illimité à 19.99 CHF/mois.
-                  L’offre Team vise les petites équipes à 34.90 CHF/mois, avec conventions
-                  partagées et jusqu’à 3 utilisateurs inclus. Les modalités exactes de paiement,
-                  taxes, renouvellement, résiliation et facturation sont précisées au moment de la
-                  souscription ou dans le devis correspondant.
+                  Free : 5 lots de renommage par jour, sans compte, traitement local.
+                  Team : 19 €/mois — lots illimités, compte, synchronisation des conventions
+                  (JSON uniquement), jusqu’à 10 utilisateurs. Cabinet : 49 €/mois —
+                  membres et projets illimités, support prioritaire. Affichage multi-devises
+                  (EUR/CHF/USD) indicatif. Les modalités de paiement, taxes, renouvellement
+                  et résiliation figurent dans les Conditions et sur la page Tarifs.
                 </p>
               </div>
               <div>
@@ -285,7 +285,7 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="font-sans text-lg font-semibold text-ink">Usage interdit</h3>
                 <p className="mt-2 max-w-3xl text-ink-soft">
-                  Il est interdit d’utiliser BimDoc Renamer pour contourner des obligations légales,
+                  Il est interdit d’utiliser BIMCHECK-Rename pour contourner des obligations légales,
                   masquer l’origine de documents, diffuser des fichiers illicites ou traiter des
                   données sans base légale dans votre propre organisation.
                 </p>

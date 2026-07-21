@@ -10,13 +10,13 @@ interface UploadZoneProps {
 
 function createDemoFiles(): File[] {
   return [
-    new File(['%PDF-1.4\n% BimDoc demo fixture\n'], 'facade etage 1 FINAL v2.pdf', {
+    new File(['%PDF-1.4\n% BIMCHECK demo fixture\n'], 'facade etage 1 FINAL v2.pdf', {
       type: 'application/pdf',
     }),
     new File(['0\nSECTION\n2\nENTITIES\n0\nENDSEC\n0\nEOF\n'], 'plan rdc copie.dwg', {
       type: 'application/acad',
     }),
-    new File(['BimDoc demo document\n'], 'rapport synthese v3.docx', {
+    new File(['BIMCHECK demo document\n'], 'rapport synthese v3.docx', {
       type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     }),
     new File(['ISO-10303-21;\nHEADER;\nENDSEC;\nEND-ISO-10303-21;\n'], 'maquette structure ifc export.ifc', {
@@ -155,7 +155,7 @@ export function UploadZone({ compact = false }: UploadZoneProps) {
       <button
         type="button"
         onClick={handleLoadDemo}
-        className="inline-flex min-h-9 items-center justify-center self-center rounded-full border border-line bg-white px-4 text-xs font-sans font-semibold text-ink-soft transition-colors hover:border-brick hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
+        className="inline-flex min-h-9 items-center justify-center self-center rounded-full border border-line bg-surface px-4 text-xs font-sans font-semibold text-ink-soft transition-colors hover:border-brick hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick dark:bg-paper-2"
       >
         Charger un lot exemple
       </button>

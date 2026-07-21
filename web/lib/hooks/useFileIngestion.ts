@@ -2,9 +2,9 @@
 
 import { useCallback } from 'react';
 import { useAppContext } from '@/lib/app-state';
-import { readZip, isZip } from '@/lib/bim/zip-io';
-import { isOtherArchive, readOtherArchive, archiveLabel } from '@/lib/bim/archive-io';
-import { detectCategory } from '@/lib/bim/detection';
+import { readZip, isZip } from '@/lib/rename-engine/zip-io';
+import { isOtherArchive, readOtherArchive, archiveLabel } from '@/lib/rename-engine/archive-io';
+import { detectCategory } from '@/lib/rename-engine/detection';
 import { prefetchForExtension } from '@/lib/viewer-prefetch';
 import {
   checkFilename,
@@ -13,7 +13,7 @@ import {
   checkZipMagic,
   MAX_FILE_SIZE,
 } from '@/lib/upload-guard';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 
 /**
  * Shared file-ingestion pipeline.
@@ -30,7 +30,7 @@ function uid(): string {
   return Math.random().toString(36).slice(2, 10);
 }
 
-function makeBimFile(originalName: string, blob: Blob, folder: string, size: number): BimFile {
+function makeWorkspaceFile(originalName: string, blob: Blob, folder: string, size: number): WorkspaceFile {
   const lastDot = originalName.lastIndexOf('.');
   const extension = lastDot > 0 ? originalName.substring(lastDot).toLowerCase() : '';
   return {
@@ -50,14 +50,14 @@ function makeBimFile(originalName: string, blob: Blob, folder: string, size: num
   };
 }
 
-async function expandZip(file: File, onError: (msg: string) => void): Promise<BimFile[]> {
+async function expandZip(file: File, onError: (msg: string) => void): Promise<WorkspaceFile[]> {
   try {
     const entries = await readZip(file);
-    const results: BimFile[] = [];
+    const results: WorkspaceFile[] = [];
     for (const entry of entries) {
       if (entry.isDir) continue;
       const blob = await entry.blob();
-      results.push(makeBimFile(entry.name, blob, entry.folder, entry.size ?? blob.size));
+      results.push(makeWorkspaceFile(entry.name, blob, entry.folder, entry.size ?? blob.size));
     }
     return results;
   } catch {
@@ -66,10 +66,10 @@ async function expandZip(file: File, onError: (msg: string) => void): Promise<Bi
   }
 }
 
-async function expandOtherArchive(file: File, onError: (msg: string) => void): Promise<BimFile[]> {
+async function expandOtherArchive(file: File, onError: (msg: string) => void): Promise<WorkspaceFile[]> {
   try {
     const entries = await readOtherArchive(file);
-    const results: BimFile[] = [];
+    const results: WorkspaceFile[] = [];
     for (const entry of entries) {
       if (entry.isDir) continue;
       const blob = await entry.blob();
@@ -77,7 +77,7 @@ async function expandOtherArchive(file: File, onError: (msg: string) => void): P
         onError(`${entry.name} : fichier extrait trop volumineux (${MAX_FILE_SIZE / 1024 / 1024} Mo maximum), ignoré.`);
         continue;
       }
-      results.push(makeBimFile(entry.name, blob, entry.folder, entry.size ?? blob.size));
+      results.push(makeWorkspaceFile(entry.name, blob, entry.folder, entry.size ?? blob.size));
     }
     return results;
   } catch (err) {
@@ -88,13 +88,13 @@ async function expandOtherArchive(file: File, onError: (msg: string) => void): P
   }
 }
 
-async function expandFile(file: File, onError: (msg: string) => void): Promise<BimFile[]> {
+async function expandFile(file: File, onError: (msg: string) => void): Promise<WorkspaceFile[]> {
   if (isZip(file)) return expandZip(file, onError);
   if (isOtherArchive(file)) return expandOtherArchive(file, onError);
-  return [makeBimFile(file.name, file, '', file.size)];
+  return [makeWorkspaceFile(file.name, file, '', file.size)];
 }
 
-function prefetchUniqueExtensions(files: BimFile[]): void {
+function prefetchUniqueExtensions(files: WorkspaceFile[]): void {
   const seen = new Set<string>();
   for (const f of files) {
     if (!seen.has(f.extension)) {
@@ -123,7 +123,7 @@ export function useFileIngestion(): UseFileIngestionReturn {
   const processFiles = useCallback(
     async (nativeFiles: File[]) => {
       dispatch({ type: 'UPLOAD_START' });
-      const bimFiles: BimFile[] = [];
+      const workspaceFiles: WorkspaceFile[] = [];
 
       let totalBytes = 0;
       const accepted: File[] = [];
@@ -159,16 +159,16 @@ export function useFileIngestion(): UseFileIngestionReturn {
       const onError = (msg: string) => dispatch({ type: 'TOAST_SHOW', msg });
       for (const file of accepted) {
         const expanded = await expandFile(file, onError);
-        bimFiles.push(...expanded);
+        workspaceFiles.push(...expanded);
       }
 
-      if (bimFiles.length > 0) {
-        dispatch({ type: 'FILES_ADD', files: bimFiles });
+      if (workspaceFiles.length > 0) {
+        dispatch({ type: 'FILES_ADD', files: workspaceFiles });
         dispatch({
           type: 'TOAST_SHOW',
-          msg: formatAddedFiles(bimFiles.length),
+          msg: formatAddedFiles(workspaceFiles.length),
         });
-        prefetchUniqueExtensions(bimFiles);
+        prefetchUniqueExtensions(workspaceFiles);
       }
       dispatch({ type: 'UPLOAD_END' });
     },

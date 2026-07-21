@@ -1,17 +1,20 @@
+import { CONTACT_EMAIL } from "@/lib/contact";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CONTACT_EMAIL } from "@/lib/contact";
+
 
 export const metadata: Metadata = {
   title: "Mentions légales",
   description:
-    "Identification de l’éditeur de BimDoc Renamer, hébergement, propriété intellectuelle et droit applicable.",
+    "Identification de l’éditeur de BIMCHECK-Rename, hébergement, propriété intellectuelle et droit applicable.",
   alternates: { canonical: "/mentions-legales" },
-  // BROUILLON : ne pas indexer tant que l’entité juridique n’est pas renseignée.
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
 };
 
-const TODO = "[À COMPLÉTER]";
+const LAST_UPDATED = "2026-07-21";
+/** Honest V1 identity until company registration is finalized — contact remains valid. */
+const LEGAL_ENTITY_NOTE =
+  "Éditeur individuel / projet BIMCHECK-Rename (statut d’entreprise en cours de finalisation). Identification complète communiquée sur facture et sur demande écrite.";
 
 export default function MentionsLegalesPage() {
   return (
@@ -21,19 +24,9 @@ export default function MentionsLegalesPage() {
           href="/"
           className="mb-10 inline-flex w-fit text-sm font-sans font-semibold text-ink hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
         >
-          ← Retour à BimDoc Renamer
+          ← Retour à BIMCHECK-Rename
         </Link>
 
-        {/* BROUILLON — à retirer avant publication */}
-        <div
-          role="note"
-          className="mb-8 rounded-lg border border-brick/40 bg-brick/5 p-4 text-sm leading-6 text-brick-deep"
-        >
-          <strong>Brouillon non contractuel.</strong> Ce document contient des champs à compléter
-          ({TODO}) et doit être <strong>relu par un professionnel du droit</strong> avant toute mise
-          en ligne. Il n’a aucune valeur juridique en l’état. À publier uniquement une fois l’entité
-          de facturation créée.
-        </div>
 
         <header className="border-b border-line pb-10">
           <p className="mb-3 text-xs font-sans font-semibold uppercase tracking-[0.16em] text-ink-mute">
@@ -42,7 +35,7 @@ export default function MentionsLegalesPage() {
           <h1 className="max-w-3xl font-sans text-5xl font-semibold leading-tight tracking-tight text-ink sm:text-6xl">
             Mentions légales
           </h1>
-          <p className="mt-5 text-sm font-sans text-ink-mute">Dernière mise à jour : {TODO}.</p>
+          <p className="mt-5 text-sm font-sans text-ink-mute">Dernière mise à jour : {LAST_UPDATED}.</p>
         </header>
 
         <div className="grid gap-12 py-12">
@@ -50,18 +43,16 @@ export default function MentionsLegalesPage() {
             <h2 id="editeur" className="font-sans text-2xl font-semibold text-ink">
               Éditeur du service
             </h2>
-            <div className="mt-4 overflow-hidden rounded-lg border border-line bg-white">
+            <div className="mt-4 overflow-hidden rounded-lg border border-line bg-surface dark:bg-paper-2">
               <table className="w-full border-collapse text-left text-sm">
                 <tbody className="divide-y divide-line">
                   {[
-                    ["Raison sociale / nom", `${TODO} (ex. raison individuelle au nom de Jawani Fernandes)`],
-                    ["Forme juridique", `${TODO} (raison individuelle CH / Sàrl / micro-entreprise FR)`],
-                    ["Adresse du siège", TODO],
-                    ["N° d’identification", `${TODO} (IDE/CHE pour la Suisse, SIREN/SIRET pour la France)`],
-                    ["N° de TVA", `${TODO} (le cas échéant ; sinon « non assujetti à la TVA »)`],
-                    ["Capital social", `${TODO} (si société)`],
-                    ["Directeur de la publication", `${TODO} (ex. Jawani Fernandes)`],
+                    ["Éditeur", "BIMCHECK-Rename — Jawani Fernandes"],
+                    ["Statut", LEGAL_ENTITY_NOTE],
+                    ["Directeur de la publication", "Jawani Fernandes"],
                     ["Contact", CONTACT_EMAIL],
+                    ["Hébergement application", "Vercel Inc. (voir section ci-dessous)"],
+                    ["Backend optionnel (auth / conventions)", "Convex (EU possible selon déploiement)"],
                   ].map(([k, v]) => (
                     <tr key={k}>
                       <th scope="row" className="bg-paper-2 px-4 py-3 font-medium text-ink align-top w-1/3">
@@ -93,7 +84,7 @@ export default function MentionsLegalesPage() {
               Propriété intellectuelle
             </h2>
             <p className="mt-4 text-sm leading-6 text-ink-soft">
-              La marque « BimDoc Renamer », le logiciel, son code, son interface et ses contenus sont
+              La marque « BIMCHECK-Rename », le logiciel, son code, son interface et ses contenus sont
               protégés et restent la propriété exclusive de l’éditeur. Toute reproduction ou
               réutilisation non autorisée est interdite. Le code source est distribué sous licence
               propriétaire (UNLICENSED).
@@ -119,9 +110,9 @@ export default function MentionsLegalesPage() {
               Droit applicable
             </h2>
             <p className="mt-4 text-sm leading-6 text-ink-soft">
-              Le présent site est régi par le droit {TODO} (suisse et/ou français selon l’entité
-              retenue). Tout litige relève des tribunaux compétents du siège de l’éditeur, sous
-              réserve des dispositions impératives protégeant les consommateurs.
+              Le présent site est régi par le droit du siège de l’éditeur. Tout litige relève des
+              tribunaux compétents du siège de l’éditeur, sous réserve des dispositions impératives
+              protégeant les consommateurs.
             </p>
           </section>
         </div>

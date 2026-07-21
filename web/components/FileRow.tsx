@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { saveAs } from 'file-saver';
 import { useAppContext } from '@/lib/app-state';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 import { NameEditorModal } from './NameEditorModal';
 import { FileTypePill } from './FileTypePill';
 
@@ -26,7 +26,7 @@ const statusLabels: Record<string, string> = {
 };
 
 interface FileRowProps {
-  file: BimFile;
+  file: WorkspaceFile;
 }
 
 export function FileRow({ file }: FileRowProps) {
@@ -59,7 +59,7 @@ export function FileRow({ file }: FileRowProps) {
         className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 shadow-xs hover:shadow-md hover:-translate-y-[1px] transition-all ${
           isSelected
             ? 'bg-gold-soft/15 border-brick/50'
-            : 'border-line bg-white hover:border-line-2'
+            : 'border-line bg-surface hover:border-line-2 dark:bg-paper-2'
         }`}
       >
         {/* Selection checkbox */}

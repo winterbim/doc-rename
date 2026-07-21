@@ -1,8 +1,9 @@
 'use client';
 
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonHTMLAttributes, ReactNode, ReactElement } from 'react';
+import { cloneElement, isValidElement } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'danger' | 'ghost';
+type Variant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'accent';
 type Size = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -10,23 +11,26 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
   children: ReactNode;
   loading?: boolean;
+  asChild?: boolean;
 }
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    'bg-ink text-paper hover:bg-brick focus-visible:ring-brick disabled:opacity-50',
+    'bg-primary text-paper hover:bg-indigo-700 focus-visible:ring-primary disabled:opacity-50 shadow-sm shadow-indigo-900/10',
   secondary:
-    'bg-white dark:bg-paper-2 text-ink border border-line hover:bg-paper-2 dark:hover:bg-paper-3 focus-visible:ring-brick disabled:opacity-50',
+    'bg-surface text-ink border border-border hover:bg-surface-2 focus-visible:ring-primary disabled:opacity-50',
   danger:
-    'bg-brick text-paper hover:bg-brick-deep focus-visible:ring-brick disabled:opacity-50',
+    'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 disabled:opacity-50',
   ghost:
-    'bg-transparent text-ink border border-ink hover:bg-ink hover:text-paper focus-visible:ring-brick disabled:opacity-40',
+    'bg-transparent text-ink border border-transparent hover:bg-surface-2 focus-visible:ring-primary disabled:opacity-40',
+  accent:
+    'bg-accent text-slate-900 hover:bg-amber-600 focus-visible:ring-amber-500 disabled:opacity-50 shadow-sm shadow-amber-900/10',
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: 'px-2.5 py-1.5 text-xs',
+  sm: 'px-3 py-1.5 text-xs',
   md: 'px-4 py-2 text-sm',
-  lg: 'px-5 py-2.5 text-base',
+  lg: 'px-6 py-3 text-base',
 };
 
 export function Button({
@@ -36,22 +40,21 @@ export function Button({
   disabled,
   className = '',
   children,
+  asChild = false,
   ...rest
 }: ButtonProps) {
-  return (
-    <button
-      disabled={disabled || loading}
-      className={[
-        'inline-flex items-center justify-center gap-2 rounded-full font-medium font-sans',
-        'transition-colors duration-150',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
-        'disabled:cursor-not-allowed',
-        variantClasses[variant],
-        sizeClasses[size],
-        className,
-      ].join(' ')}
-      {...rest}
-    >
+  const classes = [
+    'inline-flex items-center justify-center gap-2 rounded-lg font-semibold font-sans',
+    'transition-all duration-200 active:scale-[0.98]',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
+    'disabled:cursor-not-allowed',
+    variantClasses[variant],
+    sizeClasses[size],
+    className,
+  ].join(' ');
+
+  const content = (
+    <>
       {loading && (
         <svg
           className="h-4 w-4 animate-spin"
@@ -76,6 +79,20 @@ export function Button({
         </svg>
       )}
       {children}
+    </>
+  );
+
+  if (asChild && isValidElement(children)) {
+    const childProps = children.props as { className?: string };
+    return cloneElement(children as ReactElement<{ className?: string }>, {
+      className: [classes, childProps.className].filter(Boolean).join(' '),
+      ...(rest as Record<string, unknown>),
+    });
+  }
+
+  return (
+    <button disabled={disabled || loading} className={classes} {...rest}>
+      {content}
     </button>
   );
 }

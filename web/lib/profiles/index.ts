@@ -1,6 +1,6 @@
-import type { FieldDefinition } from '@/lib/bim/types';
-import type { FieldsState } from '@/lib/bim/fields';
-import { COMPANIES } from '@/lib/bim/config/companies';
+import type { FieldDefinition } from '@/lib/rename-engine/types';
+import type { FieldsState } from '@/lib/rename-engine/fields';
+import { COMPANIES, formatCompanyOption } from '@/lib/rename-engine/config/companies';
 import { INDUSTRY_PROFILES } from './industry-profiles';
 import { adaptAbbreviationSeparator, normalizeFieldValue } from './normalization';
 import type {
@@ -36,12 +36,11 @@ export { getProfileEntityStorageKey, importEntitiesFromText, mergeProfileEntitie
 export const DEFAULT_PROFILE_ID: IndustryProfileId = 'bim-construction';
 
 /**
- * V1 commercial gate. When `NEXT_PUBLIC_BIM_ONLY` is `'true'` we hide every
- * non-BIM profile from the public UI (picker, landing copy, OG meta).
- * The full profile catalog stays in code so a single env flip restores V2.
+ * Optional commercial gate. Product truth is multi-industry (all profiles).
+ * Set `NEXT_PUBLIC_BIM_ONLY=true` only if a deployment must temporarily expose
+ * the BIM profile alone. Default / unset = full multi-métier catalog.
  *
- * Read from `process.env` rather than a constant so Next.js statically
- * inlines the value at build time on both client and server.
+ * Read from `process.env` so Next.js inlines the value at build time.
  */
 export const BIM_ONLY = process.env.NEXT_PUBLIC_BIM_ONLY === 'true';
 
@@ -103,16 +102,21 @@ function optionsForField(
       const options = new Map(
         COMPANIES.map((company) => [
           company.code,
-          { code: company.code, name: company.name },
+          { code: company.code, name: formatCompanyOption(company) },
         ]),
       );
       for (const entity of entities) {
-        options.set(entity.code, {
-          code: entity.code,
-          name: `${entity.code} - ${entity.label}`,
+        const code = entity.code.trim();
+        if (!code) continue;
+        // Imported entities override catalog entry with same code (no double line)
+        options.set(code, {
+          code,
+          name: formatCompanyOption({ code, name: entity.label }),
         });
       }
-      return Array.from(options.values());
+      return Array.from(options.values()).sort((a, b) =>
+        a.code.localeCompare(b.code, 'fr'),
+      );
     }
   }
 

@@ -12,7 +12,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { STORAGE_KEYS } from '@/lib/bim/config/defaults';
+import { STORAGE_KEYS } from '@/lib/rename-engine/config/defaults';
 
 // ---------------------------------------------------------------------------
 // Types

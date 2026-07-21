@@ -50,7 +50,7 @@ export function SearchAndFilter() {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Rechercher dans les noms…"
-          className="w-full rounded-md border border-line bg-white py-1.5 pl-8 pr-3 text-sm text-ink placeholder-ink-mute focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition"
+          className="w-full rounded-md border border-line bg-surface py-1.5 pl-8 pr-3 text-sm text-ink placeholder-ink-mute focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition dark:bg-paper-2"
         />
       </div>
 
@@ -66,7 +66,7 @@ export function SearchAndFilter() {
             onChange={(e) =>
               dispatch({ type: 'EXT_FILTER_SET', ext: e.target.value })
             }
-            className="rounded-md border border-line bg-white py-1.5 pl-2.5 pr-7 text-sm text-ink focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition"
+            className="rounded-md border border-line bg-surface py-1.5 pl-2.5 pr-7 text-sm text-ink focus:border-brick focus:outline-none focus:ring-2 focus:ring-brick/20 transition dark:bg-paper-2"
           >
             <option value="">Tout</option>
             {extensions.map((ext) => (

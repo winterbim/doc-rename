@@ -40,7 +40,7 @@ export function TemplatePicker() {
         id="template-picker"
         value={currentTemplate}
         onChange={handleChange}
-        className="w-full rounded-md border border-line bg-white dark:bg-paper-2 text-ink px-2.5 py-1.5 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick"
+        className="w-full rounded-md border border-line bg-surface dark:bg-paper-2 text-ink px-2.5 py-1.5 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus:border-brick"
       >
         {templates.map((t) => (
           <option key={t.id} value={t.id}>

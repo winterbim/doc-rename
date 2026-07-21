@@ -5,18 +5,18 @@
 'use client';
 
 import { createContext, useContext } from 'react';
-import type { BimFile, PrefixRule } from '@/lib/bim/types';
+import type { WorkspaceFile, PrefixRule } from '@/lib/rename-engine/types';
 import {
   loadTemplate,
   setFieldValue,
   setActiveFields,
   type FieldsState,
-} from '@/lib/bim/fields';
-import { normalizeOutputName } from '@/lib/bim/nomenclature';
+} from '@/lib/rename-engine/fields';
+import { normalizeOutputName } from '@/lib/rename-engine/nomenclature';
 import {
   createDefaultState as createDefaultCleanerState,
   type CleanerState,
-} from '@/lib/bim/filename-cleaner';
+} from '@/lib/rename-engine/filename-cleaner';
 import {
   DEFAULT_PROFILE_ID,
   applyProfileTemplate,
@@ -47,7 +47,7 @@ export interface AppUiState {
 }
 
 export interface AppState {
-  files: BimFile[];
+  files: WorkspaceFile[];
   profileId: IndustryProfileId;
   profileEntities: ProfileEntitiesById;
   fields: FieldsState;
@@ -82,7 +82,7 @@ export interface PersistedSlices {
 }
 
 export type Action =
-  | { type: 'FILES_ADD'; files: BimFile[] }
+  | { type: 'FILES_ADD'; files: WorkspaceFile[] }
   | { type: 'FILE_REMOVE'; id: string }
   | { type: 'FILES_RESET' }
   | { type: 'FIELD_VALUE_SET'; fieldId: string; value: string }

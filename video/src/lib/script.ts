@@ -38,7 +38,7 @@ export const subtitles: Cue[] = [
   cue(7.2, 9.8, 'Erreurs, doublons, livrables non conformes.'),
 
   // Scene 2 — Solution 10 → 20 s
-  cue(10.2, 14.4, 'BimDoc Renamer.'),
+  cue(10.2, 14.4, 'BIMCHECK-Rename.'),
   cue(14.6, 19.8, 'Convention ISO 19650 ou SIA, appliquée en 60 secondes.'),
 
   // Scene 3 — Import 20 → 32 s
@@ -73,7 +73,7 @@ export const subtitles: Cue[] = [
  */
 export const subtitlesShort: Cue[] = [
   cue(0.4, 3.6, 'Renommer un lot BIM avant dépôt CDE :\n30 minutes.'),
-  cue(4.0, 7.5, 'BimDoc Renamer — convention ISO 19650 en 60 secondes.'),
+  cue(4.0, 7.5, 'BIMCHECK-Rename — convention ISO 19650 en 60 secondes.'),
   cue(8.0, 12.5, 'Importez. Composez votre convention BIM.'),
   cue(13.0, 18.0, 'Projet · Phase · Lot · Type · Zone · Révision.'),
   cue(18.5, 23.0, 'Renommez tout un lot en quelques secondes.'),

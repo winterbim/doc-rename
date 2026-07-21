@@ -11,35 +11,148 @@
   --font-sans: var(--font-sans, ui-sans-serif, system-ui);
   --font-mono: var(--font-mono, ui-monospace, monospace);
 
-  /* Light palette */
-  --color-paper:      #F8F6F1;
-  --color-paper-2:    #F0EDE5;
-  --color-paper-3:    #E5DFCF;
-  --color-ink:        #2B2218;
-  --color-ink-soft:   #5A4B3A;
-  --color-ink-mute:   #6E5E48;
-  --color-brick:      #B84A35;
-  --color-brick-deep: #8C3722;
-  --color-gold:       #C49545;
-  --color-gold-soft:  #E0B96B;
-  --color-olive:      #5C6B3A;
-  --color-line:       #E8DFC8;
-  --color-line-2:     #C2B292;
+  /* -------------------------------------------------------------------------
+   * New premium SaaS palette (2026 redesign)
+   * ------------------------------------------------------------------------- */
+  --color-slate-50:   #F8FAFC;
+  --color-slate-100:  #F1F5F9;
+  --color-slate-200:  #E2E8F0;
+  --color-slate-300:  #CBD5E1;
+  --color-slate-400:  #94A3B8;
+  --color-slate-500:  #64748B;
+  --color-slate-600:  #475569;
+  --color-slate-700:  #334155;
+  --color-slate-800:  #1E293B;
+  --color-slate-900:  #0F172A;
+  --color-slate-950:  #020617;
+
+  --color-indigo-50:  #EEF2FF;
+  --color-indigo-100: #E0E7FF;
+  --color-indigo-200: #C7D2FE;
+  --color-indigo-300: #A5B4FC;
+  --color-indigo-400: #818CF8;
+  --color-indigo-500: #6366F1;
+  --color-indigo-600: #4F46E5;
+  --color-indigo-700: #4338CA;
+  --color-indigo-800: #3730A3;
+  --color-indigo-900: #312E81;
+
+  --color-emerald-50:  #ECFDF5;
+  --color-emerald-100: #D1FAE5;
+  --color-emerald-200: #A7F3D0;
+  --color-emerald-300: #6EE7B7;
+  --color-emerald-400: #34D399;
+  --color-emerald-500: #10B981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+
+  --color-amber-50:  #FFFBEB;
+  --color-amber-100: #FEF3C7;
+  --color-amber-200: #FDE68A;
+  --color-amber-400: #FBBF24;
+  --color-amber-500: #F59E0B;
+  --color-amber-600: #D97706;
+
+  /* Semantic aliases — legacy names mapped to the new palette so existing
+   * components keep working while we migrate to the new design language. */
+  --color-paper:      var(--color-slate-50);
+  --color-paper-2:    var(--color-slate-100);
+  --color-paper-3:    var(--color-slate-200);
+  --color-ink:        var(--color-slate-900);
+  --color-ink-soft:   var(--color-slate-600);
+  --color-ink-mute:   var(--color-slate-500);
+  --color-brick:      var(--color-indigo-600);
+  --color-brick-deep: var(--color-indigo-700);
+  --color-gold:       var(--color-amber-500);
+  --color-gold-soft:  var(--color-amber-400);
+  --color-olive:      var(--color-emerald-500);
+  --color-line:       var(--color-slate-200);
+  --color-line-2:     var(--color-slate-300);
+
+  /* New semantic tokens */
+  --color-bg:         var(--color-slate-50);
+  --color-surface:    #FFFFFF;
+  --color-surface-2:  var(--color-slate-100);
+  --color-primary:    var(--color-indigo-600);
+  --color-primary-2:  var(--color-indigo-100);
+  --color-success:    var(--color-emerald-500);
+  --color-success-2:  var(--color-emerald-50);
+  --color-accent:     var(--color-amber-500);
+  --color-accent-2:   var(--color-amber-100);
+  --color-text:       var(--color-slate-900);
+  --color-text-2:     var(--color-slate-600);
+  --color-text-3:     var(--color-slate-500);
+  --color-border:     var(--color-slate-200);
+  --color-border-2:   var(--color-slate-300);
+
+  /* Viewer / preview surfaces that need to stay light regardless of theme */
+  --color-doc-surface: #FFFFFF;
+  --color-doc-ink:     #1F2937;
 }
 
 /* ---------------------------------------------------------------------------
  * Dark mode CSS variable overrides (Tailwind v4 doesn't flip @theme by attr)
  * --------------------------------------------------------------------------- */
 [data-theme="dark"] {
-  --color-paper:      #0F1115;
-  --color-paper-2:    #181B21;
-  --color-paper-3:    #1F232A;
-  --color-ink:        #E7E4DD;
-  --color-ink-soft:   #B8B3A6;
-  --color-ink-mute:   #8A8479;
-  --color-brick:      #E0735C;
-  --color-line:       #2A2E36;
-  --color-line-2:     #3A3F4A;
+  --color-slate-50:   #0F1115;
+  --color-slate-100:  #181B21;
+  --color-slate-200:  #1F232A;
+  --color-slate-300:  #2A2E36;
+  --color-slate-400:  #3A3F4A;
+  --color-slate-500:  #64748B;
+  --color-slate-600:  #94A3B8;
+  --color-slate-700:  #CBD5E1;
+  --color-slate-800:  #E2E8F0;
+  --color-slate-900:  #F8FAFC;
+  --color-slate-950:  #FFFFFF;
+
+  --color-indigo-50:  #1E1B4B;
+  --color-indigo-100: #312E81;
+  --color-indigo-200: #3730A3;
+  --color-indigo-600: #6366F1;
+  --color-indigo-700: #818CF8;
+
+  --color-emerald-50:  #064E3B;
+  --color-emerald-500: #34D399;
+  --color-emerald-600: #6EE7B7;
+
+  --color-amber-500: #FBBF24;
+  --color-amber-600: #F59E0B;
+
+  /* Legacy dark mapping */
+  --color-paper:      var(--color-slate-50);
+  --color-paper-2:    var(--color-slate-100);
+  --color-paper-3:    var(--color-slate-200);
+  --color-ink:        var(--color-slate-900);
+  --color-ink-soft:   var(--color-slate-600);
+  --color-ink-mute:   var(--color-slate-500);
+  --color-brick:      var(--color-indigo-600);
+  --color-brick-deep: var(--color-indigo-700);
+  --color-gold:       var(--color-amber-500);
+  --color-gold-soft:  var(--color-amber-600);
+  --color-olive:      var(--color-emerald-500);
+  --color-line:       var(--color-slate-200);
+  --color-line-2:     var(--color-slate-300);
+
+  /* New semantic dark tokens */
+  --color-bg:         var(--color-slate-50);
+  --color-surface:    var(--color-slate-100);
+  --color-surface-2:  var(--color-slate-200);
+  --color-primary:    var(--color-indigo-500);
+  --color-primary-2:  var(--color-indigo-100);
+  --color-success:    var(--color-emerald-500);
+  --color-success-2:  var(--color-emerald-50);
+  --color-accent:     var(--color-amber-500);
+  --color-accent-2:   var(--color-amber-100);
+  --color-text:       var(--color-slate-900);
+  --color-text-2:     var(--color-slate-600);
+  --color-text-3:     var(--color-slate-500);
+  --color-border:     var(--color-slate-200);
+  --color-border-2:   var(--color-slate-300);
+
+  /* Viewer / preview surfaces stay light for readability */
+  --color-doc-surface: #FFFFFF;
+  --color-doc-ink:     #1F2937;
 }
 
 html, body {
@@ -50,6 +163,10 @@ html, body {
 /* ---------------------------------------------------------------------------
  * DocxPreview — rendered DOCX HTML
  * --------------------------------------------------------------------------- */
+.docx-render {
+  background: var(--color-doc-surface);
+  color: var(--color-doc-ink);
+}
 .docx-render h1 { @apply font-sans text-2xl font-semibold mt-6 mb-3; }
 .docx-render h2 { @apply font-sans text-xl font-semibold mt-5 mb-2; }
 .docx-render h3 { @apply font-sans text-lg font-semibold mt-4 mb-2; }
@@ -64,9 +181,23 @@ html, body {
 /* ---------------------------------------------------------------------------
  * SpreadsheetPreview — SheetJS HTML table
  * --------------------------------------------------------------------------- */
+.spreadsheet-render {
+  background: var(--color-doc-surface);
+  color: var(--color-doc-ink);
+}
 .spreadsheet-render table { @apply border-collapse w-auto; }
 .spreadsheet-render td, .spreadsheet-render th {
   @apply border border-line px-2 py-1 text-xs min-w-[60px];
 }
 .spreadsheet-render th { @apply bg-paper-2 font-sans font-semibold sticky top-0 z-10; }
 .spreadsheet-render tr:nth-child(even) td { @apply bg-paper-2/30; }
+
+/* Ensure native form controls match the theme in dark mode */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+[data-theme="dark"] button {
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+  border-color: var(--color-border) !important;
+}

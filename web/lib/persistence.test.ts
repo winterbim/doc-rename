@@ -8,8 +8,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { loadPersistedState, persistState, flushPersist } from './persistence';
 import { initialState } from './app-state';
-import { STORAGE_KEYS } from './bim/config/defaults';
-import { createDefaultState as createDefaultCleanerState } from './bim/filename-cleaner';
+import { STORAGE_KEYS } from './rename-engine/config/defaults';
+import { createDefaultState as createDefaultCleanerState } from './rename-engine/filename-cleaner';
 import type { AppState } from './app-state';
 
 // ---------------------------------------------------------------------------

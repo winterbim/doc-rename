@@ -1,7 +1,7 @@
 'use client';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 
-interface Props { readonly file: BimFile }
+interface Props { readonly file: WorkspaceFile }
 
 const REASONS: Record<string, string> = {
   '.rvt': "Format propriétaire Autodesk Revit. Une visualisation web complète requiert l'API Autodesk Platform Services (payante).",
@@ -19,7 +19,7 @@ const REASONS: Record<string, string> = {
   '.ifc': "IFC : modèle BIM 3D. Une visualisation 3D nécessite ~10 Mo de JavaScript supplémentaires (web-ifc-viewer) — pas encore intégré.",
 };
 
-function downloadBlob(file: BimFile) {
+function downloadBlob(file: WorkspaceFile) {
   const url = URL.createObjectURL(file.blob);
   const a = document.createElement('a');
   a.href = url;

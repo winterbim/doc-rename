@@ -6,7 +6,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { setupPdfWorker } from '@/lib/pdf-config';
 import { getObjectUrl } from '@/lib/viewer-cache';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 
 // Configure worker once when this module loads (client-side only)
 setupPdfWorker();
@@ -15,7 +15,7 @@ const ZOOM_STEPS = [50, 75, 100, 125, 150, 200] as const;
 type ZoomStep = (typeof ZOOM_STEPS)[number];
 
 interface PdfPreviewProps {
-  file: BimFile;
+  file: WorkspaceFile;
 }
 
 export function PdfPreview({ file }: PdfPreviewProps) {
@@ -70,14 +70,14 @@ export function PdfPreview({ file }: PdfPreviewProps) {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       {/* PDF toolbar */}
-      <div className="flex shrink-0 items-center gap-2 border-b border-gray-100 bg-gray-50 px-4 py-2">
+      <div className="flex shrink-0 items-center gap-2 border-b border-line bg-paper-2 px-4 py-2">
         {/* Zoom controls */}
         <button
           type="button"
           onClick={zoomOut}
           disabled={!canZoomOut}
           aria-label="Réduire le zoom"
-          className="rounded p-1 text-gray-500 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 transition-colors"
+          className="rounded p-1 text-ink-mute hover:bg-paper-2 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -96,7 +96,7 @@ export function PdfPreview({ file }: PdfPreviewProps) {
           </svg>
         </button>
 
-        <span className="min-w-[3rem] text-center text-xs font-medium text-gray-600">
+        <span className="min-w-[3rem] text-center text-xs font-medium text-ink-soft">
           {zoom}%
         </span>
 
@@ -105,7 +105,7 @@ export function PdfPreview({ file }: PdfPreviewProps) {
           onClick={zoomIn}
           disabled={!canZoomIn}
           aria-label="Augmenter le zoom"
-          className="rounded p-1 text-gray-500 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 transition-colors"
+          className="rounded p-1 text-ink-mute hover:bg-paper-2 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +124,7 @@ export function PdfPreview({ file }: PdfPreviewProps) {
           </svg>
         </button>
 
-        <div className="mx-1 h-4 w-px bg-gray-300" aria-hidden="true" />
+        <div className="mx-1 h-4 w-px bg-line" aria-hidden="true" />
 
         {/* Page navigation */}
         <button
@@ -132,7 +132,7 @@ export function PdfPreview({ file }: PdfPreviewProps) {
           onClick={goToPrev}
           disabled={pageNumber <= 1}
           aria-label="Page précédente"
-          className="rounded p-1 text-gray-500 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 transition-colors"
+          className="rounded p-1 text-ink-mute hover:bg-paper-2 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -147,7 +147,7 @@ export function PdfPreview({ file }: PdfPreviewProps) {
           </svg>
         </button>
 
-        <span className="text-xs text-gray-600 whitespace-nowrap">
+        <span className="text-xs text-ink-soft whitespace-nowrap">
           {numPages > 0 ? `Page ${pageNumber} / ${numPages}` : '—'}
         </span>
 
@@ -156,7 +156,7 @@ export function PdfPreview({ file }: PdfPreviewProps) {
           onClick={goToNext}
           disabled={pageNumber >= numPages || numPages === 0}
           aria-label="Page suivante"
-          className="rounded p-1 text-gray-500 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 transition-colors"
+          className="rounded p-1 text-ink-mute hover:bg-paper-2 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -173,7 +173,7 @@ export function PdfPreview({ file }: PdfPreviewProps) {
       </div>
 
       {/* PDF rendering area */}
-      <div className="flex flex-1 overflow-auto items-start justify-center bg-gray-100 p-4">
+      <div className="flex flex-1 overflow-auto items-start justify-center bg-paper-2 p-4">
         <Document
             file={objectUrl}
             onLoadSuccess={onDocumentLoadSuccess}

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useAppContext } from '@/lib/app-state';
 import { useDebounce } from '@/lib/hooks/useDebounce';
-import { generatePreview } from '@/lib/bim/nomenclature';
+import { generatePreview } from '@/lib/rename-engine/nomenclature';
 import { getActiveFieldsForProfile, normalizeFieldValuesForGeneration } from '@/lib/profiles';
 
 export function LivePreview() {
@@ -50,7 +50,7 @@ export function LivePreview() {
         Aperçu
       </p>
       <div
-        className="rounded-md border border-line bg-white px-2.5 py-1.5 dark:bg-paper-2"
+        className="rounded-md border border-line bg-surface px-2.5 py-1.5 dark:bg-paper-2"
         aria-live="polite"
         aria-label={`Aperçu du nom de fichier: ${preview}`}
       >

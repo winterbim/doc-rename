@@ -1,10 +1,10 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { getDxfSvgCache, setDxfSvgCache } from '@/lib/viewer-cache';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 import type { IDxf } from 'dxf-parser';
 
-interface Props { readonly file: BimFile }
+interface Props { readonly file: WorkspaceFile }
 
 export function DxfPreview({ file }: Props) {
   const cached = getDxfSvgCache(file.id);
@@ -69,7 +69,7 @@ export function DxfPreview({ file }: Props) {
     <div className="flex-1 overflow-auto bg-paper-2 p-4">
       <div
         ref={containerRef}
-        className="bg-white rounded-md shadow-sm p-4"
+        className="bg-doc-surface rounded-md shadow-sm p-4"
         dangerouslySetInnerHTML={{ __html: svg }}
       />
     </div>

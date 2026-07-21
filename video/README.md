@@ -1,7 +1,7 @@
-# DOC-RENAME — vidéo de présentation
+# BIMCHECK-Rename — vidéo de présentation
 
 Projet **Remotion** (React → MP4) qui produit la vidéo marketing/démo de
-DOC-RENAME en quatre formats :
+BIMCHECK-Rename en quatre formats :
 
 | Composition         | Format       | Durée  | Usage                                             |
 | ------------------- | ------------ | ------ | ------------------------------------------------- |
@@ -93,7 +93,7 @@ video/
     ├── components/              # UI primitives réutilisables
     │   ├── BrandMark.tsx        # Logo "DR" + wordmark
     │   ├── PaperBackground.tsx  # Fond "warm-paper" + grille
-    │   ├── AppFrame.tsx         # Reproduction du shell DOC-RENAME
+    │   ├── AppFrame.tsx         # Reproduction du shell BIMCHECK-Rename
     │   ├── Panel.tsx, SubPanel  # Cartes / sous-cartes
     │   ├── FileRow.tsx          # Ligne fichier (old / new / neutral)
     │   ├── Chip.tsx             # Pastilles profils / catégories
@@ -185,7 +185,7 @@ le texte en clair, organisé par scène (timing arrondi à la seconde).
 | 0.4 – 3.6     | Des fichiers mal nommés ralentissent vos projets. |
 | 3.8 – 7.0     | Perte de temps, erreurs, doublons.             |
 | 7.2 – 9.8     | Des livrables difficiles à contrôler.          |
-| 10.2 – 14.8   | DOC-RENAME                                     |
+| 10.2 – 14.8   | BIMCHECK-Rename                                     |
 | 15.0 – 19.8   | Renommage documentaire professionnel.          |
 | 20.3 – 24.8   | Importez vos fichiers ou vos archives.         |
 | 25.0 – 28.6   | PDF, DOCX, images, tableurs, ZIP…              |
@@ -208,7 +208,7 @@ le texte en clair, organisé par scène (timing arrondi à la seconde).
 | t (s)         | Texte                                          |
 | ------------- | ---------------------------------------------- |
 | 0.4 – 3.6     | Des fichiers mal nommés ralentissent vos projets. |
-| 4.0 – 7.5     | DOC-RENAME — renommage documentaire pro.       |
+| 4.0 – 7.5     | BIMCHECK-Rename — renommage documentaire pro.       |
 | 8.0 – 12.5    | Importez. Construisez une convention métier.   |
 | 13.0 – 18.0   | Champs : Projet · Bâtiment · Lot · Type · Rév. |
 | 18.5 – 23.0   | Renommez tout un lot en quelques secondes.     |
@@ -279,7 +279,7 @@ Conformément au brief, la vidéo :
   explicitement) ;
 - **ne revendique aucune certification** (ISO, RGPD entreprise, etc.) ;
 - **n'utilise pas de stock générique** — uniquement le système visuel
-  réel de DOC-RENAME ;
+  réel de BIMCHECK-Rename ;
 - **garde une promesse mesurée** : « rapidement », « quelques minutes »,
   pas de « instantané » ou « magique ».
 
@@ -300,5 +300,5 @@ Conformément au brief, la vidéo :
 
 ## Licence
 
-Code interne DOC-RENAME — copyright (c) 2026 Jawani Fernandes. Tous droits
+Code interne BIMCHECK-Rename — copyright (c) 2026 Jawani Fernandes. Tous droits
 réservés. Voir le `LICENSE` racine.

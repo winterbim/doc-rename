@@ -1,207 +1,98 @@
-# BimDoc Renamer — Architecture
+# BIMCHECK-Rename — Architecture
 
-This document is the contract: how the app is laid out, what the guarantees
-are, and where to look when something breaks. It must stay accurate. If a
-commit changes any of these properties, the commit must update this file.
+Contrat technique de l’app `web/`. Toute modification structurelle doit
+mettre à jour ce fichier.
 
 ## 1. Surfaces
 
 | Path | Build | Purpose |
 |---|---|---|
-| `/` | Server Component | Marketing landing (vanilla HTML/CSS ported to JSX) |
-| `/app` | Client Component (`'use client'`, `dynamic ssr:false`) | The renamer |
-| `/pilot` | Server Component + client mailto form | Commercial pilot request page; no backend storage |
-| `/privacy` | Server Component | Privacy policy |
-| `/manifest.webmanifest` | static | PWA manifest |
+| `/` | Server Component | Landing marketing multi-métiers |
+| `/app` | Client (`'use client'`, `dynamic ssr:false`) | Renamer |
+| `/pricing`, `/pilot` | Server + forms | Conversion commerciale |
+| `/merci` | Server | Post-checkout / activation manuelle |
+| `/privacy`, `/conditions`, `/mentions-legales`, `/security` | Server | Légal / confiance |
+| `/iso-19650` | Server | Contenu SEO BIM (un profil parmi d’autres) |
+| `/login`, `/account`, `/access` | Mixed | Auth / accès |
 
-Single Vercel project `doc-rename-saas`, `rootDirectory=web`, `framework=nextjs`,
-auto-deploy on push to `main`.
+Offre commerciale figée : `lib/pricing.ts` + doctrine `docs/product/SAAS_V1.md`.
+
+Déploiement : projet Vercel, `rootDirectory=web`, framework Next.js.
 
 ## 2. State model
 
-One `useReducer` in `app/app/page.tsx`, propagated through `AppContext`. Slices:
+Un `useReducer` dans `app/app/page.tsx`, propagé via contexte. Tranches clés :
 
 | Slice | Type | Persisted? |
 |---|---|---|
-| `files` | `BimFile[]` | NO (transient) |
-| `fields` | `FieldsState` (activeFieldIds + values) | YES |
-| `separator` | `string` | YES |
-| `cleaner` | `CleanerState` | YES |
-| `prefixRules` | `PrefixRule[]` | YES |
-| `ui.theme` | `'light' \| 'dark' \| 'system'` | YES |
-| `ui.{searchQuery, extFilter, selectedIds, previewingFileId, applyScope}` | misc | NO |
-| `isUploading`, `isRenaming`, `preview`, `toastMsg` | transient | NO |
+| `files` | `WorkspaceFile[]` | NON (transitoire, binaires en mémoire) |
+| `profileId` | `IndustryProfileId` | OUI |
+| `profileEntities` | par profil | OUI |
+| `fields` | `FieldsState` | OUI |
+| `separator` | `string` | OUI |
+| `cleaner` | `CleanerState` | OUI |
+| `prefixRules` | `PrefixRule[]` | OUI |
+| `ui.*` | divers | partiel (thème oui) |
 
-Reducer is **pure**; side effects (URL revocation, persistence writes) live in
-hooks that observe state changes.
+Reducer **pur** ; effets de bord (revoke URL, writes) dans des hooks.
 
-## 3. Pure logic boundary — `lib/bim/`
+## 3. Logique pure — `lib/rename-engine/`
 
-This directory contains **zero React, zero DOM, zero Supabase, zero
-localStorage** imports. It mirrors `extension/js/{prefixes, nomenclature,
-filename-cleaner, fields, config, detection}.js` 1:1. Every public function
-is total under `fast-check` property-based fuzzing — verified by
-`lib/bim/__tests__/fuzz.test.ts`.
+Zéro React, zéro DOM, zéro localStorage, zéro Convex.
 
-Coverage is enforced at the CI level (`vitest --coverage` v8 provider):
-lines ≥ 80, statements ≥ 80, functions ≥ 80, branches ≥ 75. Current actual
-floor is significantly higher — those thresholds are the regression gate.
+| Module | Rôle |
+|---|---|
+| `types.ts` | Types partagés (`WorkspaceFile`, champs, préfixes…) |
+| `nomenclature.ts` | Génération / validation des noms |
+| `filename-cleaner.ts` | Nettoyage (accents, règles, orthographe) |
+| `fields.ts` | État des champs de nomenclature |
+| `prefixes.ts` | Détection / actions sur préfixes |
+| `detection.ts` | Catégorie / type de doc (surtout catalogue BIM) |
+| `zip-io.ts` / `archive-io.ts` | Lecture / écriture d’archives |
+| `config/*` | Catalogues BIM (lots, entreprises, types…) + defaults / storage keys |
 
-Modules:
+Couverture CI : `vitest --coverage` sur `lib/rename-engine/**` (seuils ≥ 80 % lignes).
 
-- `logger.ts` — severity-leveled console wrapper
-- `config/{workLots, companies, documentTypes, extensions, phases, defaults, detectionPatterns}` — pure data (41 lots, 201 companies, 232 doc types, 14 groups)
-- `prefixes.ts` — `detectPrefixes()`, `applyPrefixAction()`, batch variants
-- `nomenclature.ts` — `generate()`, `normalizeBIM()`, `validateFilename()`, `parseFilename()`, `batchGenerate()`, `NomenclatureCache`
-- `filename-cleaner.ts` — `createDefaultState()`, `clean()`, `cleanAll()`, immutable rule manipulators, `exportState()` / `importState()`
-- `fields.ts` — `FIELD_DEFINITIONS` (17), `FieldsState`, manipulators, `loadTemplate()`, `exportFieldsState()` / `importFieldsState()`
-- `detection.ts` — `detectCategory()`, `detectDocumentType()`, `detectCompanyInName()`, `detectLotFromPath()`, `detectDocTypeCode()`
-- `zip-io.ts` — `readZip()`, `writeZip()`, `isZip()` (thin JSZip wrapper)
+## 4. Profils métiers — `lib/profiles/`
 
-## 4. Persistence
+| Module | Rôle |
+|---|---|
+| `industry-profiles.ts` | Catalogue multi-métiers (champs, types, templates) |
+| `index.ts` | API profils, `PROFILE_OPTIONS`, `BIM_ONLY` optionnel |
+| `normalization.ts` | Normalisation des valeurs / abréviations |
+| `entities.ts` | Import entités (CSV, tableur…) |
 
-`lib/persistence.ts`:
+`DEFAULT_PROFILE_ID = 'bim-construction'` (profil de démarrage, pas le seul).
 
-- Keys mirror the extension's `STORAGE_KEYS` (prefix `bimcheck_rename_`)
-- **Schema version sentinel** at `STORAGE_KEYS.SCHEMA_VERSION`. Current: `SCHEMA_VERSION = 1`. Stamped on every write.
-- `loadPersistedState()` flow:
-  1. If sentinel > `SCHEMA_VERSION` → **fail closed**, return `{}` (defaults apply)
-  2. If sentinel < current or missing → run `migrateSchema()` (idempotent)
-  3. Read each slice, validate shape, skip the corrupt ones
-- `persistState()` is debounced 500 ms via `setTimeout`.
-- All access wrapped in `try/catch`; SSR-safe (`globalThis.localStorage?.`).
+## 5. Persistence
 
-### Free quota (`web/lib/usage-limits.ts`)
+`lib/persistence.ts` + clés `STORAGE_KEYS` (`bimcheck_rename_*`).
 
-- Public Free plan defaults to 3 rename lots per local day.
-- The counter is local-only (`doc_rename_daily_usage_v1`) and stores `{ date, count }`.
-- `NEXT_PUBLIC_DOC_RENAME_PLAN=free|pro|team` controls the in-app badge and quota gate.
-- `pro` and `team` disable the Free quota for manually provisioned paid access.
-- This quota never stores file names, file contents or binary buffers.
+- Schéma versionné (`SCHEMA_VERSION`)
+- Fail-closed si sentinel plus récent que le code
+- Quota Free : `lib/usage-limits.ts` + `lib/hooks/useAccessPlan.ts`
+  (localStorage ; plan paid via env deploy **ou** `users.plan` Convex)
 
-## 5. Security
+## 6. Sécurité (résumé)
 
-### HTTP layer (`web/next.config.ts`)
+- Headers HTTP + CSP dans `next.config.ts`
+- Garde d’upload : `lib/upload-guard.ts` (taille, nom, magic ZIP)
+- Aperçus HTML assainis (DOMPurify) pour docx/xlsx
+- Local-first : pas d’upload pour le renommage
 
-- `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`
-- `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: DENY`
-- `Referrer-Policy: strict-origin-when-cross-origin`
-- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
-- `Content-Security-Policy`: same-origin baseline with explicit exceptions for local blob processing, Next/font, Sentry and PostHog endpoints. Allows `unsafe-inline` style (Tailwind), `unsafe-eval` script (Next runtime + react-pdf), `worker-src blob:` (PDF.js), `img-src https: data: blob:` (object URLs), `connect-src 'self' blob:` plus configured observability hosts. `frame-ancestors 'none'`.
-- `Cache-Control: immutable` on `/pdf.worker.min.mjs`.
+Détail public : page `/security`.
 
-### Upload boundary (`web/lib/upload-guard.ts`)
+## 7. Tests
 
-Every file passes through:
-- `checkFilename`: control chars (< 0x20 except whitespace), `..` traversal, ≤255 chars
-- `checkSize`: 500 MiB per file
-- `checkBatchSize`: 1 GiB total per drop
-- `checkZipMagic`: `PK\x03\x04`, `\x05\x06`, or `\x07\x08`
-
-20 unit tests in `lib/__tests__/upload-guard.test.ts`.
-
-### React layer (`web/components/ErrorBoundary.tsx`)
-
-Catches React render errors + `window.onerror` + `unhandledrejection`. Stores
-the last 50 entries in `localStorage` (key `bimdoc_error_log`). Fallback UI
-offers "Recharger" + "Télécharger le journal" so the user can send it manually.
-If Sentry env vars are configured, framework-level errors may also be reported
-to Sentry with `sendDefaultPii: false`; file contents and binary buffers must
-not be captured.
-
-### Privacy
-
-Files should not leave the browser for the renaming workflow. Processing —
-extraction, parsing, rendering, ZIP composition — happens in JS / Wasm in the
-user's tab. The SaaS migration may process account, billing, team, support,
-telemetry and error metadata, but file contents and binary buffers remain out
-of analytics, monitoring and payment flows.
-
-Telemetry (`web/components/TelemetryProvider.tsx`) is disabled unless
-`NEXT_PUBLIC_POSTHOG_KEY` is set and `NEXT_PUBLIC_TELEMETRY_ENABLED` is not
-`false`. When enabled: no autocapture, no pageleave, no session recording by
-default, text and element attributes masked, Do Not Track respected, and only
-manual pageview events are emitted.
-
-The `/pilot` request form is deliberately mailto-only for paid pilot validation.
-It opens the user's email client with contact details, project context and the
-149 CHF pilot request, but the app does not store that form submission or accept
-confidential files from that route.
-
-## 6. Viewer caches (`web/lib/viewer-cache.ts`)
-
-Memory-bounded LRU per cache type. `onEvict` callback fires on capacity
-overflow + delete + clear, ensuring `URL.revokeObjectURL` is called on every
-object URL eviction.
-
-| Cache | Capacity | Eviction action |
+| Couche | Outil | Cible |
 |---|---|---|
-| `objectUrl` | 200 | `URL.revokeObjectURL(value)` |
-| `docx` | 30 | none (string GC) |
-| `spreadsheet` | 20 | none |
-| `dxfSvg` | 50 | none |
-| `text` | 100 | none |
+| Unit / property | Vitest + fast-check | `lib/rename-engine`, `lib/profiles`, app-state… |
+| E2E | Playwright | `tests/e2e/renamer.spec.ts` |
 
-Tested in `lib/__tests__/viewer-cache.test.ts` (30 tests including eviction
-ordering, recency refresh on `get`, URL revocation on overwrite + delete + clear).
+## 8. Nommage (anti-dette)
 
-## 7. File viewers
-
-Loaded lazily via `next/dynamic({ ssr: false })`:
-
-| Extension | Component | Library |
-|---|---|---|
-| `.pdf` | `PdfPreview` | `react-pdf` (bundles `pdfjs-dist@5.4.296`) |
-| `.docx`, `.doc` | `DocxPreview` | `mammoth` |
-| `.xlsx`, `.xls`, `.xlsm`, `.xlsb`, `.ods`, `.csv`, `.tsv` | `SpreadsheetPreview` | `xlsx` (SheetJS CDN tarball) |
-| `.dxf` | `DxfPreview` | `dxf-parser` |
-| `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif` | `ImagePreview` + `ImageLightbox` | native |
-| `.txt`, `.json`, `.xml` | `TextPreview` | native |
-| anything else (incl. `.rvt`, `.dwg`, `.ifc`, `.pptx`, `.skp`) | `NoPreview` | honest per-format explanation + download |
-
-The PDF.js worker is copied to `web/public/pdf.worker.min.mjs` by the
-`postinstall` script in `package.json`. The version must match react-pdf's
-nested `pdfjs-dist`. The script falls back to the top-level `pdfjs-dist` if
-the nested one is absent.
-
-## 8. Tests
-
-| Surface | Framework | Count |
-|---|---|---|
-| Unit (`lib/bim/**`, `lib/**`, `components/__tests__/**`) | Vitest + jsdom | ~490 |
-| Property-based fuzz (`lib/bim/__tests__/fuzz.test.ts`) | Vitest + fast-check | 27 (~8000 random inputs per run) |
-| Coverage (v8 provider) | Vitest | gated at 80 % lines/statements/functions, 75 % branches |
-
-Run: `npm test`, `npm run test:coverage`.
-
-## 9. CI
-
-Remote CI workflow. Triggers: push to any branch, PR to main.
-Job: checkout → setup-node 20 (npm cache on `web/package-lock.json`) → `cd web && npm ci && npx tsc --noEmit && npm test && npm run build`. Concurrency group cancels stale runs on the same ref. Timeout 10 min.
-
-Pre-commit hook (`web/scripts/install-hooks.sh` writes `.git/hooks/pre-commit`)
-runs `cd web && npx tsc --noEmit` before every commit on the developer's machine.
-
-## 10. Deploy
-
-`vercel.com/wintfernandes-7029s-projects/doc-rename-saas`:
-
-- `rootDirectory`: `web`
-- `framework`: `nextjs`
-- `productionBranch`: `main`
-- Deployment Protection: disabled (public app)
-- Auto-deploy on push to `main`
-- Aliases: `doc-rename-saas.vercel.app` (production)
-
-## 11. Versioning
-
-`web/package.json` — `0.2.0` (current). Versioning follows
-[Semantic Versioning 2.0](https://semver.org). Bump rules:
-
-- **Patch** (`0.1.x`): bug fix, no API/UX change visible to users
-- **Minor** (`0.x.0`): user-visible feature, backward-compat (data, URLs)
-- **Major** (`x.0.0`): breaking change (URL paths, data schema major version, removed feature)
-
-Changes are recorded in `web/CHANGELOG.md` following
-[Keep a Changelog 1.1.0](https://keepachangelog.com/).
+| Interdit (legacy) | Actuel |
+|---|---|
+| `lib/bim` | `lib/rename-engine` |
+| `BimFile` | `WorkspaceFile` |
+| BimDoc Renamer / DOC-RENAME (marque) | **BIMCHECK-Rename** |

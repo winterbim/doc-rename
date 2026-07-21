@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react';
 import { getDocxCache, setDocxCache } from '@/lib/viewer-cache';
 import { sanitizeDocumentHtml } from '@/lib/sanitize-html';
-import type { BimFile } from '@/lib/bim/types';
+import type { WorkspaceFile } from '@/lib/rename-engine/types';
 
-interface Props { readonly file: BimFile }
+interface Props { readonly file: WorkspaceFile }
 
 export function DocxPreview({ file }: Props) {
   const cached = getDocxCache(file.id);
@@ -66,7 +66,7 @@ export function DocxPreview({ file }: Props) {
   return (
     <div className="flex-1 overflow-auto bg-paper p-6">
       <div
-        className="docx-render mx-auto max-w-3xl bg-white p-8 shadow-md font-serif text-ink leading-relaxed"
+        className="docx-render mx-auto max-w-3xl bg-doc-surface p-8 shadow-md font-serif text-doc-ink leading-relaxed"
         dangerouslySetInnerHTML={{ __html: html ?? '' }}
       />
       {warnings.length > 0 && (
