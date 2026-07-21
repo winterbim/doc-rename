@@ -22,9 +22,9 @@ Voir `docs/product/VISION.md` + **`docs/product/SAAS_V1.md`** (doctrine live).
 
 ### Checklist ops ce soir (humain)
 
-- [ ] Commit + push (ou `vercel --prod` depuis `web/`) du worktree final
-- [ ] Smoke 5 min : `/` → `/app` → import → renommage → ZIP
-- [ ] Smoke pilote : une demande test marquée « NE PAS TRAITER » dans Convex
+- [x] Commit + push (`a1e2937`) + deploy prod Vercel Ready
+- [x] Smoke post-deploy : pages `200`, Winter Fernandes, 0 Stripe, pilote `202`
+- [ ] Smoke manuel 5 min : `/` → `/app` → import → renommage → ZIP (recommandé une fois dans le navigateur)
 - [ ] Surveiller les demandes dans le dashboard Convex (`exuberant-herring-311`)
 - [ ] Ne **pas** activer `NEXT_PUBLIC_AUTH_ENABLED`, `PAID_ACCOUNTS`, `PAID_CHECKOUT`, Stripe live
 
