@@ -1,6 +1,7 @@
 import { Config } from '@remotion/cli/config';
 
-Config.setVideoImageFormat('jpeg');
+// png → cleaner yuv420p path for LinkedIn/YouTube (avoid yuvj420p from jpeg)
+Config.setVideoImageFormat('png');
 Config.setConcurrency(4);
 Config.setOverwriteOutput(true);
 Config.setPixelFormat('yuv420p');
