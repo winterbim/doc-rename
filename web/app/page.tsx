@@ -452,22 +452,33 @@ const SOFTWARE_APPLICATION_JSONLD = {
       priceCurrency: 'EUR',
       description: `${FREE_DAILY_LOTS} lots de renommage par jour, sans compte.`,
     },
-    ...(HAS_DIRECT_CHECKOUT && PAID_ACCOUNTS_AVAILABLE ? [
-      {
-        '@type': 'Offer',
-        name: 'Team',
-        price: String(TEAM_PRICE_EUR),
-        priceCurrency: 'EUR',
-        description: 'Lots illimités, jusqu’à 10 membres, sync des conventions.',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Cabinet',
-        price: String(CABINET_PRICE_EUR),
-        priceCurrency: 'EUR',
-        description: 'Jusqu’à 1 000 utilisateurs et projets, support prioritaire.',
-      },
-    ] : []),
+    ...(HAS_DIRECT_CHECKOUT
+      ? [
+          {
+            '@type': 'Offer',
+            name: 'Team',
+            price: String(TEAM_PRICE_EUR),
+            priceCurrency: 'EUR',
+            description:
+              'Lots illimités, support email, licence activée automatiquement après paiement Stripe.',
+          },
+          {
+            '@type': 'Offer',
+            name: 'Cabinet',
+            price: String(CABINET_PRICE_EUR),
+            priceCurrency: 'EUR',
+            description:
+              'Volume multi-équipes, support prioritaire, licence activée automatiquement.',
+          },
+          {
+            '@type': 'Offer',
+            name: 'Pilote 14 jours',
+            price: '49',
+            priceCurrency: 'EUR',
+            description: 'Paiement unique, accès illimité 14 jours et onboarding guidé.',
+          },
+        ]
+      : []),
   ],
 };
 
@@ -500,7 +511,13 @@ const faqs = [
   {
     question: 'Quelle conformité RGPD ?',
     answer:
-      "Le renommage n’envoie pas vos documents au serveur. Une demande commerciale transmet seulement les coordonnées et le besoin saisis à Vercel puis Convex ; les détails et vos droits figurent dans la politique de confidentialité.",
+      "Le renommage n’envoie pas vos documents au serveur. Le paiement est traité par Stripe. Une demande pilote peut transmettre des coordonnées à Vercel puis Convex ; détails dans la politique de confidentialité.",
+  },
+  {
+    question: 'Comment la licence payante s’active-t-elle ?',
+    answer: HAS_DIRECT_CHECKOUT
+      ? 'Après paiement Stripe, vous êtes redirigé vers /merci. La licence (lots illimités) s’active automatiquement sur ce navigateur — sans compte obligatoire et sans attente manuelle.'
+      : 'Dès que le paiement en ligne est ouvert, l’activation est automatique après confirmation Stripe.',
   },
   {
     question: 'Que se passe-t-il si vous arrêtez le service ?',
@@ -510,7 +527,7 @@ const faqs = [
   {
     question: 'Vous travaillez avec des grands comptes ?',
     answer:
-      "Aucune formule Entreprise n’est ouverte aujourd’hui. Vous pouvez décrire votre besoin ; toute option SSO, DPA ou déploiement dédié devra être étudiée et confirmée par écrit.",
+      "SSO, DPA ou on-premise ne sont pas des formules self-serve aujourd’hui. Décrivez votre besoin via le pilote ; toute option dédiée se confirme par écrit.",
   },
 ];
 
@@ -548,7 +565,11 @@ export default function LandingPage() {
         <main>
           <section className="hero">
             <div>
-              <span className="eyebrow">Bêta gratuite · Local-first · Sans compte</span>
+              <span className="eyebrow">
+                {HAS_DIRECT_CHECKOUT
+                  ? 'Disponible · Local-first · Paiement Stripe'
+                  : 'Local-first · Sans compte'}
+              </span>
               <h1>
                 La même convention de nommage, <em>appliquée sans improviser.</em>
               </h1>
@@ -556,17 +577,21 @@ export default function LandingPage() {
                 BIM, Juridique, Finance, RH, Santé, Industrie, Immobilier.
                 Composez les règles, contrôlez l’aperçu puis exportez un ZIP.
                 <strong> Aucun fichier ne quitte le navigateur</strong> pendant ce flux.
-                {PAID_ACCOUNTS_AVAILABLE
-                  ? ' Les conventions peuvent ensuite être partagées par les comptes équipe.'
-                  : ' Bêta ouverte en Free : les comptes payants et le paiement en ligne ne sont pas encore ouverts ; la configuration reste locale et exportable.'}
+                {HAS_DIRECT_CHECKOUT
+                  ? ' Free pour tester ; Team et Cabinet se paient en ligne — licence activée automatiquement après paiement.'
+                  : ' La configuration reste locale et exportable.'}
               </p>
 
               <div className="cta-row">
                 <a className="button primary" href="/app">Essayer maintenant — sans compte</a>
-                <a className="button secondary" href="/pricing">Voir les tarifs cibles</a>
+                <a className="button secondary" href="/pricing">
+                  {HAS_DIRECT_CHECKOUT ? 'Voir les tarifs' : 'Voir les offres'}
+                </a>
               </div>
               <p className="small-note">
-                Gratuit · 5 lots/jour · aucun prélèvement. Fichiers 100 % locaux (DevTools &gt; Réseau).
+                {HAS_DIRECT_CHECKOUT
+                  ? `Free ${FREE_DAILY_LOTS} lots/jour · Team ${TEAM_PRICE_EUR} €/mois · licence auto · fichiers 100 % locaux`
+                  : `Gratuit · ${FREE_DAILY_LOTS} lots/jour · fichiers 100 % locaux (DevTools > Réseau)`}
               </p>
             </div>
 
@@ -715,9 +740,9 @@ export default function LandingPage() {
                 <p>
                   Aperçu Avant / Après ligne par ligne, correction manuelle possible.
                   Téléchargez un ZIP propre avec arborescence intacte.
-                  {PAID_ACCOUNTS_AVAILABLE
-                    ? ' En Team, partagez ensuite la convention avec les collaborateurs autorisés.'
-                    : ' Vous pouvez aussi exporter la convention ; le partage par compte est encore en préparation.'}
+                  {HAS_DIRECT_CHECKOUT
+                    ? ' En Team / Cabinet, lots illimités dès activation auto de la licence.'
+                    : ' Vous pouvez aussi exporter la convention en JSON / CSV.'}
                 </p>
               </article>
             </div>
@@ -799,9 +824,9 @@ export default function LandingPage() {
                   <tr><td>Profils métier pré-câblés</td><td className="us"><span className="ok">7 métiers</span></td><td><span className="no">Aucun</span></td><td><span className="no">Aucun</span></td><td><span className="ok">BIM</span></td></tr>
                   <tr><td>Import CSV / Excel d’entités</td><td className="us"><span className="ok">Oui</span></td><td><span className="ok">Oui mais fragile</span></td><td><span className="no">Non</span></td><td>Via API</td></tr>
                   <tr><td>Aperçu Avant / Après</td><td className="us"><span className="ok">Oui</span></td><td><span className="no">Non</span></td><td><span className="no">Non</span></td><td>Partiel</td></tr>
-                  <tr><td>Sync convention équipe</td><td className="us"><span className={PAID_ACCOUNTS_AVAILABLE ? 'ok' : 'no'}>{PAID_ACCOUNTS_AVAILABLE ? 'Team / Cabinet' : 'Prévue — non ouverte'}</span></td><td><span className="no">Non native</span></td><td><span className="no">Non</span></td><td><span className="ok">Selon plateforme</span></td></tr>
+                  <tr><td>Sync convention équipe</td><td className="us"><span className={PAID_ACCOUNTS_AVAILABLE ? 'ok' : 'no'}>{PAID_ACCOUNTS_AVAILABLE ? 'Team / Cabinet' : 'Export JSON (sync compte à venir)'}</span></td><td><span className="no">Non native</span></td><td><span className="no">Non</span></td><td><span className="ok">Selon plateforme</span></td></tr>
                   <tr><td>Prise en main</td><td className="us"><span className="ok">Essai autonome</span></td><td>Configuration interne</td><td>Immédiate</td><td>Selon plateforme</td></tr>
-                  <tr><td>Tarif d’entrée publié</td><td className="us us-cell">Free ouvert · Team cible {TEAM_PRICE_EUR} €/mois</td><td>Temps interne</td><td>Temps interne</td><td>Selon offre</td></tr>
+                  <tr><td>Tarif d’entrée publié</td><td className="us us-cell">{HAS_DIRECT_CHECKOUT ? `Free · Team ${TEAM_PRICE_EUR} €/mois` : `Free · Team ${TEAM_PRICE_EUR} €/mois`}</td><td>Temps interne</td><td>Temps interne</td><td>Selon offre</td></tr>
                 </tbody>
               </table>
             </div>
@@ -818,7 +843,7 @@ export default function LandingPage() {
                 un renommage, aucune requête sortante ne contient vos fichiers.
                 {PAID_ACCOUNTS_AVAILABLE
                   ? 'Seul le JSON de la convention peut transiter en cloud avec un compte Team ou Cabinet.'
-                  : 'La configuration reste locale ; les comptes cloud Team et Cabinet ne sont pas encore ouverts.'}
+                  : 'La configuration et les fichiers restent locaux ; le paiement Stripe n’envoie jamais vos documents.'}
               </p>
             </div>
 
@@ -826,7 +851,7 @@ export default function LandingPage() {
               <ul className="security-list">
                 <li><strong>Traitement 100 % navigateur</strong> — lecture, parsing, renommage et export ZIP côté client.</li>
                 <li><strong>Aucune requête sortante de contenu</strong> — visible en direct dans DevTools &gt; Réseau.</li>
-                <li><strong>Règles locales et exportables</strong> — la synchronisation cloud reste désactivée tant que les comptes ne sont pas ouverts.</li>
+                <li><strong>Règles locales et exportables</strong> — JSON / CSV à tout moment ; sync multi-comptes en option future.</li>
                 <li><strong>Headers HTTP audités</strong> — HSTS deux ans, X-Frame-Options DENY, CSP stricte.</li>
                 <li><strong>CI sécurité automatique</strong> — CodeQL, OWASP ZAP et Lighthouse selon leurs workflows.</li>
                 <li><strong>Export conventions</strong> — JSON / CSV à tout moment, pas de verrou.</li>
@@ -904,9 +929,9 @@ export default function LandingPage() {
                 <h2>Des prix bas pour ne pas freiner l’équipe.</h2>
               </div>
               <p className="section-copy">
-                Free est ouvert pour mesurer le gain. Team et Cabinet affichent des tarifs
-                et périmètres cibles, clairement marqués non ouverts tant qu’ils ne sont pas livrés.
-                Changez la devise d’affichage (EUR, CHF, USD) ci-dessous.
+                {HAS_DIRECT_CHECKOUT
+                  ? `Free pour tester. Team ${TEAM_PRICE_EUR} €/mois et Cabinet ${CABINET_PRICE_EUR} €/mois se paient en ligne (Stripe) — licence activée automatiquement. Devise d’affichage EUR / CHF / USD ci-dessous.`
+                  : 'Free est ouvert pour mesurer le gain. Les offres payantes s’affichent dès que le paiement en ligne est branché.'}
               </p>
             </div>
 
@@ -942,13 +967,15 @@ export default function LandingPage() {
                 <h2>Du lot brut au ZIP propre, dans un même atelier local.</h2>
               </div>
               <p className="section-copy">
-                Pas de compte à créer, pas de configuration cloud, pas de carte
-                bancaire pour la version Free.
+                Free sans compte ni carte. Team et Cabinet se paient en ligne quand vous êtes
+                convaincu — licence activée automatiquement, fichiers toujours locaux.
               </p>
             </div>
             <div className="cta-row">
               <a className="button primary" href="/app">Essayer sans compte</a>
-              <a className="button secondary" href="/pricing">Voir les tarifs</a>
+              <a className="button secondary" href="/pricing">
+                {HAS_DIRECT_CHECKOUT ? `Passer à Team — ${TEAM_PRICE_EUR} €/mois` : 'Voir les tarifs'}
+              </a>
             </div>
           </section>
         </main>

@@ -55,19 +55,18 @@ test('keeps every public route honest in manual or Stripe test mode', async ({ p
   if (await directTeamCheckout.count()) {
     await expect(directTeamCheckout).toHaveAttribute(
       'href',
-      /^https:\/\/buy\.stripe\.com\/test_[A-Za-z0-9]+\?locale=fr$/,
+      /^https:\/\/buy\.stripe\.com\/(?!test_)[A-Za-z0-9]+/,
     );
     await expect(page.getByRole('link', { name: /S’abonner — Cabinet/i }).first()).toHaveAttribute(
       'href',
-      /^https:\/\/buy\.stripe\.com\/test_[A-Za-z0-9]+\?locale=fr$/,
+      /^https:\/\/buy\.stripe\.com\/(?!test_)[A-Za-z0-9]+/,
     );
     await page.goto('/pilot');
     await expect(page.getByRole('link', { name: /Réserver le pilote/i }).first()).toHaveAttribute(
       'href',
-      /^https:\/\/buy\.stripe\.com\/test_[A-Za-z0-9]+\?locale=fr$/,
+      /^https:\/\/buy\.stripe\.com\/(?!test_)[A-Za-z0-9]+/,
     );
   } else {
-    await expect(page.getByText(/aucun prélèvement en ligne/i)).toBeVisible();
     await expect(page.getByRole('link', { name: /Demander Team/i }).first()).toHaveAttribute(
       'href',
       /\/pilot\?plan=team/,
@@ -369,7 +368,7 @@ test('completes a real BIM renaming journey and downloads the ZIP', async ({ pag
   await expect(page.getByText('Renommé', { exact: true }).first()).toBeVisible();
   await expect(page.getByText(/MUSEE_BAT01_ARC_PLAN_BOUYGUES_BATIMENT_/).first()).toBeVisible();
   await expect(page.getByText(/Lot prêt à déposer/i)).toBeVisible();
-  await expect(page.getByRole('link', { name: /Demander le pilote/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /pilote|Team|S’abonner|Réserver/i }).first()).toBeVisible();
 
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Télécharger tout (ZIP)', exact: true }).click();

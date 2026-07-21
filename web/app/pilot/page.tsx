@@ -5,14 +5,19 @@ import { HAS_DIRECT_CHECKOUT, PAID_ACCOUNTS_AVAILABLE, PAID_PILOT_PRICE_LABEL, p
 
 export const metadata: Metadata = {
   title: 'Pilote 14 jours',
-  description:
-    `Demander un échange sur le projet de pilote BIMCHECK-Rename annoncé à ${PAID_PILOT_PRICE_LABEL}. La demande ne réserve rien et ne déclenche aucun paiement.`,
+  description: HAS_DIRECT_CHECKOUT
+    ? `Pilote BIMCHECK-Rename ${PAID_PILOT_PRICE_LABEL} — 14 jours, paiement en ligne, licence activée automatiquement.`
+    : `Échange sur un pilote BIMCHECK-Rename annoncé à ${PAID_PILOT_PRICE_LABEL}.`,
   alternates: {
     canonical: '/pilot',
   },
   openGraph: {
-    title: 'Demander un pilote BIMCHECK-Rename',
-    description: 'Décrivez votre convention et votre volume. La demande ne déclenche aucun paiement en ligne.',
+    title: HAS_DIRECT_CHECKOUT
+      ? 'Réserver le pilote BIMCHECK-Rename'
+      : 'Demander un pilote BIMCHECK-Rename',
+    description: HAS_DIRECT_CHECKOUT
+      ? `Paiement unique ${PAID_PILOT_PRICE_LABEL}, accès 14 jours, onboarding guidé.`
+      : 'Décrivez votre convention et votre volume pour organiser un échange.',
     url: '/pilot',
   },
 };
@@ -100,8 +105,9 @@ export default function PilotPage() {
               {PAID_PILOT_PRICE_LABEL}
             </p>
             <p className="mt-2 text-sm leading-6 text-ink-soft">
-              Tarif cible annoncé, à confirmer par écrit avec le périmètre et les conditions avant
-              toute commande. La demande actuelle sert uniquement à organiser un échange.
+              {HAS_DIRECT_CHECKOUT
+                ? 'Paiement unique en ligne. Licence 14 jours activée automatiquement après confirmation Stripe. Onboarding guidé inclus.'
+                : 'Tarif annoncé, à confirmer par écrit avant commande. La demande sert à organiser un échange.'}
             </p>
             <ul className="mt-4 grid gap-3 text-sm leading-6 text-ink-soft">
               {outcomes.map((item) => (
@@ -112,10 +118,10 @@ export default function PilotPage() {
               ))}
             </ul>
             <p className="mt-5 rounded-md bg-paper-2 px-3 py-2 text-xs leading-5 text-ink-soft">
-              Périmètre envisagé : convention préparée, test sur lot non confidentiel et bilan.
-              Tarifs cibles après ouverture : Team 19 € / mois (jusqu’à 10 utilisateurs) ou Cabinet
-              49 € / mois (jusqu’à 1 000 utilisateurs et projets). {!PAID_ACCOUNTS_AVAILABLE && 'Les comptes payants ne sont pas encore ouverts. '}
-              {!HAS_DIRECT_CHECKOUT && 'Aucun paiement n’est encaissé depuis cette page.'}
+              Périmètre : convention préparée, test sur lot non confidentiel et bilan.
+              Abonnements : Team 19 € / mois ou Cabinet 49 € / mois (licence auto après paiement).
+              {!PAID_ACCOUNTS_AVAILABLE && ' La sync multi-comptes cloud est en déploiement ; le renommage illimité n’exige pas de compte.'}
+              {!HAS_DIRECT_CHECKOUT && ' Aucun paiement n’est encaissé depuis cette page pour le moment.'}
             </p>
           </aside>
         </section>

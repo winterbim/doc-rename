@@ -10,7 +10,7 @@ mettre à jour ce fichier.
 | `/` | Server Component | Landing marketing multi-métiers |
 | `/app` | Client (`'use client'`, `dynamic ssr:false`) | Renamer |
 | `/pricing`, `/pilot` | Server + forms | Conversion commerciale |
-| `/merci` | Server | Post-checkout / activation manuelle |
+| `/merci` | Server + client | Post-checkout / activation automatique de licence |
 | `/privacy`, `/conditions`, `/mentions-legales`, `/security` | Server | Légal / confiance |
 | `/iso-19650` | Server | Contenu SEO BIM (un profil parmi d’autres) |
 | `/login`, `/account`, `/access` | Mixed | Auth / accès |

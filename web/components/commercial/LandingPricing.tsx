@@ -38,17 +38,18 @@ export function LandingPricing() {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginBottom: 28 }}>
         <CurrencySwitcher currency={currency} onChange={setCurrency} />
         <p className="small-note" style={{ margin: 0, textAlign: 'center', maxWidth: 420 }}>
-          Devise d’affichage : {CURRENCIES[currency].label}. Hors euro = conversion indicative (base EUR).
+          Devise d’affichage : {CURRENCIES[currency].label}. Hors euro = conversion indicative
+          (base EUR). Facturation Stripe en euros.
         </p>
-        {!HAS_DIRECT_CHECKOUT && (
-          <p className="small-note" style={{ margin: 0, textAlign: 'center', maxWidth: 520 }}>
-            Free est ouvert immédiatement. Le paiement en ligne Team / Cabinet / Pilote s’active
-            dès branchement Stripe live (encaissement réel, pas de mode test sur le site public).
+        {HAS_DIRECT_CHECKOUT ? (
+          <p className="small-note" style={{ margin: 0, textAlign: 'center', maxWidth: 560 }}>
+            Paiement sécurisé Stripe · licence activée automatiquement après paiement ·
+            résiliation à tout moment · sans compte obligatoire pour démarrer.
           </p>
-        )}
-        {HAS_DIRECT_CHECKOUT && (
+        ) : (
           <p className="small-note" style={{ margin: 0, textAlign: 'center', maxWidth: 520 }}>
-            Paiement sécurisé Stripe · licence activée automatiquement · résiliation à tout moment.
+            Free est ouvert immédiatement. Les offres payantes s’ouvrent dès le branchement
+            Stripe live.
           </p>
         )}
       </div>
@@ -84,15 +85,18 @@ export function LandingPricing() {
             {teamPrice} <small>{perMonth}</small>
           </p>
           <p className="muted">
-            {HAS_DIRECT_CHECKOUT
-              ? 'Lots illimités — paiement en ligne, licence automatique.'
-              : 'Lots illimités dès paiement Stripe live.'}
+            Lots illimités — paiement en ligne, licence activée automatiquement.
           </p>
           <ul>
             <li>Lots de renommage illimités</li>
+            <li>Licence auto après paiement Stripe</li>
             <li>Support email</li>
             <li>Export conventions JSON</li>
-            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Sync cloud multi-comptes' : 'Sans compte obligatoire pour démarrer'}</li>
+            <li>
+              {PAID_ACCOUNTS_AVAILABLE
+                ? 'Sync cloud multi-comptes'
+                : 'Sans compte obligatoire pour démarrer'}
+            </li>
             <li>Sans upload de vos fichiers</li>
           </ul>
           <a
@@ -113,15 +117,17 @@ export function LandingPricing() {
             {cabinetPrice} <small>{perMonth}</small>
           </p>
           <p className="muted">
-            {HAS_DIRECT_CHECKOUT
-              ? 'Volume élevé, support prioritaire — paiement en ligne.'
-              : 'Volume élevé dès paiement Stripe live.'}
+            Volume élevé, support prioritaire — licence activée automatiquement.
           </p>
           <ul>
             <li>Tout Team +</li>
             <li>Support prioritaire</li>
             <li>Onboarding assisté sur demande</li>
-            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 1 000 utilisateurs / projets' : 'Multi-équipes (activation manuelle)'}</li>
+            <li>
+              {PAID_ACCOUNTS_AVAILABLE
+                ? 'Jusqu’à 1 000 utilisateurs / projets'
+                : 'Multi-équipes (licence navigateur)'}
+            </li>
             <li>Facture Stripe</li>
           </ul>
           <a
@@ -143,10 +149,11 @@ export function LandingPricing() {
 
       <div className="paid-pilot">
         <div>
-          <strong>Projet pilote 14 jours — tarif annoncé {pilotLabel}</strong>
+          <strong>Projet pilote 14 jours — {pilotLabel}</strong>
           <p>
-            Périmètre proposé : cadrage, convention reproduite, test sur lot non confidentiel et
-            bilan. Conditions et disponibilité à confirmer par écrit ; la demande ne facture rien.
+            {HAS_DIRECT_CHECKOUT
+              ? 'Paiement unique en ligne : accès illimité 14 jours, cadrage de convention, test sur lot non confidentiel et bilan. Licence activée automatiquement.'
+              : 'Périmètre proposé : cadrage, convention reproduite, test sur lot non confidentiel et bilan. Conditions à confirmer par écrit.'}
           </p>
         </div>
         <a

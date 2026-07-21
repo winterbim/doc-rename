@@ -90,9 +90,9 @@ export function FilesList() {
                     Lot prêt à déposer : {renamedCount} fichier(s) renommé(s).
                   </p>
                   <p className="mt-1 text-xs leading-5 text-ink-soft">
-                    Si ce workflow vous évite une reprise manuelle, demandez un échange sur
-                    le futur pilote BIM — tarif cible {PAID_PILOT_PRICE_LABEL} : convention
-                    reproduite, onboarding 30 min et test sur un lot réel non sensible.
+                    Si ce workflow vous évite une reprise fastidieuse : pilote {PAID_PILOT_PRICE_LABEL}
+                    (14 jours) ou Team pour lots illimités — licence activée automatiquement après
+                    paiement.
                   </p>
                 </div>
                 <a

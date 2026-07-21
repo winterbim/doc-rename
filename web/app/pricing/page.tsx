@@ -13,7 +13,6 @@ import {
   FREE_DAILY_LOTS,
   PILOT_PRICE_EUR,
   HAS_DIRECT_CHECKOUT,
-  PAID_ACCOUNTS_AVAILABLE,
 } from '@/lib/pricing';
 
 export const metadata: Metadata = {
@@ -98,8 +97,8 @@ export default function PricingPage() {
             <div className="mx-auto max-w-3xl text-center">
               <Badge variant="primary" className="mb-6">
                 {HAS_DIRECT_CHECKOUT
-                  ? 'Prix publics · paiement Stripe · annulation à tout moment'
-                  : 'Free ouvert · paiement live en cours d’activation'}
+                  ? 'Prix publics · paiement Stripe · licence auto'
+                  : 'Free ouvert'}
               </Badge>
               <h1 className="text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
                 Des tarifs pensés pour ne pas vous faire fuir.
@@ -108,8 +107,8 @@ export default function PricingPage() {
                 Free généreux. Team à {TEAM_PRICE_EUR}&nbsp;€/mois. Cabinet à {CABINET_PRICE_EUR}&nbsp;€/mois.
                 Changez la devise d’affichage (EUR, CHF, USD) ci-dessous.{' '}
                 {HAS_DIRECT_CHECKOUT
-                  ? 'Paiement sécurisé en ligne (Stripe production).'
-                  : 'Encaissement réel dès finalisation du compte Stripe live.'}
+                  ? 'Paiement sécurisé Stripe · licence activée automatiquement après paiement · sans compte obligatoire.'
+                  : 'Les offres payantes s’ouvrent dès le paiement en ligne branché.'}
               </p>
             </div>
           </Container>
@@ -130,8 +129,8 @@ export default function PricingPage() {
               title="Tout ce qui est inclus dans chaque plan"
               description={
                 HAS_DIRECT_CHECKOUT
-                  ? 'Capacités livrées avec chaque plan après activation.'
-                  : 'Free disponible maintenant. Team et Cabinet s’achètent dès Stripe live branché.'
+                  ? 'Capacités livrées après paiement : licence automatique sur votre navigateur.'
+                  : 'Free disponible maintenant. Team et Cabinet s’achètent dès le paiement en ligne ouvert.'
               }
             />
 
@@ -186,13 +185,12 @@ export default function PricingPage() {
           <Container>
             <Card variant="dark" padding="xl" className="text-center">
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                {PAID_ACCOUNTS_AVAILABLE
-                  ? 'Commencez gratuitement. Passez à une offre payante seulement si elle est utile.'
-                  : 'Commencez gratuitement. Les offres payantes ne sont pas encore ouvertes.'}
+                Commencez gratuitement. Passez à Team seulement si le gain est clair.
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-slate-300">
-                Testez sur un lot non confidentiel et mesurez le résultat. Le tarif cible Team est
-                de {TEAM_PRICE_EUR}&nbsp;€ / mois, sans possibilité de souscrire aujourd’hui.
+                {HAS_DIRECT_CHECKOUT
+                  ? `Testez sur un lot non confidentiel. Team à ${TEAM_PRICE_EUR} €/mois se paie en ligne ; la licence s’active automatiquement.`
+                  : `Testez sur un lot non confidentiel. Team est annoncé à ${TEAM_PRICE_EUR} €/mois.`}
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <Button variant="accent" size="lg" asChild>
@@ -204,7 +202,9 @@ export default function PricingPage() {
                     className="!border-slate-600 !bg-slate-800 !text-white hover:!bg-slate-700"
                     asChild
                   >
-                  <Link href="/pilot?plan=team">Demander à être recontacté</Link>
+                  <Link href={HAS_DIRECT_CHECKOUT ? '/pricing' : '/pilot?plan=team'}>
+                    {HAS_DIRECT_CHECKOUT ? 'Voir Team & Cabinet' : 'Demander un échange'}
+                  </Link>
                 </Button>
               </div>
             </Card>

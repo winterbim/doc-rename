@@ -109,8 +109,8 @@ export const PAID_ACCOUNTS_AVAILABLE =
   PAID_ACCOUNTS_ENABLED;
 
 /**
- * Checkout is independent of OAuth/org SaaS. Revenue can start with Stripe
- * Payment Links + manual fulfillment (activation sous 1 jour ouvré).
+ * Checkout is independent of OAuth/org SaaS. Revenue uses Stripe Payment Links
+ * with automatic browser license activation after payment.
  * Fail-closed: requires an explicit commercial switch AND at least one valid
  * live (or, off production, test) Payment Link for the resolved mode.
  */
@@ -342,11 +342,11 @@ export function getTeamPlan(currency: CurrencyCode = DEFAULT_CURRENCY): PricingP
     features: selling
       ? [
           'Tout Free + lots de renommage illimités',
-          'Activation automatique de licence après paiement',
+          'Licence activée automatiquement après paiement',
           'Support email',
           PAID_ACCOUNTS_AVAILABLE
             ? 'Compte + sync cloud des conventions (JSON)'
-            : 'Sync cloud multi-comptes : en déploiement (export JSON déjà inclus)',
+            : 'Sans compte obligatoire (export JSON inclus)',
           'Sans upload de vos fichiers',
         ]
       : [

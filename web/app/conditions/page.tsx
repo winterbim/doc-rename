@@ -125,7 +125,7 @@ export default function ConditionsPage() {
           <Section id="offres" title="4. Offres et prix">
             <ul className="list-disc pl-5">
               <li><strong>Free</strong> : 0 € — 5 lots de renommage par jour, sans compte, traitement local.</li>
-              <li><strong>Team</strong> : 19 € / mois — lots illimités, support email, activation sous 1 jour ouvré après paiement.</li>
+              <li><strong>Team</strong> : 19 € / mois — lots illimités, support email, licence activée automatiquement après paiement.</li>
               <li><strong>Cabinet</strong> : 49 € / mois — volume multi-équipes, support prioritaire, onboarding sur demande.</li>
               <li><strong>Pilote 14 jours</strong> : 49 € (paiement unique) — onboarding guidé.</li>
             </ul>
