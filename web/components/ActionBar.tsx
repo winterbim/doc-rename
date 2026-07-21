@@ -9,13 +9,11 @@ import { normalizeZipArchiveName, writeZip } from '@/lib/rename-engine/zip-io';
 import { useFileIngestion } from '@/lib/hooks/useFileIngestion';
 import {
   FREE_DAILY_RENAME_LIMIT,
-  getAccessPlanLabel,
-  getConfiguredAccessPlan,
   getRemainingFreeRenames,
-  isUsageLimitEnabled,
   readDailyRenameUsage,
   recordFreeRenames,
 } from '@/lib/usage-limits';
+import { useAccessPlan } from '@/lib/hooks/useAccessPlan';
 import { Button } from './ui/Button';
 
 function normalizeZipFolder(folder: string): string {
@@ -34,9 +32,7 @@ export function ActionBar() {
   const [remainingFreeRenames, setRemainingFreeRenames] = useState(FREE_DAILY_RENAME_LIMIT);
   const { processFiles } = useFileIngestion();
   const addInputRef = useRef<HTMLInputElement | null>(null);
-  const accessPlan = getConfiguredAccessPlan();
-  const accessPlanLabel = getAccessPlanLabel(accessPlan);
-  const usageLimitEnabled = isUsageLimitEnabled(accessPlan);
+  const { label: accessPlanLabel, usageLimitEnabled } = useAccessPlan();
 
   const refreshUsage = useCallback(() => {
     setRemainingFreeRenames(getRemainingFreeRenames());
@@ -228,7 +224,7 @@ export function ActionBar() {
               href="/pricing"
               className="font-semibold text-brick underline underline-offset-2 hover:text-brick-deep"
             >
-              Passer à l’équipe
+              Passer Team
             </a>
           </>
         ) : (

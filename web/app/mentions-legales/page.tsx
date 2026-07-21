@@ -11,8 +11,10 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-const LAST_UPDATED = "2026-01-01";
-const LEGAL_PLACEHOLDER = "Informations légales disponibles sur demande écrite";
+const LAST_UPDATED = "2026-07-21";
+/** Honest V1 identity until company registration is finalized — contact remains valid. */
+const LEGAL_ENTITY_NOTE =
+  "Éditeur individuel / projet BIMCHECK-Rename (statut d’entreprise en cours de finalisation). Identification complète communiquée sur facture et sur demande écrite.";
 
 export default function MentionsLegalesPage() {
   return (
@@ -45,14 +47,12 @@ export default function MentionsLegalesPage() {
               <table className="w-full border-collapse text-left text-sm">
                 <tbody className="divide-y divide-line">
                   {[
-                    ["Raison sociale / nom", LEGAL_PLACEHOLDER],
-                    ["Forme juridique", LEGAL_PLACEHOLDER],
-                    ["Adresse du siège", LEGAL_PLACEHOLDER],
-                    ["N° d’identification", LEGAL_PLACEHOLDER],
-                    ["N° de TVA", LEGAL_PLACEHOLDER],
-                    ["Capital social", LEGAL_PLACEHOLDER],
+                    ["Éditeur", "BIMCHECK-Rename — Jawani Fernandes"],
+                    ["Statut", LEGAL_ENTITY_NOTE],
                     ["Directeur de la publication", "Jawani Fernandes"],
                     ["Contact", CONTACT_EMAIL],
+                    ["Hébergement application", "Vercel Inc. (voir section ci-dessous)"],
+                    ["Backend optionnel (auth / conventions)", "Convex (EU possible selon déploiement)"],
                   ].map(([k, v]) => (
                     <tr key={k}>
                       <th scope="row" className="bg-paper-2 px-4 py-3 font-medium text-ink align-top w-1/3">

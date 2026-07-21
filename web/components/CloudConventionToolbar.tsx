@@ -25,7 +25,6 @@ function buildRuleJson(state: ReturnType<typeof useAppContext>['state']): string
 
 export function CloudConventionToolbar() {
   const { state, dispatch } = useAppContext();
-  const { signIn } = useAuthActions();
   const conventions = useQuery(api.conventions.listConventions, { orgId: undefined });
   const saveConvention = useMutation(api.conventions.saveConvention);
 

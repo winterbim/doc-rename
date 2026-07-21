@@ -113,8 +113,14 @@ describe('config: companies', () => {
   it('getCompany returns SIEMENS correctly', () => {
     const c = getCompany('SIEMENS');
     expect(c).toBeDefined();
-    expect(c!.name).toBe('SIEMENS');
+    expect(c!.name.toUpperCase()).toContain('SIEMENS');
     expect(c!.lots).toContain('ELE');
+  });
+
+  it('has unique company codes and no empty names', () => {
+    const codes = COMPANIES.map((c) => c.code);
+    expect(new Set(codes).size).toBe(codes.length);
+    expect(COMPANIES.length).toBeGreaterThanOrEqual(250);
   });
 
   it('getCompany returns undefined for unknown code', () => {

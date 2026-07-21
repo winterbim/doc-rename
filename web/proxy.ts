@@ -54,7 +54,8 @@ const convexAuthMiddleware = convexAuthNextjsMiddleware(
 );
 
 export function proxy(request: NextRequest) {
-  return convexAuthMiddleware(request, {} as any);
+  // Second argument is Convex auth options bag; empty object is valid at runtime.
+  return convexAuthMiddleware(request, {} as Parameters<typeof convexAuthMiddleware>[1]);
 }
 
 export const config = {

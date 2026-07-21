@@ -10,9 +10,12 @@ mettre à jour ce fichier.
 | `/` | Server Component | Landing marketing multi-métiers |
 | `/app` | Client (`'use client'`, `dynamic ssr:false`) | Renamer |
 | `/pricing`, `/pilot` | Server + forms | Conversion commerciale |
+| `/merci` | Server | Post-checkout / activation manuelle |
 | `/privacy`, `/conditions`, `/mentions-legales`, `/security` | Server | Légal / confiance |
 | `/iso-19650` | Server | Contenu SEO BIM (un profil parmi d’autres) |
 | `/login`, `/account`, `/access` | Mixed | Auth / accès |
+
+Offre commerciale figée : `lib/pricing.ts` + doctrine `docs/product/SAAS_V1.md`.
 
 Déploiement : projet Vercel, `rootDirectory=web`, framework Next.js.
 
@@ -67,7 +70,8 @@ Couverture CI : `vitest --coverage` sur `lib/rename-engine/**` (seuils ≥ 80 % 
 
 - Schéma versionné (`SCHEMA_VERSION`)
 - Fail-closed si sentinel plus récent que le code
-- Quota Free : `lib/usage-limits.ts` (localStorage, nudge, pas mur serveur)
+- Quota Free : `lib/usage-limits.ts` + `lib/hooks/useAccessPlan.ts`
+  (localStorage ; plan paid via env deploy **ou** `users.plan` Convex)
 
 ## 6. Sécurité (résumé)
 

@@ -1,7 +1,12 @@
-import { PAID_PILOT_PRICE_LABEL, pilotCta, teamCta } from '@/lib/pricing';
+import {
+  FREE_DAILY_LOTS,
+  TEAM_PRICE_EUR,
+  CABINET_PRICE_EUR,
+} from '@/lib/pricing';
 import { CONTACT_EMAIL } from '@/lib/contact';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { LandingPricing } from '@/components/commercial/LandingPricing';
 
 
 const siteUrl = 'https://bimcheck-rename.vercel.app';
@@ -421,21 +426,21 @@ const SOFTWARE_APPLICATION_JSONLD = {
       name: 'Free',
       price: '0',
       priceCurrency: 'EUR',
-      description: '3 lots de renommage par jour, sans compte.',
+      description: `${FREE_DAILY_LOTS} lots de renommage par jour, sans compte.`,
     },
     {
       '@type': 'Offer',
       name: 'Team',
-      price: '49',
+      price: String(TEAM_PRICE_EUR),
       priceCurrency: 'EUR',
-      description: 'Jusqu’à 10 membres, sync des conventions, templates.',
+      description: 'Lots illimités, jusqu’à 10 membres, sync des conventions.',
     },
     {
       '@type': 'Offer',
       name: 'Cabinet',
-      price: '149',
+      price: String(CABINET_PRICE_EUR),
       priceCurrency: 'EUR',
-      description: 'Utilisateurs illimités, audit trail, rapport conformité PDF.',
+      description: 'Utilisateurs et projets illimités, support prioritaire.',
     },
   ],
 };
@@ -469,7 +474,7 @@ const faqs = [
   {
     question: 'Quelle conformité RGPD ?',
     answer:
-      "Aucune donnée personnelle traitée tant que vous ne créez pas de compte. Avec un compte Pro : email + préférences uniquement, hébergement EU (Vercel Frankfurt). DPA disponible sur demande pour les contrats Entreprise.",
+      "Aucune donnée personnelle traitée tant que vous ne créez pas de compte. Avec un compte Team/Cabinet : email + préférences + JSON de convention uniquement (jamais le contenu des fichiers). Hébergement EU (Vercel). DPA sur demande pour les contrats Cabinet.",
   },
   {
     question: 'Que se passe-t-il si vous arrêtez le service ?',
@@ -627,7 +632,7 @@ export default function LandingPage() {
                 <div className="ledger">
                   <div className="ledger-row"><span>Temps manuel estimé</span><strong>2 h 40</strong></div>
                   <div className="ledger-row"><span>Coût interne du lot</span><strong>~213 €</strong></div>
-                  <div className="ledger-row"><span>Prix Team mensuel</span><strong>49 €</strong></div>
+                  <div className="ledger-row"><span>Prix Team mensuel</span><strong>{TEAM_PRICE_EUR} €</strong></div>
                 </div>
               </article>
 
@@ -761,7 +766,7 @@ export default function LandingPage() {
                   <tr><td>Aperçu Avant / Après</td><td className="us"><span className="ok">Oui</span></td><td><span className="no">Non</span></td><td><span className="no">Non</span></td><td>Partiel</td></tr>
                   <tr><td>Sync convention équipe</td><td className="us"><span className="ok">Team / Cabinet</span></td><td><span className="no">Non</span></td><td><span className="no">Non</span></td><td><span className="ok">Oui</span></td></tr>
                   <tr><td>Onboarding</td><td className="us"><span className="ok">0 min</span></td><td>Heures de dev</td><td>N/A</td><td>Plusieurs heures</td></tr>
-                  <tr><td>Tarif entrée</td><td className="us us-cell">Gratuit puis 49 €/mois</td><td>Temps interne</td><td>Temps interne</td><td>70 €+/mois</td></tr>
+                  <tr><td>Tarif entrée</td><td className="us us-cell">Gratuit puis {TEAM_PRICE_EUR} €/mois</td><td>Temps interne</td><td>Temps interne</td><td>70 €+/mois</td></tr>
                   <tr><td>Casse à chaque mise à jour</td><td className="us"><span className="no">Non</span></td><td><span className="ok">Oui</span></td><td><span className="no">Non</span></td><td><span className="no">Non</span></td></tr>
                 </tbody>
               </table>
@@ -866,103 +871,16 @@ export default function LandingPage() {
             <div className="section-head">
               <div>
                 <span className="kicker">Tarifs</span>
-                <h2>Un prix pour tester, un prix pour l’équipe, un prix pour le cabinet.</h2>
+                <h2>Des prix bas pour ne pas freiner l’équipe.</h2>
               </div>
               <p className="section-copy">
-                Pas de freemium piégé. La version Free reste utilisable pour
-                des lots petits et ponctuels. Team synchronise les conventions.
-                Cabinet ajoute l’audit et la conformité.
+                Free généreux pour prouver le gain. Team pour la convention partagée.
+                Cabinet pour le multi-équipes — sans features fantômes.
+                Changez la devise d’affichage (EUR, CHF, USD) ci-dessous.
               </p>
             </div>
 
-            <div className="grid-3 pricing">
-              <article className="plan">
-                <div className="plan-top">
-                  <h3>Free</h3>
-                  <span className="badge">Pour tester</span>
-                </div>
-                <p className="price">0 <small>€</small></p>
-                <p className="muted">3 lots de renommage par jour. Sans compte.</p>
-                <ul>
-                  <li>Tous les profils métier</li>
-                  <li>Convention personnalisée illimitée</li>
-                  <li>Aperçu Avant / Après</li>
-                  <li>Traitement local navigateur</li>
-                  <li>Export ZIP propre</li>
-                </ul>
-                <a className="button secondary" href="/app">Essayer maintenant</a>
-              </article>
-
-              <article className="plan team">
-                <div className="plan-top">
-                  <h3>Team</h3>
-                  <span className="badge">Le plus choisi</span>
-                </div>
-                <p className="price">49 <small>€ / mois</small></p>
-                <p className="muted">Pour les équipes qui partagent une convention.</p>
-                <ul>
-                  <li>Jusqu’à 10 utilisateurs</li>
-                  <li>Sync des conventions</li>
-                  <li>Bibliothèque de templates</li>
-                  <li>3 projets</li>
-                  <li>Support email</li>
-                </ul>
-                <a
-                  className="button primary"
-                  href={teamCta.href}
-                  {...(teamCta.checkout ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                >
-                  {teamCta.label}
-                </a>
-              </article>
-
-              <article className="plan pro">
-                <div className="plan-top">
-                  <h3>Cabinet</h3>
-                  <span className="badge">Audit & conformité</span>
-                </div>
-                <p className="price">149 <small>€ / mois</small></p>
-                <p className="muted">Pour les cabinets soumis à audit et conformité.</p>
-                <ul>
-                  <li>Utilisateurs illimités</li>
-                  <li>Projets illimités</li>
-                  <li>Audit trail complet</li>
-                  <li>Rapport de conformité PDF</li>
-                  <li>Connecteur SharePoint</li>
-                  <li>Support dédié</li>
-                </ul>
-                <a
-                  className="button primary"
-                  href="/pilot?plan=cabinet"
-                >
-                  Contacter les ventes
-                </a>
-              </article>
-            </div>
-
-            <p className="small-note" style={{ marginTop: 30 }}>
-              Besoin d’un déploiement on-premise, SSO ou DPA Entreprise ?{' '}
-              <a href="/pilot" style={{ color: 'var(--color-primary)', fontWeight: 700 }}>
-                Parlons-en →
-              </a>
-            </p>
-
-            <div className="paid-pilot">
-              <div>
-                <strong>Pilote 14 jours — {PAID_PILOT_PRICE_LABEL}</strong>
-                <p>
-                  Onboarding 30 min, convention reproduite, test sur lot non confidentiel
-                  et décision Team/Cabinet. Paiement manuel aujourd’hui, lien Stripe dès qu’il est configuré.
-                </p>
-              </div>
-              <a
-                className="button primary"
-                href={pilotCta.href}
-                {...(pilotCta.checkout ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              >
-                {pilotCta.label}
-              </a>
-            </div>
+            <LandingPricing />
           </section>
 
           <section className="section" id="faq">

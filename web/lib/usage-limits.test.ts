@@ -26,9 +26,11 @@ describe('usage-limits', () => {
 
   it('records successful renames up to the daily cap', () => {
     recordFreeRenames(2, new Date('2026-05-17T10:00:00'));
-    expect(getRemainingFreeRenames(new Date('2026-05-17T11:00:00'))).toBe(1);
+    expect(getRemainingFreeRenames(new Date('2026-05-17T11:00:00'))).toBe(
+      FREE_DAILY_RENAME_LIMIT - 2,
+    );
 
-    recordFreeRenames(10, new Date('2026-05-17T12:00:00'));
+    recordFreeRenames(100, new Date('2026-05-17T12:00:00'));
     expect(readDailyRenameUsage(new Date('2026-05-17T13:00:00')).count).toBe(FREE_DAILY_RENAME_LIMIT);
     expect(getRemainingFreeRenames(new Date('2026-05-17T13:00:00'))).toBe(0);
   });
@@ -51,6 +53,18 @@ describe('usage-limits', () => {
     vi.stubEnv('NEXT_PUBLIC_DOC_RENAME_PLAN', 'team');
 
     expect(getConfiguredAccessPlan()).toBe('team');
+    expect(getAccessPlanLabel()).toBe('Team');
+    expect(isUsageLimitEnabled()).toBe(false);
+  });
+
+  it('treats cabinet and legacy pro as unlimited', () => {
+    vi.stubEnv('NEXT_PUBLIC_DOC_RENAME_PLAN', 'cabinet');
+    expect(getConfiguredAccessPlan()).toBe('cabinet');
+    expect(getAccessPlanLabel()).toBe('Cabinet');
+    expect(isUsageLimitEnabled()).toBe(false);
+
+    vi.stubEnv('NEXT_PUBLIC_DOC_RENAME_PLAN', 'pro');
+    expect(getConfiguredAccessPlan()).toBe('pro');
     expect(getAccessPlanLabel()).toBe('Team');
     expect(isUsageLimitEnabled()).toBe(false);
   });

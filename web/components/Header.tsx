@@ -51,9 +51,9 @@ export function Header() {
           className="hidden sm:inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-paper shadow-sm shadow-indigo-900/10 hover:bg-indigo-700 transition-colors"
         >
           <Badge variant="soft" size="sm" className="bg-indigo-400/20 text-indigo-50 border-0">
-            Pro
+            Team
           </Badge>
-          Passer à l’équipe
+          Passer Team
         </Link>
 
         {isLoading ? (
@@ -69,7 +69,7 @@ export function Header() {
         )}
 
         <span className="hidden lg:inline-flex text-[10px] uppercase tracking-wider font-sans font-medium text-ink-mute">
-          v0.2.0
+          v0.3.0
         </span>
 
         <ThemeToggle />

@@ -1,29 +1,33 @@
 # TODO — BIMCHECK-Rename
 
 Vérité produit : multi-métiers, marque **BIMCHECK-Rename**.  
-Voir `docs/product/VISION.md`.
+Voir `docs/product/VISION.md` + **`docs/product/SAAS_V1.md`** (doctrine live).
 
-## Fait (purification 2026-07-20)
+## Fait — SaaS V1 shippable (2026-07-21)
 
-- [x] Vérité multi-métiers documentée (README + VISION)
-- [x] `lib/bim` → `lib/rename-engine`
-- [x] `BimFile` → `WorkspaceFile`
-- [x] Anciennes stratégies contradictoires → `docs/archive/`
-- [x] Marque / package / APP_NAME alignés sur BIMCHECK-Rename
-- [x] Metadata layout + manifest multi-métiers
+- [x] Offre unique Free / Team / Cabinet + Pilote (`web/lib/pricing.ts`)
+- [x] Audit prix → Team **19 €**, Cabinet **49 €**, Pilote **49 €**, Free **5** lots/j
+- [x] Sélecteur devise EUR / CHF / USD (landing + /pricing)
+- [x] CGU, privacy, landing, pilot, pricing alignés (plus de Pro CHF fantôme)
+- [x] Features promises = features shipped (plus de SharePoint / PDF audit marketing)
+- [x] Plan effectif : env deploy **ou** `users.plan` Convex (`useAccessPlan`)
+- [x] Page `/merci` post-paiement
+- [x] Mentions légales honnêtes (contact réel, statut éditeur transparent)
+- [x] Quota Free + upgrade Team dans l’app
+- [x] Copy multi-métiers sur loading `/app`
+- [x] Docs `STRIPE_SETUP.md` + `SAAS_V1.md`
 
-## Suite prioritaire
+## Lancer en prod aujourd’hui (ops)
 
-### Juridique
-- [ ] Finaliser `/mentions-legales` et `/conditions` (plus de TODO trompeurs)
-- [ ] Aligner `/privacy` sur le wording multi-métiers (pas seulement BIM)
+- [ ] Configurer Payment Links Stripe + success `/merci`
+- [ ] Variables Vercel (`NEXT_PUBLIC_SITE_URL`, Stripe, Convex, plan=free)
+- [ ] OAuth Google/GitHub sur le déploiement Convex
+- [ ] Smoke prod : rename lot exemple + pages légales
+- [ ] Remplacer mentions « entreprise en finalisation » par SIREN / IDE dès immatriculation
 
-### Produit / GTM
-- [ ] Uniformiser pricing affiché (CHF vs EUR) sur toutes les pages
-- [ ] Stripe Payment Links (voir `STRIPE_SETUP.md`)
-- [ ] Remplacer témoignages / captures fictives par preuves réelles
+## Suite produit (post-premiers paiements)
 
-### Technique
-- [ ] Vérifier exports de conventions (`bimcheck-rename-*.json`)
-- [ ] Aligner package-lock name si besoin (`npm install` dans `web/`)
-- [ ] Option : migrer clé `THEME: bim_theme` vers préfixe stable (avec migration)
+- [ ] Webhook Stripe → `users.plan` automatique
+- [ ] Invites membres org par email
+- [ ] Preuves clients réelles (remplacer personas types)
+- [ ] Audit trail / exports conformité **si** demandés par 2+ cabinets

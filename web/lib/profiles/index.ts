@@ -1,6 +1,6 @@
 import type { FieldDefinition } from '@/lib/rename-engine/types';
 import type { FieldsState } from '@/lib/rename-engine/fields';
-import { COMPANIES } from '@/lib/rename-engine/config/companies';
+import { COMPANIES, formatCompanyOption } from '@/lib/rename-engine/config/companies';
 import { INDUSTRY_PROFILES } from './industry-profiles';
 import { adaptAbbreviationSeparator, normalizeFieldValue } from './normalization';
 import type {
@@ -102,16 +102,21 @@ function optionsForField(
       const options = new Map(
         COMPANIES.map((company) => [
           company.code,
-          { code: company.code, name: company.name },
+          { code: company.code, name: formatCompanyOption(company) },
         ]),
       );
       for (const entity of entities) {
-        options.set(entity.code, {
-          code: entity.code,
-          name: `${entity.code} - ${entity.label}`,
+        const code = entity.code.trim();
+        if (!code) continue;
+        // Imported entities override catalog entry with same code (no double line)
+        options.set(code, {
+          code,
+          name: formatCompanyOption({ code, name: entity.label }),
         });
       }
-      return Array.from(options.values());
+      return Array.from(options.values()).sort((a, b) =>
+        a.code.localeCompare(b.code, 'fr'),
+      );
     }
   }
 

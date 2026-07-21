@@ -74,7 +74,7 @@ describe('industry profiles', () => {
     expect(companyOptions).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ code: 'BOUYGUES_BATIMENT' }),
-        expect.objectContaining({ code: 'ACME_BIM', name: 'ACME_BIM - Acme BIM Conseil' }),
+        expect.objectContaining({ code: 'ACME_BIM', name: 'ACME_BIM — Acme BIM Conseil' }),
       ]),
     );
   });

@@ -91,11 +91,20 @@ npm run test:e2e
 - Variables optionnelles : `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_POSTHOG_KEY`,
   `NEXT_PUBLIC_TELEMETRY_ENABLED`, `NEXT_PUBLIC_BIM_ONLY`, Sentry DSN
 
-## Offre (indicatif)
+## Offre SaaS V1
 
-- Free (quota journalier local)
-- Pro / Team (provisionnement manuel ou Stripe — voir `STRIPE_SETUP.md`)
-- Pilote accompagné via `/pilot`
+Source unique : `web/lib/pricing.ts` + `docs/product/SAAS_V1.md`.
+
+| Plan | Prix (base EUR) | Rôle |
+|------|-----------------|------|
+| Free | 0 € | 5 lots/jour, local, sans compte |
+| Team | **19 €/mois** | Illimité + sync conventions + org (10) |
+| Cabinet | **49 €/mois** | Illimité multi-équipes + support prioritaire |
+| Pilote | **49 €** | 14 jours guidés (`/pilot`) |
+
+Affichage multi-devises EUR / CHF / USD (conversion indicative). Audit : `docs/product/PRICING_AUDIT.md`.
+
+Encaissement : Stripe Payment Links (voir `STRIPE_SETUP.md`) ou devis.
 
 ## Propriétaire
 

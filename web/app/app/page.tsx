@@ -20,25 +20,25 @@ function AppLoadingState() {
         <div className="flex items-center gap-3">
           <span
             aria-hidden="true"
-            className="flex h-8 w-8 items-center justify-center rounded-md border border-ink bg-ink font-sans text-[13px] font-bold tracking-[-0.04em] text-paper"
+            className="flex h-8 w-8 items-center justify-center rounded-md bg-primary font-sans text-[13px] font-bold tracking-[-0.04em] text-paper"
           >
-            BD
+            BC
           </span>
           <div>
             <h1 className="text-base font-sans font-semibold leading-none tracking-[-0.01em] text-ink">
               BIMCHECK-Rename
             </h1>
             <p className="mt-0.5 text-xs font-sans text-ink-mute">
-              Chargement de l&apos;atelier de renommage BIM…
+              Chargement de l&apos;atelier de convention…
             </p>
           </div>
         </div>
       </header>
       <section className="flex flex-1 items-center justify-center px-6 py-16" aria-live="polite">
         <div className="w-full max-w-xl rounded-xl border border-line bg-surface p-8 text-center shadow-sm dark:bg-paper-2">
-          <p className="font-sans text-lg text-ink">Préparation de votre lot BIM.</p>
+          <p className="font-sans text-lg text-ink">Préparation de votre espace de renommage.</p>
           <p className="mt-3 text-sm text-ink-soft">
-            Convention ISO 19650 / SIA 2051 prête à appliquer. Vos fichiers restent dans votre navigateur.
+            Profils multi-métiers prêts. Vos fichiers restent dans votre navigateur — aucun upload.
           </p>
         </div>
       </section>

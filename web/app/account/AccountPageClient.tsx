@@ -10,6 +10,8 @@ import { Container } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
+import { useAccessPlan } from '@/lib/hooks/useAccessPlan';
+import { teamPlan, cabinetPlan, formatPlanPrice } from '@/lib/pricing';
 
 function slugify(input: string) {
   return input
@@ -25,6 +27,8 @@ function AccountContent() {
   const organizations = useQuery(api.organizations.listMyOrganizations);
   const conventions = useQuery(api.conventions.listConventions, { orgId: undefined });
   const createOrg = useMutation(api.organizations.createOrganization);
+  const cloudUser = useQuery(api.users.currentUser);
+  const access = useAccessPlan();
 
   const [orgName, setOrgName] = useState('');
   const [orgPlan, setOrgPlan] = useState<'team' | 'cabinet'>('team');
@@ -74,8 +78,50 @@ function AccountContent() {
         <Container size="md">
           <h1 className="text-2xl font-semibold tracking-tight text-ink">Mon compte</h1>
           <p className="mt-1 text-ink-soft">
-            Gérez vos conventions et vos équipes.
+            Gérez votre plan, vos conventions et vos équipes.
           </p>
+
+          <Card variant="elevated" padding="lg" className="mt-8">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink-mute">
+                  Plan actuel
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <h2 className="text-xl font-semibold text-ink">{access.label}</h2>
+                  <Badge variant={access.usageLimitEnabled ? 'soft' : 'primary'} size="sm">
+                    {access.usageLimitEnabled ? 'Quota Free' : 'Illimité'}
+                  </Badge>
+                </div>
+                <p className="mt-1 text-sm text-ink-soft">
+                  {cloudUser?.email ? (
+                    <>Connecté en tant que <strong className="text-ink">{cloudUser.email}</strong></>
+                  ) : (
+                    'Compte authentifié — plan cloud mis à jour après paiement.'
+                  )}
+                  {access.source === 'env' && (
+                    <span className="block text-xs text-ink-mute mt-1">
+                      Plan provisionné au niveau déploiement.
+                    </span>
+                  )}
+                </p>
+              </div>
+              {access.usageLimitEnabled ? (
+                <div className="flex flex-wrap gap-2">
+                  <Button asChild size="sm">
+                    <Link href={teamPlan.cta.href}>{formatPlanPrice(teamPlan)} — Team</Link>
+                  </Button>
+                  <Button asChild size="sm" variant="secondary">
+                    <Link href={cabinetPlan.cta.href}>Cabinet</Link>
+                  </Button>
+                </div>
+              ) : (
+                <Button asChild size="sm" variant="secondary">
+                  <Link href="/app">Ouvrir l’atelier</Link>
+                </Button>
+              )}
+            </div>
+          </Card>
 
           <div className="mt-8 grid gap-6 lg:grid-cols-2">
             <Card variant="elevated" padding="lg">

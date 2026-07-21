@@ -162,7 +162,7 @@ export default function SecurityPage() {
               <p className="text-xs font-mono uppercase tracking-wide text-muted">Côté serveur</p>
               <ul className="mt-3 space-y-1.5 text-sm text-ink-soft">
                 <li>• Servir les fichiers statiques Next.js</li>
-                <li>• (Optionnel) gérer l’authentification compte Pro</li>
+                <li>• (Optionnel) gérer l’authentification compte Team / Cabinet</li>
                 <li>• <strong className="text-ink">Aucun upload de fichier utilisateur</strong></li>
                 <li>• <strong className="text-ink">Aucun stockage de contenu document</strong></li>
               </ul>
@@ -305,7 +305,7 @@ upgrade-insecure-requests;`}
             <li>Évaluation gravité : critique (24 h), élevée (72 h), moyenne (7 j), faible (sprint).</li>
             <li>Correctif déployé via Vercel sans coupure de service.</li>
             <li>Communication publique sur <code className="rounded bg-paper-2 px-1 font-mono text-xs">/changelog</code> (à venir) pour les incidents critiques et élevés.</li>
-            <li>Notification email aux clients Pro / Team / Entreprise impactés.</li>
+            <li>Notification email aux clients Team / Cabinet impactés.</li>
           </ol>
           <p className="mt-5 text-sm">
             Pour signaler une faille de manière confidentielle :{' '}

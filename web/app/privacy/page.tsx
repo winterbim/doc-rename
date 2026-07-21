@@ -39,13 +39,13 @@ export default function PrivacyPage() {
             BIMCHECK-Rename garde vos fichiers dans le navigateur.
           </h1>
           <p className="mt-5 max-w-3xl font-sans text-xl leading-8 text-ink-soft">
-            BIMCHECK-Rename devient un service Free / Pro / Team, mais le principe central ne
+            BIMCHECK-Rename est un service Free / Team / Cabinet, mais le principe central ne
             change pas : le renommage, la prévisualisation et l’export ZIP se font dans votre
             navigateur lorsque la fonctionnalité le permet. Le contenu de vos fichiers n’est pas
             envoyé à BIMCHECK-Rename pour être renommé.
           </p>
           <p className="mt-5 text-sm font-sans text-ink-mute">
-            Dernière mise à jour: 17 mai 2026.
+            Dernière mise à jour: 21 juillet 2026.
           </p>
         </header>
 
@@ -77,8 +77,8 @@ export default function PrivacyPage() {
               <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-base font-semibold text-ink">Ce qui peut être traité côté SaaS</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
-                  Compte, email, plan Free/Pro/Team, facturation, support, télémétrie minimale et
-                  journaux d’erreur si ces services sont activés.
+                  Compte, email, plan Free/Team/Cabinet, JSON de convention, facturation, support,
+                  télémétrie minimale et journaux d’erreur si ces services sont activés.
                 </p>
               </div>
             </div>
@@ -257,21 +257,21 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="font-sans text-lg font-semibold text-ink">Objet du service</h3>
                 <p className="mt-2 max-w-3xl text-ink-soft">
-                  BIMCHECK-Rename aide à appliquer une convention de nommage BIM
-                  (ISO 19650, SIA 2051 ou convention maison) à des lots de
-                  livrables avant dépôt CDE. Le service ne remplace pas une
-                  CDE, une GED, ni une certification réglementaire.
+                  BIMCHECK-Rename aide les équipes professionnelles (BIM, juridique,
+                  finance, RH, santé, industrie, immobilier…) à appliquer une convention
+                  de nommage à des lots de fichiers avant dépôt, archivage ou partage.
+                  Le service ne remplace pas une CDE, une GED, ni une certification réglementaire.
                 </p>
               </div>
               <div>
-                <h3 className="font-sans text-lg font-semibold text-ink">Offres Free, Pro et Team</h3>
+                <h3 className="font-sans text-lg font-semibold text-ink">Offres Free, Team et Cabinet</h3>
                 <p className="mt-2 max-w-3xl text-ink-soft">
-                  Pendant la phase d’accès privé, le quota local de 3 fichiers par jour est
-                  désactivé. L’offre Pro vise un usage individuel illimité à 19.99 CHF/mois.
-                  L’offre Team vise les petites équipes à 34.90 CHF/mois, avec conventions
-                  partagées et jusqu’à 3 utilisateurs inclus. Les modalités exactes de paiement,
-                  taxes, renouvellement, résiliation et facturation sont précisées au moment de la
-                  souscription ou dans le devis correspondant.
+                  Free : 5 lots de renommage par jour, sans compte, traitement local.
+                  Team : 19 €/mois — lots illimités, compte, synchronisation des conventions
+                  (JSON uniquement), jusqu’à 10 utilisateurs. Cabinet : 49 €/mois —
+                  membres et projets illimités, support prioritaire. Affichage multi-devises
+                  (EUR/CHF/USD) indicatif. Les modalités de paiement, taxes, renouvellement
+                  et résiliation figurent dans les Conditions et sur la page Tarifs.
                 </p>
               </div>
               <div>

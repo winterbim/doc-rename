@@ -7,7 +7,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Conditions générales d’utilisation et de vente",
   description:
-    "CGU/CGV de BIMCHECK-Rename : objet, offres Free/Pro/Team, paiement, résiliation, responsabilité et droit applicable (Suisse & France).",
+    "CGU/CGV de BIMCHECK-Rename : objet, offres Free/Team/Cabinet, paiement, résiliation, responsabilité et droit applicable (Suisse & France).",
   alternates: { canonical: "/conditions" },
   robots: { index: true, follow: true },
 };
@@ -118,16 +118,17 @@ export default function ConditionsPage() {
 
           <Section id="offres" title="4. Offres et prix">
             <ul className="list-disc pl-5">
-              <li><strong>Free</strong> : 0 CHF — usage limité (lots quotidiens plafonnés), sans compte.</li>
-              <li><strong>Pro</strong> : 19,99 CHF / mois — usage illimité, conventions sauvegardées.</li>
-              <li><strong>Team</strong> : 34,90 CHF / mois — jusqu’à 3 utilisateurs, conventions partagées.</li>
-              <li><strong>Entreprise / Pilote</strong> : sur devis ou selon l’offre pilote en vigueur.</li>
+              <li><strong>Free</strong> : 0 € — 5 lots de renommage par jour, sans compte, traitement local.</li>
+              <li><strong>Team</strong> : 19 € / mois — lots illimités, compte, sync des conventions, jusqu’à 10 utilisateurs et 3 projets.</li>
+              <li><strong>Cabinet</strong> : 49 € / mois — membres et projets illimités, support prioritaire.</li>
+              <li><strong>Pilote 14 jours</strong> : 49 € (paiement unique) — onboarding guidé, selon offre en vigueur.</li>
             </ul>
             <p>
-              Prix en francs suisses (CHF), selon le statut fiscal applicable de l’éditeur
-              (hors taxes ou TTC selon les obligations légales). Les prix peuvent évoluer ; le tarif
-              applicable est celui en vigueur lors de la souscription. Une tarification en euros (EUR)
-              pourra être proposée pour le marché français.
+              Prix publics de référence en euros (EUR). L’interface peut afficher des
+              équivalents CHF ou USD à titre indicatif (conversion arrondie). La facturation
+              suit le lien de paiement Stripe ou le devis. Hors taxes ou TTC selon le statut
+              fiscal de l’éditeur et le pays du client. Le tarif applicable est celui affiché
+              sur la page Tarifs au moment de la souscription.
             </p>
           </Section>
 
