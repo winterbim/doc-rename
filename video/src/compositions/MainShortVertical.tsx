@@ -42,7 +42,7 @@ export function MainShortVertical() {
           gap: 8,
         }}
       >
-        <BrandMark size="md" inverted />
+        <BrandMark size="md" inverted showWordmark={false} />
         <span
           style={{
             fontFamily: fonts.sans,

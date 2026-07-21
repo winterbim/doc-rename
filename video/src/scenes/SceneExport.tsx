@@ -101,30 +101,6 @@ export function SceneExport() {
                 })}
               </div>
 
-              <div style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
-                {['Autodesk Docs', 'Trimble Connect', 'Kroqi', 'ProjectWise', 'GED / dossier'].map(
-                  (label, i) => {
-                    const t = softSpring({ frame, fps, delay: 100 + i * 6 });
-                    return (
-                      <div
-                        key={label}
-                        style={{
-                          opacity: t,
-                          padding: '8px 14px',
-                          borderRadius: 999,
-                          border: `1px solid ${colors.border}`,
-                          background: colors.surface,
-                          fontSize: 14,
-                          fontWeight: 650,
-                          color: colors.inkSoft,
-                        }}
-                      >
-                        {label}
-                      </div>
-                    );
-                  },
-                )}
-              </div>
             </AppFrame>
           </div>
         </AbsoluteFill>

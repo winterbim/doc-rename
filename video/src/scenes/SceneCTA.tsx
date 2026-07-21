@@ -40,7 +40,7 @@ export function SceneCTA() {
         }}
       >
         <div style={{ transform: `scale(${logo})`, opacity: logo }}>
-          <BrandMark size="xl" inverted showWordmark />
+          <BrandMark size="xl" inverted showWordmark={false} />
         </div>
 
         <h2

@@ -31,7 +31,7 @@ export function SceneSolution() {
           }}
         >
           <div style={{ transform: `scale(${0.65 + 0.35 * logoScale})`, opacity: logoScale }}>
-            <BrandMark size="xl" inverted showWordmark />
+            <BrandMark size="xl" inverted showWordmark={false} />
           </div>
 
           <div style={{ opacity: taglineOpacity, textAlign: 'center' }}>

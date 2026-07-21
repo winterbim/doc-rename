@@ -8,15 +8,17 @@ const SIZES: Record<
   Size,
   { logoH: number; gap: number; brand: number; maxW: number; mark: number }
 > = {
-  sm: { logoH: 28, gap: 10, brand: 16, maxW: 120, mark: 32 },
-  md: { logoH: 48, gap: 14, brand: 26, maxW: 200, mark: 44 },
-  lg: { logoH: 72, gap: 18, brand: 36, maxW: 280, mark: 64 },
-  xl: { logoH: 110, gap: 24, brand: 48, maxW: 420, mark: 88 },
+  sm: { logoH: 36, gap: 10, brand: 15, maxW: 200, mark: 32 },
+  md: { logoH: 56, gap: 14, brand: 22, maxW: 320, mark: 44 },
+  lg: { logoH: 88, gap: 16, brand: 28, maxW: 480, mark: 64 },
+  xl: { logoH: 150, gap: 18, brand: 34, maxW: 720, mark: 88 },
 };
 
 /**
- * Official BIMCheck logo + product name as on the live site.
- * `mode="app"` uses the cyan/indigo BC tile like the real Header.
+ * Official BIMCheck Consulting logo (transparent PNG variants).
+ * - inverted (dark scenes): white mark on transparent — never CSS invert
+ * - light scenes: full colour mark
+ * - mode="app": matches production Header (BC gradient tile)
  */
 export function BrandMark({
   size = 'md',
@@ -60,9 +62,9 @@ export function BrandMark({
               style={{
                 fontFamily: fonts.sans,
                 fontWeight: 700,
-                fontSize: dim.brand * 0.72,
+                fontSize: dim.brand * 0.85,
                 letterSpacing: '-0.02em',
-                color: ink,
+                color: colors.ink,
                 lineHeight: 1,
               }}
             >
@@ -71,7 +73,7 @@ export function BrandMark({
             <span
               style={{
                 fontFamily: fonts.sans,
-                fontSize: Math.max(11, dim.brand * 0.32),
+                fontSize: Math.max(11, dim.brand * 0.42),
                 color: colors.inkMute,
                 fontWeight: 500,
               }}
@@ -84,18 +86,30 @@ export function BrandMark({
     );
   }
 
+  const src = inverted
+    ? staticFile('brand/logo-white.png')
+    : staticFile('brand/logo-color.png');
+
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: dim.gap, ...style }}>
+    <div
+      style={{
+        display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: dim.gap,
+        ...style,
+      }}
+    >
       <Img
-        src={staticFile('brand/bimcheck-logo.png')}
+        src={src}
         alt="BIMCheck Consulting"
         style={{
           height: dim.logoH,
           width: 'auto',
           maxWidth: dim.maxW,
           objectFit: 'contain',
-          filter: inverted ? 'brightness(0) invert(1)' : undefined,
           display: 'block',
+          // No CSS filter — assets are pre-processed for light/dark.
         }}
       />
       {showWordmark && (
@@ -105,12 +119,12 @@ export function BrandMark({
             fontWeight: 700,
             fontSize: dim.brand,
             letterSpacing: '-0.02em',
-            color: inverted ? colors.inkOnDark : colors.ink,
+            color: ink,
             whiteSpace: 'nowrap',
           }}
         >
-          <span style={{ color: inverted ? colors.inkOnDark : colors.ink }}>BIMCHECK</span>
-          <span style={{ color: inverted ? colors.cyan : colors.cyanDeep, fontWeight: 600 }}> Rename</span>
+          <span style={{ color: ink }}>Produit </span>
+          <span style={{ color: inverted ? colors.cyan : colors.cyanDeep }}>BIMCHECK-Rename</span>
         </span>
       )}
     </div>
