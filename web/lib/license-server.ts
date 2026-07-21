@@ -130,7 +130,8 @@ export async function activateFromStripeSession(
   if (!sessionId.startsWith('cs_')) return null;
 
   const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
-  if (secretKey?.startsWith('sk_')) {
+  // sk_live_ / sk_test_ (full) or rk_live_ / rk_test_ (restricted with Checkout read).
+  if (secretKey && /^(sk|rk)_(live|test)_/.test(secretKey)) {
     try {
       const stripeRes = await fetch(
         `https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`,
