@@ -26,25 +26,25 @@
   --color-slate-900:  #0F172A;
   --color-slate-950:  #020617;
 
-  --color-indigo-50:  #EEF2FF;
-  --color-indigo-100: #E0E7FF;
-  --color-indigo-200: #C7D2FE;
-  --color-indigo-300: #A5B4FC;
-  --color-indigo-400: #818CF8;
-  --color-indigo-500: #6366F1;
-  --color-indigo-600: #4F46E5;
-  --color-indigo-700: #4338CA;
-  --color-indigo-800: #3730A3;
-  --color-indigo-900: #312E81;
+  --color-indigo-50:  #ECFEFF;
+  --color-indigo-100: #CFFAFE;
+  --color-indigo-200: #A5F3FC;
+  --color-indigo-300: #67E8F9;
+  --color-indigo-400: #22D3EE;
+  --color-indigo-500: #06B6D4;
+  --color-indigo-600: #0E7490;
+  --color-indigo-700: #155E75;
+  --color-indigo-800: #164E63;
+  --color-indigo-900: #164E63;
 
   --color-emerald-50:  #ECFDF5;
   --color-emerald-100: #D1FAE5;
   --color-emerald-200: #A7F3D0;
   --color-emerald-300: #6EE7B7;
   --color-emerald-400: #34D399;
-  --color-emerald-500: #10B981;
-  --color-emerald-600: #059669;
-  --color-emerald-700: #047857;
+  --color-emerald-500: #047857;
+  --color-emerald-600: #047857;
+  --color-emerald-700: #065F46;
 
   --color-amber-50:  #FFFBEB;
   --color-amber-100: #FEF3C7;
@@ -94,23 +94,24 @@
  * Dark mode CSS variable overrides (Tailwind v4 doesn't flip @theme by attr)
  * --------------------------------------------------------------------------- */
 [data-theme="dark"] {
-  --color-slate-50:   #0F1115;
-  --color-slate-100:  #181B21;
-  --color-slate-200:  #1F232A;
-  --color-slate-300:  #2A2E36;
-  --color-slate-400:  #3A3F4A;
-  --color-slate-500:  #64748B;
-  --color-slate-600:  #94A3B8;
-  --color-slate-700:  #CBD5E1;
-  --color-slate-800:  #E2E8F0;
-  --color-slate-900:  #F8FAFC;
+  --color-slate-50:   #0A0F1E;
+  --color-slate-100:  #0E1628;
+  --color-slate-200:  #152238;
+  --color-slate-300:  #20304A;
+  --color-slate-400:  #33445F;
+  --color-slate-500:  #94A3B8;
+  --color-slate-600:  #B6C2D3;
+  --color-slate-700:  #C6D2E3;
+  --color-slate-800:  #D8E3F0;
+  --color-slate-900:  #E6EDF6;
   --color-slate-950:  #FFFFFF;
 
-  --color-indigo-50:  #1E1B4B;
-  --color-indigo-100: #312E81;
-  --color-indigo-200: #3730A3;
-  --color-indigo-600: #6366F1;
-  --color-indigo-700: #818CF8;
+  --color-indigo-50:  #082F49;
+  --color-indigo-100: #164E63;
+  --color-indigo-200: #155E75;
+  --color-indigo-500: #22D3EE;
+  --color-indigo-600: #67E8F9;
+  --color-indigo-700: #A5F3FC;
 
   --color-emerald-50:  #064E3B;
   --color-emerald-500: #34D399;

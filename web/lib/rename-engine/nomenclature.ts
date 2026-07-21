@@ -224,25 +224,39 @@ export function validateFilename(filename: string): ValidationResult {
   }
 
   // Invalid characters (source: /[<>:"/\\|?*]/)
-  if (/[<>:"/\\|?*]/.test(filename)) {
+  if (/[<>:"/\\|?*\x00-\x1f\x7f\u202a-\u202e\u2066-\u2069]/.test(filename)) {
     errors.push('Contient des caractères invalides');
   }
 
   // Length checks
-  if (filename.length > 255) {
+  if (new TextEncoder().encode(filename).byteLength > 255) {
     errors.push('Nom de fichier trop long');
   } else if (filename.length > 200) {
     warnings.push('Nom de fichier très long (>200 caractères)');
   }
 
   // Windows reserved names
-  const reserved = ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'LPT1'];
+  const reserved = [
+    'CON', 'PRN', 'AUX', 'NUL',
+    'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9',
+    'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9',
+  ];
   const baseName = filename.split('.')[0].toUpperCase();
   if (reserved.includes(baseName)) {
     errors.push('Nom réservé par le système');
   }
+  if (/[. ]$/.test(filename)) errors.push('Point ou espace final interdit');
 
   return { valid: errors.length === 0, errors, warnings };
+}
+
+/**
+ * Pick the filename exposed to browser download APIs. Invalid generated names
+ * must never reach `download`/FileSaver because browsers sanitize them
+ * inconsistently and could save a name different from the preview.
+ */
+export function resolveSafeDownloadName(original: string, generated?: string): string {
+  return generated && validateFilename(generated).valid ? generated : original;
 }
 
 // ---------------------------------------------------------------------------
@@ -450,6 +464,23 @@ export function batchGenerate(
     }
 
     results.push({ fileId: file.id, newName, errors });
+  }
+
+  const collisions = new Map<string, number[]>();
+  for (const [index, result] of results.entries()) {
+    if (!result.newName || result.errors.length > 0) continue;
+    const folder = files[index]?.folder ?? '';
+    const key = `${folder}/${result.newName}`.normalize('NFC').toLocaleLowerCase('en-US');
+    const indexes = collisions.get(key) ?? [];
+    indexes.push(index);
+    collisions.set(key, indexes);
+  }
+  for (const indexes of collisions.values()) {
+    if (indexes.length < 2) continue;
+    for (const index of indexes) {
+      const result = results[index];
+      if (result) result.errors.push('Collision de nom avec un autre fichier du lot');
+    }
   }
 
   return results;

@@ -14,6 +14,9 @@ mettre à jour ce fichier.
 | `/privacy`, `/conditions`, `/mentions-legales`, `/security` | Server | Légal / confiance |
 | `/iso-19650` | Server | Contenu SEO BIM (un profil parmi d’autres) |
 | `/login`, `/account`, `/access` | Mixed | Auth / accès |
+| `/api/stripe/webhook` | Route Handler Node | Vérification Stripe + relais signé vers Convex |
+| `/robots.txt`, `/sitemap.xml` | Metadata routes | Indexation des surfaces publiques |
+| Toute autre route | Server | Page 404 de marque, sans perte de données locales |
 
 Offre commerciale figée : `lib/pricing.ts` + doctrine `docs/product/SAAS_V1.md`.
 
@@ -76,6 +79,7 @@ Couverture CI : `vitest --coverage` sur `lib/rename-engine/**` (seuils ≥ 80 % 
 ## 6. Sécurité (résumé)
 
 - Headers HTTP + CSP dans `next.config.ts`
+- Webhook Stripe vérifié deux fois (SDK Next.js puis HMAC Convex), idempotence par `eventId`
 - Garde d’upload : `lib/upload-guard.ts` (taille, nom, magic ZIP)
 - Aperçus HTML assainis (DOMPurify) pour docx/xlsx
 - Local-first : pas d’upload pour le renommage

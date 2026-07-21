@@ -8,6 +8,9 @@ import {
 } from '@/lib/access-control';
 
 export async function POST(request: NextRequest) {
+  if (request.headers.get('origin') !== request.nextUrl.origin) {
+    return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
+  }
   const formData = await request.formData();
   const password = formData.get('password');
   const nextPath = normalizeNextPath(formData.get('next'));
@@ -31,7 +34,7 @@ export async function POST(request: NextRequest) {
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
-    maxAge: 60 * 60 * 24 * 30,
+    maxAge: 60 * 60 * 8,
   });
   return response;
 }

@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rename.bimcheck-consulting.com/schemas/nomenclature.v1.json",
+  "title": "BIMCHECK-Rename nomenclature template v1",
+  "type": "object",
+  "required": ["name", "version", "locale", "separator", "case", "activeFieldIds", "values", "fields"],
+  "properties": {
+    "$schema": { "type": "string", "format": "uri" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "description": { "type": "string", "maxLength": 2000 },
+    "version": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "locale": { "type": "string", "minLength": 2, "maxLength": 35 },
+    "separator": { "type": "string", "minLength": 1, "maxLength": 4 },
+    "case": { "enum": ["UPPER", "LOWER", "PRESERVE"] },
+    "activeFieldIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 80 }
+    },
+    "values": {
+      "type": "object",
+      "maxProperties": 64,
+      "additionalProperties": { "type": "string", "maxLength": 255 }
+    },
+    "workLotPart": { "type": ["string", "null"], "maxLength": 255 },
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/field" }
+    },
+    "suffix": { "$ref": "#/$defs/suffix" },
+    "examples": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "required": ["input", "output"],
+        "properties": {
+          "input": { "type": "string", "maxLength": 255 },
+          "output": { "type": "string", "maxLength": 255 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "references": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "required": ["label", "url"],
+        "properties": {
+          "label": { "type": "string", "maxLength": 200 },
+          "url": { "type": "string", "format": "uri", "maxLength": 2048 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "field": {
+      "type": "object",
+      "required": ["code", "label", "required"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "label": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "example": { "type": "string", "maxLength": 255 },
+        "required": { "type": "boolean" },
+        "maxLength": { "type": "integer", "minimum": 1, "maximum": 255 },
+        "comment": { "type": "string", "maxLength": 2000 }
+      },
+      "additionalProperties": false
+    },
+    "suffix": {
+      "type": "object",
+      "required": ["code", "label"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "label": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "example": { "type": "string", "maxLength": 255 },
+        "format": { "type": "string", "maxLength": 255 },
+        "comment": { "type": "string", "maxLength": 2000 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

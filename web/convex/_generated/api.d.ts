@@ -9,10 +9,17 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as billing from "../billing.js";
 import type * as conventions from "../conventions.js";
+import type * as crons from "../crons.js";
 import type * as http from "../http.js";
 import type * as organizations from "../organizations.js";
+import type * as paidFeature from "../paidFeature.js";
+import type * as pilotRequests from "../pilotRequests.js";
+import type * as stripeSignature from "../stripeSignature.js";
+import type * as stripeWebhookModel from "../stripeWebhookModel.js";
 import type * as users from "../users.js";
+import type * as validation from "../validation.js";
 
 import type {
   ApiFromModules,
@@ -22,10 +29,17 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  billing: typeof billing;
   conventions: typeof conventions;
+  crons: typeof crons;
   http: typeof http;
   organizations: typeof organizations;
+  paidFeature: typeof paidFeature;
+  pilotRequests: typeof pilotRequests;
+  stripeSignature: typeof stripeSignature;
+  stripeWebhookModel: typeof stripeWebhookModel;
   users: typeof users;
+  validation: typeof validation;
 }>;
 
 /**

@@ -11,6 +11,7 @@ import {
   parseFilename,
   cleanFilename,
   validateFilename,
+  resolveSafeDownloadName,
   generate,
   generatePreview,
   batchGenerate,
@@ -303,6 +304,19 @@ describe('validateFilename', () => {
     const r = validateFilename(name);
     expect(r.warnings.length).toBeGreaterThan(0);
   });
+});
+
+describe('resolveSafeDownloadName', () => {
+  it('uses a valid generated name', () => {
+    expect(resolveSafeDownloadName('source.pdf', 'PLAN_FINAL.PDF')).toBe('PLAN_FINAL.PDF');
+  });
+
+  it.each(['../../outside.pdf', 'CON.pdf', 'bad\u0000name.pdf'])(
+    'falls back to the original name for invalid generated name %s',
+    (generated) => {
+      expect(resolveSafeDownloadName('source.pdf', generated)).toBe('source.pdf');
+    },
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -679,6 +693,27 @@ describe('batchGenerate', () => {
     const file = makeFile({ id: 'unique-123', original: 'doc.pdf', extension: '.pdf' });
     const results = batchGenerate([file], ctx);
     expect(results[0].fileId).toBe('unique-123');
+  });
+
+  it('marks every same-folder filename collision instead of allowing ZIP overwrite', () => {
+    const ctx = makeCtx();
+    const files = [
+      makeFile({ id: 'first', original: 'plan.pdf', extension: '.pdf', folder: 'plans' }),
+      makeFile({ id: 'second', original: 'PLAN.PDF', extension: '.PDF', folder: 'plans' }),
+    ];
+    const results = batchGenerate(files, ctx);
+    expect(results).toHaveLength(2);
+    expect(results.every((result) => result.errors.some((error) => /Collision de nom/.test(error))))
+      .toBe(true);
+  });
+
+  it('allows the same generated filename in distinct folders', () => {
+    const ctx = makeCtx();
+    const files = [
+      makeFile({ id: 'first', original: 'plan.pdf', extension: '.pdf', folder: 'a' }),
+      makeFile({ id: 'second', original: 'plan.pdf', extension: '.pdf', folder: 'b' }),
+    ];
+    expect(batchGenerate(files, ctx).every((result) => result.errors.length === 0)).toBe(true);
   });
 });
 

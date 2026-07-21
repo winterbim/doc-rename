@@ -24,4 +24,4 @@ Voir l’email de contact dans l’application (`web/lib/contact.ts`).
 
 ## Propriété
 
-Logiciel propriétaire, Jawani Fernandes. Tous droits réservés.
+Logiciel propriétaire, Winter Fernandes. Tous droits réservés.

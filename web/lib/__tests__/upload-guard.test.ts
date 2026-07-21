@@ -1,11 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import {
   checkFilename,
+  checkArchivePath,
   checkSize,
   checkBatchSize,
+  checkArchiveEntryCount,
+  checkExtractedBatchSize,
+  reserveArchiveEntries,
   checkZipMagic,
   MAX_FILE_SIZE,
   MAX_BATCH_SIZE,
+  MAX_ARCHIVE_ENTRIES,
 } from '../upload-guard';
 
 describe('upload-guard: checkFilename', () => {
@@ -28,19 +33,46 @@ describe('upload-guard: checkFilename', () => {
     expect(checkFilename('plan\x1f.pdf').ok).toBe(false);
   });
 
-  it('accepts tab + LF + CR (not blocked) — those are 0x09/0x0a/0x0d', () => {
-    // Tabs/newlines are rare in filenames but not classed as dangerous here.
-    expect(checkFilename('plan\tname.pdf').ok).toBe(true);
+  it('rejects whitespace controls and bidi override characters', () => {
+    expect(checkFilename('plan\tname.pdf').ok).toBe(false);
+    expect(checkFilename('plan\nname.pdf').ok).toBe(false);
+    expect(checkFilename('plan\u202ename.pdf').ok).toBe(false);
   });
 
   it('rejects names > 255 chars', () => {
     expect(checkFilename('a'.repeat(256) + '.pdf').ok).toBe(false);
   });
 
+  it('uses the UTF-8 byte length and rejects trailing Windows aliases', () => {
+    expect(checkFilename(`${'é'.repeat(128)}.pdf`).ok).toBe(false);
+    expect(checkFilename('plan.pdf ').ok).toBe(false);
+  });
+
   it('accepts names with dots that are not traversal', () => {
     expect(checkFilename('plan.v2.final.pdf').ok).toBe(true);
     expect(checkFilename('.gitignore').ok).toBe(true);
   });
+});
+
+describe('upload-guard: checkArchivePath', () => {
+  it('accepts a normal nested relative path', () => {
+    expect(checkArchivePath('plans/phase-1/facade.pdf').ok).toBe(true);
+  });
+
+  it.each(['../secret.pdf', 'plans/../../secret.pdf', '/etc/passwd', 'C:\\secret.pdf']) (
+    'rejects traversal or absolute path %s',
+    (path) => expect(checkArchivePath(path).ok).toBe(false),
+  );
+
+  it('rejects control characters and overlong path components', () => {
+    expect(checkArchivePath('folder/evil\u0000.pdf').ok).toBe(false);
+    expect(checkArchivePath(`folder/${'x'.repeat(256)}.pdf`).ok).toBe(false);
+  });
+
+  it.each(['safe/./file.pdf', 'safe//file.pdf', 'safe/file.pdf/']) (
+    'rejects non-canonical archive path %s',
+    (path) => expect(checkArchivePath(path).ok).toBe(false),
+  );
 });
 
 describe('upload-guard: checkSize', () => {
@@ -55,6 +87,30 @@ describe('upload-guard: checkSize', () => {
 describe('upload-guard: checkBatchSize', () => {
   it('accepts under cap', () => expect(checkBatchSize(MAX_BATCH_SIZE - 1).ok).toBe(true));
   it('rejects over cap', () => expect(checkBatchSize(MAX_BATCH_SIZE + 1).ok).toBe(false));
+});
+
+describe('upload-guard: checkArchiveEntryCount', () => {
+  it('accepts the cap and rejects the next entry', () => {
+    expect(checkArchiveEntryCount(MAX_ARCHIVE_ENTRIES).ok).toBe(true);
+    expect(checkArchiveEntryCount(MAX_ARCHIVE_ENTRIES + 1).ok).toBe(false);
+  });
+
+  it('enforces one cumulative cap across multiple reservations', () => {
+    const budget = { entries: 0 };
+    expect(reserveArchiveEntries(budget, 3_000).ok).toBe(true);
+    expect(reserveArchiveEntries(budget, 2_000).ok).toBe(true);
+    expect(budget.entries).toBe(MAX_ARCHIVE_ENTRIES);
+    expect(reserveArchiveEntries(budget, 1).ok).toBe(false);
+    expect(budget.entries).toBe(MAX_ARCHIVE_ENTRIES);
+  });
+});
+
+describe('upload-guard: extracted archive budget', () => {
+  it('rejects invalid and oversized totals', () => {
+    expect(checkExtractedBatchSize(1).ok).toBe(true);
+    expect(checkExtractedBatchSize(Number.POSITIVE_INFINITY).ok).toBe(false);
+    expect(checkExtractedBatchSize(501 * 1024 * 1024).ok).toBe(false);
+  });
 });
 
 describe('upload-guard: checkZipMagic', () => {

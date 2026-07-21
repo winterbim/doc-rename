@@ -7,7 +7,8 @@ import { PostHogProvider } from 'posthog-js/react';
 
 const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? 'https://eu.i.posthog.com';
-const telemetryEnabled = Boolean(posthogKey) && process.env.NEXT_PUBLIC_TELEMETRY_ENABLED !== 'false';
+const telemetryEnabled =
+  Boolean(posthogKey) && process.env.NEXT_PUBLIC_TELEMETRY_ENABLED === 'true';
 
 let posthogInitialized = false;
 
@@ -35,7 +36,7 @@ export function TelemetryProvider({ children }: { readonly children: ReactNode }
   useEffect(() => {
     if (!telemetryEnabled || !posthogInitialized) return;
     posthog.capture('$pageview', {
-      $current_url: globalThis.location.href,
+      $current_url: `${globalThis.location.origin}${pathname}`,
       path: pathname,
     });
   }, [pathname]);

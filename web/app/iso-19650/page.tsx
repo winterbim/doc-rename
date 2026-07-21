@@ -3,11 +3,16 @@ import Link from 'next/link';
 import { CONTACT_EMAIL } from '@/lib/contact';
 
 export const metadata: Metadata = {
-  title: 'Convention de nommage ISO 19650 — guide + modèle prêt à importer',
+  title: 'Guide de convention de nommage ISO 19650',
   description:
     "Guide pratique de la convention de nommage ISO 19650 (UK National Annex). Champs, exemples, FAQ. Modèle JSON prêt à importer dans BIMCHECK-Rename.",
   alternates: {
     canonical: '/iso-19650',
+  },
+  openGraph: {
+    title: 'Guide de convention de nommage ISO 19650',
+    description: 'Guide pratique et modèle adaptable pour préparer vos noms de fichiers avant dépôt.',
+    url: '/iso-19650',
   },
   keywords: [
     'ISO 19650',
@@ -30,13 +35,13 @@ const fields: Array<{ code: string; label: string; sample: string; comment: stri
   { code: 'Type', label: 'Type', sample: 'DR', comment: 'DR=Drawing, MO=Model, RP=Report, SP=Specification, SH=Schedule, CO=Correspondence.' },
   { code: 'Role', label: 'Discipline', sample: 'A', comment: 'A=Architecte, S=Structure, M=MEP, C=Civil, L=Landscape, I=Interior.' },
   { code: 'Number', label: 'Numéro', sample: '0001', comment: 'Séquence à 4 chiffres.' },
-  { code: 'Suffix', label: 'Statut + révision', sample: 'P02', comment: 'P01–P99 (WIP) ou S0–S7 (Shared/Published).' },
+  { code: 'Suffix', label: 'Révision indicative', sample: 'P02', comment: 'Exemple à adapter : statut et révision peuvent être gérés séparément selon le BEP / EIR.' },
 ];
 
 const faq: Array<{ q: string; a: string }> = [
   {
     q: 'Cette convention est-elle obligatoire en marché public ?',
-    a: "Pas universellement, mais elle l’est de plus en plus dans les marchés publics tertiaires, hospitaliers et nucléaires en France et en UK. Le Cerema et BuildingSmart France la recommandent comme référence.",
+    a: "Pas automatiquement. Les exigences contractuelles, le BEP / EIR et les règles du CDE du projet déterminent le format à appliquer. Ce modèle doit donc être validé par le responsable de l’information du projet.",
   },
   {
     q: 'Que faire si mon BEP impose un autre ordre de champs ?',
@@ -44,15 +49,15 @@ const faq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Quelle différence entre P02 et S2 ?',
-    a: 'P = Work In Progress (interne). S = Shared / Published (transmis aux parties prenantes). Les codes P01-P99 désignent les itérations internes, S0-S7 désignent les jalons formels.',
+    a: 'Dans certains schémas, P02 représente une révision et S2 un statut d’usage ou de partage. Leur sens exact, leur emplacement dans le nom et les valeurs autorisées doivent être lus dans le BEP / EIR et la configuration du CDE.',
   },
   {
     q: 'Est-ce compatible avec Autodesk Docs / ACC ?',
-    a: "Oui. Depuis 2021, Autodesk Docs supporte les modèles de nommage ISO 19650 nativement. Vous pouvez préparer vos lots dans BIMCHECK-Rename puis les déposer dans ACC sans retouche.",
+    a: "BIMCHECK-Rename produit des noms de fichiers ; leur acceptation dans Autodesk Docs / ACC dépend du standard de nommage configuré pour votre projet. Comparez toujours l’aperçu avec les règles du CDE avant le dépôt.",
   },
   {
     q: 'Quid de la Suisse ?',
-    a: "Pour les projets SIA, la convention SIA 2051 prévaut. Elle est plus souple que la 19650 et nécessite un autre modèle — disponible aussi dans BIMCHECK-Rename.",
+    a: "Appliquez d’abord les exigences contractuelles du projet. SIA 2051 peut être une référence pertinente en Suisse, sans prévaloir automatiquement. Le profil Swiss BIM de l’atelier reste un point de départ à adapter.",
   },
 ];
 
@@ -76,11 +81,10 @@ export default function Iso19650Page() {
             sans jargon.
           </h1>
           <p className="mt-5 max-w-3xl font-sans text-xl leading-8 text-ink-soft">
-            ISO 19650 normalise la production et l’échange d’informations
-            documentaires sur les projets BIM. Sa partie la plus visible —
-            la convention de nommage des fichiers — devient progressivement
-            incontournable en marché public.
-            Voici l’essentiel, plus un modèle prêt à importer.
+            ISO 19650 encadre la gestion de l’information sur les projets BIM.
+            Les noms de fichiers dépendent toutefois du contrat, du BEP / EIR,
+            des annexes applicables et du CDE. Voici un exemple adaptable, plus
+            un modèle réellement importable — pas une certification de conformité.
           </p>
           <p className="mt-5 text-sm font-sans text-ink-mute">
             Dernière mise à jour : 2026-05-20.
@@ -92,8 +96,9 @@ export default function Iso19650Page() {
             Structure du nom de fichier
           </h2>
           <p className="mt-4 max-w-3xl text-base text-ink-soft">
-            La forme canonique combine 7 champs séparés par des tirets, suivie
-            d’un suffixe de statut/révision :
+            Le modèle téléchargeable ci-dessous combine sept champs et un exemple
+            de révision. Cet ordre n’est pas universel : adaptez-le aux documents
+            du projet, et gérez le statut séparément si le CDE l’exige.
           </p>
           <div className="mt-6 overflow-x-auto rounded-lg border border-line bg-paper-2/30 p-6">
             <code className="block whitespace-pre font-mono text-base text-ink">

@@ -1,6 +1,8 @@
 import { v } from 'convex/values';
 import { query, mutation } from './_generated/server';
 import { auth } from './auth';
+import { requireRuleJson, requireText } from './validation';
+import { requirePaidSaasEnabled } from './paidFeature';
 
 /**
  * Load conventions visible to the current user.
@@ -12,6 +14,7 @@ export const listConventions = query({
     orgId: v.optional(v.id('organizations')),
   },
   handler: async (ctx, args) => {
+    requirePaidSaasEnabled();
     const userId = await auth.getUserId(ctx);
     if (!userId) return [];
 
@@ -21,7 +24,9 @@ export const listConventions = query({
         .query('members')
         .withIndex('by_user_org', (q) => q.eq('userId', userId).eq('orgId', orgId))
         .unique();
-      if (!membership) throw new Error('Not a member of this organization');
+      if (!membership || membership.status !== 'active') {
+        throw new Error('Not a member of this organization');
+      }
 
       return ctx.db
         .query('conventions')
@@ -48,6 +53,7 @@ export const getConvention = query({
     id: v.id('conventions'),
   },
   handler: async (ctx, args) => {
+    requirePaidSaasEnabled();
     const userId = await auth.getUserId(ctx);
     if (!userId) throw new Error('Not authenticated');
 
@@ -60,7 +66,9 @@ export const getConvention = query({
         .query('members')
         .withIndex('by_user_org', (q) => q.eq('userId', userId).eq('orgId', orgId))
         .unique();
-      if (!membership) throw new Error('Not a member of this organization');
+      if (!membership || membership.status !== 'active') {
+        throw new Error('Not a member of this organization');
+      }
     } else if (convention.createdBy !== userId) {
       throw new Error('Not authorized');
     }
@@ -84,8 +92,16 @@ export const saveConvention = mutation({
     isDefault: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    requirePaidSaasEnabled();
     const userId = await auth.getUserId(ctx);
     if (!userId) throw new Error('Not authenticated');
+
+    const name = requireText(args.name, 'Convention name', 120);
+    const profileId = requireText(args.profileId, 'Profile ID', 80);
+    const templateId = args.templateId
+      ? requireText(args.templateId, 'Template ID', 80)
+      : undefined;
+    const ruleJson = requireRuleJson(args.ruleJson);
 
     if (args.orgId) {
       const orgId = args.orgId;
@@ -93,7 +109,18 @@ export const saveConvention = mutation({
         .query('members')
         .withIndex('by_user_org', (q) => q.eq('userId', userId).eq('orgId', orgId))
         .unique();
-      if (!membership) throw new Error('Not a member of this organization');
+      if (!membership || membership.status !== 'active') {
+        throw new Error('Not a member of this organization');
+      }
+
+      if (args.projectId) {
+        const project = await ctx.db.get(args.projectId);
+        if (!project || project.orgId !== args.orgId) {
+          throw new Error('Project does not belong to this organization');
+        }
+      }
+    } else if (args.projectId) {
+      throw new Error('A personal convention cannot reference an organization project');
     }
 
     if (args.id) {
@@ -103,10 +130,10 @@ export const saveConvention = mutation({
       if (!existing.orgId && existing.createdBy !== userId) throw new Error('Not authorized');
 
       await ctx.db.patch(args.id, {
-        name: args.name,
-        profileId: args.profileId,
-        templateId: args.templateId,
-        ruleJson: args.ruleJson,
+        name,
+        profileId,
+        templateId,
+        ruleJson,
         projectId: args.projectId,
         isDefault: args.isDefault,
         version: (existing.version ?? 1) + 1,
@@ -118,10 +145,10 @@ export const saveConvention = mutation({
       orgId: args.orgId,
       projectId: args.projectId,
       createdBy: userId,
-      name: args.name,
-      profileId: args.profileId,
-      templateId: args.templateId,
-      ruleJson: args.ruleJson,
+      name,
+      profileId,
+      templateId,
+      ruleJson,
       isDefault: args.isDefault,
       version: 1,
     });
@@ -136,6 +163,7 @@ export const deleteConvention = mutation({
     id: v.id('conventions'),
   },
   handler: async (ctx, args) => {
+    requirePaidSaasEnabled();
     const userId = await auth.getUserId(ctx);
     if (!userId) throw new Error('Not authenticated');
 
@@ -148,7 +176,7 @@ export const deleteConvention = mutation({
         .query('members')
         .withIndex('by_user_org', (q) => q.eq('userId', userId).eq('orgId', orgId))
         .unique();
-      if (!membership || membership.role !== 'admin') {
+      if (!membership || membership.status !== 'active' || membership.role !== 'admin') {
         throw new Error('Only admins can delete org conventions');
       }
     } else if (convention.createdBy !== userId) {

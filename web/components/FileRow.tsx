@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from 'react';
 import { saveAs } from 'file-saver';
 import { useAppContext } from '@/lib/app-state';
 import type { WorkspaceFile } from '@/lib/rename-engine/types';
+import { resolveSafeDownloadName } from '@/lib/rename-engine/nomenclature';
 import { NameEditorModal } from './NameEditorModal';
 import { FileTypePill } from './FileTypePill';
 
@@ -35,6 +36,7 @@ export function FileRow({ file }: FileRowProps) {
   const editBtnRef = useRef<HTMLButtonElement>(null);
 
   const isSelected = state.ui.selectedIds.includes(file.id);
+  const downloadName = resolveSafeDownloadName(file.original, file.newName);
 
   const handleOpenModal = () => setModalOpen(true);
 
@@ -56,7 +58,7 @@ export function FileRow({ file }: FileRowProps) {
   return (
     <>
       <li
-        className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 shadow-xs hover:shadow-md hover:-translate-y-[1px] transition-all ${
+        className={`flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2.5 shadow-xs transition-all hover:-translate-y-[1px] hover:shadow-md sm:flex-nowrap sm:gap-3 ${
           isSelected
             ? 'bg-gold-soft/15 border-brick/50'
             : 'border-line bg-surface hover:border-line-2 dark:bg-paper-2'
@@ -79,7 +81,7 @@ export function FileRow({ file }: FileRowProps) {
         <FileTypePill name={file.original} />
 
         {/* Names */}
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-32">
           <p className="truncate text-sm font-mono text-ink" title={file.original}>
             {file.original}
           </p>
@@ -140,8 +142,8 @@ export function FileRow({ file }: FileRowProps) {
         {/* Download button */}
         <button
           type="button"
-          onClick={() => saveAs(file.blob, file.newName ?? file.original)}
-          aria-label={`Télécharger ${file.newName ?? file.original}`}
+          onClick={() => saveAs(file.blob, downloadName)}
+          aria-label={`Télécharger ${downloadName}`}
           title="Télécharger ce fichier"
           className="shrink-0 rounded p-1 text-ink-mute hover:bg-paper-2 hover:text-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick transition-colors"
         >

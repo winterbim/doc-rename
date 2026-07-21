@@ -300,5 +300,5 @@ Conformément au brief, la vidéo :
 
 ## Licence
 
-Code interne BIMCHECK-Rename — copyright (c) 2026 Jawani Fernandes. Tous droits
+Code interne BIMCHECK-Rename — copyright (c) 2026 Winter Fernandes. Tous droits
 réservés. Voir le `LICENSE` racine.

@@ -2,6 +2,8 @@ import {
   FREE_DAILY_LOTS,
   TEAM_PRICE_EUR,
   CABINET_PRICE_EUR,
+  HAS_DIRECT_CHECKOUT,
+  PAID_ACCOUNTS_AVAILABLE,
 } from '@/lib/pricing';
 import { CONTACT_EMAIL } from '@/lib/contact';
 import type { Metadata } from 'next';
@@ -9,18 +11,18 @@ import Link from 'next/link';
 import { LandingPricing } from '@/components/commercial/LandingPricing';
 
 
-const siteUrl = 'https://bimcheck-rename.vercel.app';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://rename.bimcheck-consulting.com';
 
 export const metadata: Metadata = {
   title: 'BIMCHECK-Rename — Convention de nommage pour équipes',
   description:
-    'Standardisez les noms de fichiers de toute votre équipe. BIM, Juridique, Finance, RH, Santé, Industrie, Immobilier. Sans jamais uploader un document.',
+    'Appliquez une convention de nommage à vos lots de fichiers. BIM, Juridique, Finance, RH, Santé, Industrie, Immobilier. Sans envoyer vos documents.',
   metadataBase: new URL(siteUrl),
   openGraph: {
     type: 'website',
     title: 'BIMCHECK-Rename — Convention de nommage pour équipes',
     description:
-      'Standardisez les noms de fichiers de toute votre équipe. Local-first, sans upload, avec synchronisation des conventions en équipe.',
+      'Standardisez les noms de fichiers de votre équipe. Local-first : le renommage et le ZIP restent dans le navigateur.',
     url: siteUrl,
     siteName: 'BIMCHECK-Rename',
     locale: 'fr_FR',
@@ -55,13 +57,34 @@ export const metadata: Metadata = {
     'Kroqi',
   ],
   other: {
-    'theme-color': '#F8FAFC',
-    'color-scheme': 'light dark',
+    'theme-color': '#0A0F1E',
+    'color-scheme': 'dark',
   },
 };
 
 const LANDING_CSS = `
   html { scroll-behavior: smooth; }
+
+  body {
+    --color-paper: #0A0F1E;
+    --color-paper-2: #0E1628;
+    --color-paper-3: #152238;
+    --color-ink: #E6EDF6;
+    --color-ink-soft: #A8B6CA;
+    --color-ink-mute: #7F90A8;
+    --color-primary: #67E8F9;
+    --color-primary-2: rgba(103, 232, 249, .09);
+    --color-success: #2DD4BF;
+    --color-accent: #818CF8;
+    --color-surface: #0E1628;
+    --color-surface-2: #111D31;
+    --color-border: rgba(148, 163, 184, .16);
+    --color-border-2: rgba(103, 232, 249, .28);
+    background:
+      radial-gradient(circle at 78% 12%, rgba(34, 211, 238, .08), transparent 28rem),
+      radial-gradient(circle at 8% 80%, rgba(99, 102, 241, .09), transparent 30rem),
+      #0A0F1E;
+  }
 
   .wrap { width: min(1200px, calc(100% - 40px)); margin: 0 auto; }
 
@@ -77,8 +100,9 @@ const LANDING_CSS = `
 
   .mark {
     width: 32px; height: 32px; display: grid; place-items: center;
-    background: var(--color-primary); color: var(--color-paper);
+    background: linear-gradient(135deg, #67E8F9, #6366F1); color: #06121F;
     border-radius: 8px; font-size: 12px; font-weight: 800;
+    box-shadow: 0 10px 30px -12px rgba(34, 211, 238, .75);
   }
 
   .brand-name { font-size: 17px; color: var(--color-ink); }
@@ -94,12 +118,12 @@ const LANDING_CSS = `
   .pill-link {
     display: inline-flex; align-items: center; justify-content: center;
     min-height: 40px; padding: 0 18px; border-radius: 8px;
-    background: var(--color-primary); color: white; text-decoration: none;
+    background: linear-gradient(135deg, #67E8F9, #6366F1); color: #06121F; text-decoration: none;
     font-weight: 650; font-size: 14px;
     transition: transform .18s ease, background .18s ease;
-    box-shadow: 0 4px 14px -6px rgba(79, 70, 229, .35);
+    box-shadow: 0 12px 32px -14px rgba(34, 211, 238, .7);
   }
-  .pill-link:hover { transform: translateY(-1px); background: var(--color-indigo-700); }
+  .pill-link:hover { transform: translateY(-1px); filter: brightness(1.08); }
 
   .hero {
     display: grid;
@@ -120,7 +144,7 @@ const LANDING_CSS = `
   h1 {
     margin: 0; max-width: 16ch;
     font-size: clamp(42px, 6vw, 80px);
-    line-height: .98; letter-spacing: -.045em; font-weight: 600;
+    line-height: .98; letter-spacing: -.045em; font-weight: 800;
   }
   h1 em {
     color: var(--color-primary); font-style: normal;
@@ -142,8 +166,8 @@ const LANDING_CSS = `
     border: 1px solid transparent; text-decoration: none; font-weight: 650;
     transition: transform .18s ease, background .18s ease, color .18s ease, box-shadow .18s ease;
   }
-  .button.primary { background: var(--color-primary); color: white; box-shadow: 0 6px 20px -8px rgba(79, 70, 229, .4); }
-  .button.primary:hover { background: var(--color-indigo-700); transform: translateY(-1px); }
+  .button.primary { background: linear-gradient(135deg, #67E8F9, #6366F1); color: #06121F; box-shadow: 0 12px 32px -14px rgba(34, 211, 238, .7); }
+  .button.primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
   .button.secondary { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
   .button.secondary:hover { border-color: var(--color-border-2); background: var(--color-surface-2); }
 
@@ -158,7 +182,7 @@ const LANDING_CSS = `
 
   .product-shot {
     border: 1px solid var(--color-border); border-radius: 16px;
-    background: var(--color-surface); box-shadow: 0 32px 80px -40px rgba(15, 23, 42, .22); overflow: hidden;
+    background: var(--color-surface); box-shadow: 0 32px 80px -40px rgba(34, 211, 238, .32); overflow: hidden;
   }
   .shot-top {
     display: flex; align-items: center; justify-content: space-between;
@@ -186,7 +210,7 @@ const LANDING_CSS = `
   }
   .file-row:first-of-type { border-top: 0; }
   .old { color: var(--color-ink-mute); text-decoration: line-through; text-decoration-color: #ef4444; }
-  .new { color: var(--color-emerald-600); font-weight: 700; }
+  .new { color: #5EEAD4; font-weight: 700; }
 
   .iso-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
   .chip {
@@ -248,7 +272,7 @@ const LANDING_CSS = `
     background: var(--color-surface); padding: 28px;
   }
   .roi-card.dark {
-    background: #0F172A; color: #F8FAFC; border-color: #1E293B;
+    background: #08101F; color: #E6EDF6; border-color: rgba(103, 232, 249, .2);
   }
   .roi-label {
     display: block; margin-bottom: 10px; color: var(--color-primary);
@@ -328,8 +352,8 @@ const LANDING_CSS = `
     border: 1px solid var(--color-border); border-radius: 16px;
     background: var(--color-surface); padding: 26px;
   }
-  .plan.pro { border-color: #1E293B; background: #0F172A; color: #F8FAFC; }
-  .plan.team { border-color: var(--color-primary); background: var(--color-indigo-50); box-shadow: 0 18px 50px -36px rgba(79, 70, 229, .45); }
+  .plan.pro { border-color: rgba(129, 140, 248, .3); background: #0B1224; color: #E6EDF6; }
+  .plan.team { border-color: var(--color-primary); background: rgba(103, 232, 249, .06); box-shadow: 0 18px 50px -30px rgba(34, 211, 238, .32); }
   .plan-top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 22px; }
   .plan h3 { margin: 0; font-size: 24px; letter-spacing: -.03em; font-weight: 650; }
   .badge {
@@ -351,18 +375,18 @@ const LANDING_CSS = `
   .pro li::before { background: var(--color-accent); }
   .plan .button { margin-top: auto; width: fit-content; }
   .pro .button.primary { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
-  .pro .button.primary:hover { background: var(--color-accent); border-color: var(--color-accent); }
-  .team .button.primary { background: var(--color-primary); border-color: var(--color-primary); color: white; }
-  .team .button.primary:hover { background: var(--color-indigo-700); border-color: var(--color-indigo-700); }
+  .pro .button.primary:hover { background: var(--color-accent); border-color: var(--color-accent); color: #06121F; }
+  .team .button.primary { background: linear-gradient(135deg, #67E8F9, #6366F1); border-color: transparent; color: #06121F; }
+  .team .button.primary:hover { filter: brightness(1.08); }
   .paid-pilot {
-    margin-top: 22px; border: 1px solid #1E293B; border-radius: 16px;
-    background: #0F172A; color: #F8FAFC; padding: 24px;
+    margin-top: 22px; border: 1px solid rgba(103, 232, 249, .2); border-radius: 16px;
+    background: #08101F; color: #E6EDF6; padding: 24px;
     display: flex; align-items: center; justify-content: space-between; gap: 24px;
   }
   .paid-pilot strong { display: block; font-size: 22px; letter-spacing: -.02em; font-weight: 650; }
   .paid-pilot p { margin: 6px 0 0; color: rgba(248, 250, 252, .7); font-size: 14px; }
-  .paid-pilot .button.primary { background: var(--color-accent); color: var(--color-ink); border-color: var(--color-accent); flex-shrink: 0; }
-  .paid-pilot .button.primary:hover { background: var(--color-surface); border-color: var(--color-border); }
+  .paid-pilot .button.primary { background: var(--color-accent); color: #06121F; border-color: var(--color-accent); flex-shrink: 0; }
+  .paid-pilot .button.primary:hover { background: #A5B4FC; border-color: #A5B4FC; }
 
   .faq { display: grid; gap: 0; border-top: 1px solid var(--color-border); }
   details { border-bottom: 1px solid var(--color-border); padding: 20px 0; }
@@ -370,15 +394,15 @@ const LANDING_CSS = `
   details p { max-width: 760px; margin: 12px 0 0; color: var(--color-ink-soft); line-height: 1.6; }
 
   .final {
-    background: #0F172A; color: #F8FAFC;
+    background: linear-gradient(145deg, #08101F, #111A35); color: #E6EDF6;
     padding: clamp(54px, 7vw, 84px); border-radius: 24px; margin-bottom: 44px;
   }
-  .final h2 { max-width: 14ch; color: var(--color-surface); }
+  .final h2 { max-width: 14ch; color: #E6EDF6; }
   .final .section-copy { color: rgba(248, 250, 252, .72); }
-  .final .button.primary { background: var(--color-accent); color: var(--color-ink); }
-  .final .button.primary:hover { background: var(--color-surface); }
-  .final .button.secondary { color: var(--color-surface); border-color: rgba(248, 250, 252, .3); background: transparent; }
-  .final .button.secondary:hover { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
+  .final .button.primary { background: var(--color-accent); color: #06121F; }
+  .final .button.primary:hover { background: #A5B4FC; }
+  .final .button.secondary { color: #E6EDF6; border-color: rgba(248, 250, 252, .3); background: transparent; }
+  .final .button.secondary:hover { background: rgba(248, 250, 252, .08); color: #FFFFFF; border-color: rgba(248, 250, 252, .55); }
 
   footer {
     border-top: 1px solid var(--color-border); padding: 30px 0 42px;
@@ -428,20 +452,22 @@ const SOFTWARE_APPLICATION_JSONLD = {
       priceCurrency: 'EUR',
       description: `${FREE_DAILY_LOTS} lots de renommage par jour, sans compte.`,
     },
-    {
-      '@type': 'Offer',
-      name: 'Team',
-      price: String(TEAM_PRICE_EUR),
-      priceCurrency: 'EUR',
-      description: 'Lots illimités, jusqu’à 10 membres, sync des conventions.',
-    },
-    {
-      '@type': 'Offer',
-      name: 'Cabinet',
-      price: String(CABINET_PRICE_EUR),
-      priceCurrency: 'EUR',
-      description: 'Utilisateurs et projets illimités, support prioritaire.',
-    },
+    ...(HAS_DIRECT_CHECKOUT && PAID_ACCOUNTS_AVAILABLE ? [
+      {
+        '@type': 'Offer',
+        name: 'Team',
+        price: String(TEAM_PRICE_EUR),
+        priceCurrency: 'EUR',
+        description: 'Lots illimités, jusqu’à 10 membres, sync des conventions.',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Cabinet',
+        price: String(CABINET_PRICE_EUR),
+        priceCurrency: 'EUR',
+        description: 'Jusqu’à 1 000 utilisateurs et projets, support prioritaire.',
+      },
+    ] : []),
   ],
 };
 
@@ -474,7 +500,7 @@ const faqs = [
   {
     question: 'Quelle conformité RGPD ?',
     answer:
-      "Aucune donnée personnelle traitée tant que vous ne créez pas de compte. Avec un compte Team/Cabinet : email + préférences + JSON de convention uniquement (jamais le contenu des fichiers). Hébergement EU (Vercel). DPA sur demande pour les contrats Cabinet.",
+      "Le renommage n’envoie pas vos documents au serveur. Une demande commerciale transmet seulement les coordonnées et le besoin saisis à Vercel puis Convex ; les détails et vos droits figurent dans la politique de confidentialité.",
   },
   {
     question: 'Que se passe-t-il si vous arrêtez le service ?',
@@ -484,7 +510,7 @@ const faqs = [
   {
     question: 'Vous travaillez avec des grands comptes ?',
     answer:
-      "Une formule Entreprise est en préparation : SSO SAML/OIDC, déploiement on-premise (Docker), DPA et audit de sécurité, support dédié. Contactez-nous pour parler de votre cas.",
+      "Aucune formule Entreprise n’est ouverte aujourd’hui. Vous pouvez décrire votre besoin ; toute option SSO, DPA ou déploiement dédié devra être étudiée et confirmée par écrit.",
   },
 ];
 
@@ -499,7 +525,7 @@ export default function LandingPage() {
 
       <div className="wrap">
         <header className="topbar">
-          <Link href="/" className="brand" aria-label="BIMCHECK-Rename — accueil">
+          <Link href="/" className="brand">
             <span className="mark" aria-hidden="true">BC</span>
             <span className="brand-name">
               BIMCHECK <span className="brand-sub">Rename</span>
@@ -522,23 +548,25 @@ export default function LandingPage() {
         <main>
           <section className="hero">
             <div>
-              <span className="eyebrow">Standardisation documentaire · Local-first · Équipe</span>
+              <span className="eyebrow">Bêta gratuite · Local-first · Sans compte</span>
               <h1>
-                La même convention de nommage, <em>imposée à toute l’équipe.</em>
+                La même convention de nommage, <em>appliquée sans improviser.</em>
               </h1>
               <p className="lead">
                 BIM, Juridique, Finance, RH, Santé, Industrie, Immobilier.
-                L’admin définit la convention une fois. Les collaborateurs
-                l’appliquent en un clic. <strong>Aucun fichier ne quitte le navigateur</strong> :
-                seules les règles sont synchronisées.
+                Composez les règles, contrôlez l’aperçu puis exportez un ZIP.
+                <strong> Aucun fichier ne quitte le navigateur</strong> pendant ce flux.
+                {PAID_ACCOUNTS_AVAILABLE
+                  ? ' Les conventions peuvent ensuite être partagées par les comptes équipe.'
+                  : ' Bêta ouverte en Free : les comptes payants et le paiement en ligne ne sont pas encore ouverts ; la configuration reste locale et exportable.'}
               </p>
 
               <div className="cta-row">
                 <a className="button primary" href="/app">Essayer maintenant — sans compte</a>
-                <a className="button secondary" href="/pricing">Voir les tarifs</a>
+                <a className="button secondary" href="/pricing">Voir les tarifs cibles</a>
               </div>
               <p className="small-note">
-                Aucun fichier ne quitte votre poste. Vérifiable dans DevTools &gt; Réseau.
+                Gratuit · 5 lots/jour · aucun prélèvement. Fichiers 100 % locaux (DevTools &gt; Réseau).
               </p>
             </div>
 
@@ -594,11 +622,11 @@ export default function LandingPage() {
             <div className="proof-row">
               <div className="proof">
                 <strong>2 h 40</strong>
-                <span>de renommage manuel sur un lot de 80 fichiers</span>
+                <span>estimation à 2 minutes par fichier sur un lot de 80</span>
               </div>
               <div className="proof">
-                <strong>15 min</strong>
-                <span>avec BIMCHECK-Rename, convention pré-câblée</span>
+                <strong>À mesurer</strong>
+                <span>sur votre lot et votre convention, sans promesse de gain prédéfini</span>
               </div>
               <div className="proof">
                 <strong>0 upload</strong>
@@ -611,7 +639,7 @@ export default function LandingPage() {
             <div className="section-head">
               <div>
                 <span className="kicker">Rentabilité</span>
-                <h2>Le prix se justifie dès le premier dossier sérieux.</h2>
+                <h2>Mesurez le gain avant de justifier un prix.</h2>
               </div>
               <p className="section-copy">
                 BIMCHECK-Rename ne vend pas un simple renommage. Il vend le
@@ -622,7 +650,7 @@ export default function LandingPage() {
 
             <div className="roi-grid">
               <article className="roi-card dark">
-                <span className="roi-label">Exemple conservateur</span>
+                <span className="roi-label">Exemple de calcul — pas une promesse</span>
                 <p className="roi-number">80 fichiers</p>
                 <p>
                   À 2 minutes de contrôle et renommage manuel par fichier, un lot
@@ -637,12 +665,12 @@ export default function LandingPage() {
               </article>
 
               <article className="roi-card">
-                <span className="roi-label">Pourquoi ça convertit</span>
-                <p className="roi-number">10x</p>
+                <span className="roi-label">Décision fondée sur votre test</span>
+                <p className="roi-number">Votre mesure</p>
                 <p>
-                  Un seul lot mensuel qui évite deux heures de reprise couvre
-                  largement l’abonnement Team. Cabinet devient évident dès que
-                  l’équipe a besoin d’audit trail ou de rapport de conformité.
+                  Comparez le temps réellement observé avant et après sur le même lot.
+                  Une offre payante ne devient pertinente que si ce test montre un gain
+                  supérieur à son coût pour votre organisation.
                 </p>
                 <div className="cta-row">
                   <a className="button primary" href="/app">Tester sur un lot exemple</a>
@@ -686,8 +714,10 @@ export default function LandingPage() {
                 <strong>Contrôlez et exportez</strong>
                 <p>
                   Aperçu Avant / Après ligne par ligne, correction manuelle possible.
-                  Téléchargez un ZIP propre avec arborescence intacte. En Team,
-                  partagez la convention pour que tous les collaborateurs l’appliquent.
+                  Téléchargez un ZIP propre avec arborescence intacte.
+                  {PAID_ACCOUNTS_AVAILABLE
+                    ? ' En Team, partagez ensuite la convention avec les collaborateurs autorisés.'
+                    : ' Vous pouvez aussi exporter la convention ; le partage par compte est encore en préparation.'}
                 </p>
               </article>
             </div>
@@ -747,7 +777,12 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
+            <div
+              style={{ overflowX: 'auto' }}
+              role="region"
+              aria-label="Comparaison avec les méthodes alternatives"
+              tabIndex={0}
+            >
               <table className="compare-table">
                 <thead>
                   <tr>
@@ -764,10 +799,9 @@ export default function LandingPage() {
                   <tr><td>Profils métier pré-câblés</td><td className="us"><span className="ok">7 métiers</span></td><td><span className="no">Aucun</span></td><td><span className="no">Aucun</span></td><td><span className="ok">BIM</span></td></tr>
                   <tr><td>Import CSV / Excel d’entités</td><td className="us"><span className="ok">Oui</span></td><td><span className="ok">Oui mais fragile</span></td><td><span className="no">Non</span></td><td>Via API</td></tr>
                   <tr><td>Aperçu Avant / Après</td><td className="us"><span className="ok">Oui</span></td><td><span className="no">Non</span></td><td><span className="no">Non</span></td><td>Partiel</td></tr>
-                  <tr><td>Sync convention équipe</td><td className="us"><span className="ok">Team / Cabinet</span></td><td><span className="no">Non</span></td><td><span className="no">Non</span></td><td><span className="ok">Oui</span></td></tr>
-                  <tr><td>Onboarding</td><td className="us"><span className="ok">0 min</span></td><td>Heures de dev</td><td>N/A</td><td>Plusieurs heures</td></tr>
-                  <tr><td>Tarif entrée</td><td className="us us-cell">Gratuit puis {TEAM_PRICE_EUR} €/mois</td><td>Temps interne</td><td>Temps interne</td><td>70 €+/mois</td></tr>
-                  <tr><td>Casse à chaque mise à jour</td><td className="us"><span className="no">Non</span></td><td><span className="ok">Oui</span></td><td><span className="no">Non</span></td><td><span className="no">Non</span></td></tr>
+                  <tr><td>Sync convention équipe</td><td className="us"><span className={PAID_ACCOUNTS_AVAILABLE ? 'ok' : 'no'}>{PAID_ACCOUNTS_AVAILABLE ? 'Team / Cabinet' : 'Prévue — non ouverte'}</span></td><td><span className="no">Non native</span></td><td><span className="no">Non</span></td><td><span className="ok">Selon plateforme</span></td></tr>
+                  <tr><td>Prise en main</td><td className="us"><span className="ok">Essai autonome</span></td><td>Configuration interne</td><td>Immédiate</td><td>Selon plateforme</td></tr>
+                  <tr><td>Tarif d’entrée publié</td><td className="us us-cell">Free ouvert · Team cible {TEAM_PRICE_EUR} €/mois</td><td>Temps interne</td><td>Temps interne</td><td>Selon offre</td></tr>
                 </tbody>
               </table>
             </div>
@@ -782,8 +816,9 @@ export default function LandingPage() {
               <p className="section-copy">
                 Le local-first n’est pas un slogan : c’est mesurable. Pendant
                 un renommage, aucune requête sortante ne contient vos fichiers.
-                Seul le JSON de la convention transite en cloud quand vous
-                utilisez Team ou Cabinet.
+                {PAID_ACCOUNTS_AVAILABLE
+                  ? 'Seul le JSON de la convention peut transiter en cloud avec un compte Team ou Cabinet.'
+                  : 'La configuration reste locale ; les comptes cloud Team et Cabinet ne sont pas encore ouverts.'}
               </p>
             </div>
 
@@ -791,15 +826,15 @@ export default function LandingPage() {
               <ul className="security-list">
                 <li><strong>Traitement 100 % navigateur</strong> — lecture, parsing, renommage et export ZIP côté client.</li>
                 <li><strong>Aucune requête sortante de contenu</strong> — visible en direct dans DevTools &gt; Réseau.</li>
-                <li><strong>Seules les règles sont synchronisées</strong> — jamais les documents eux-mêmes.</li>
-                <li><strong>Headers HTTP audités</strong> — HSTS preload, X-Frame-Options DENY, CSP stricte.</li>
-                <li><strong>CI sécurité automatique</strong> — CodeQL, OWASP ZAP, Lighthouse à chaque commit.</li>
+                <li><strong>Règles locales et exportables</strong> — la synchronisation cloud reste désactivée tant que les comptes ne sont pas ouverts.</li>
+                <li><strong>Headers HTTP audités</strong> — HSTS deux ans, X-Frame-Options DENY, CSP stricte.</li>
+                <li><strong>CI sécurité automatique</strong> — CodeQL, OWASP ZAP et Lighthouse selon leurs workflows.</li>
                 <li><strong>Export conventions</strong> — JSON / CSV à tout moment, pas de verrou.</li>
-                <li><strong>Hébergement EU</strong> — Vercel Frankfurt par défaut. On-premise possible pour Entreprise.</li>
+                <li><strong>Hébergement du site</strong> — Vercel ; vos documents ne sont pas envoyés pendant le renommage local.</li>
               </ul>
               <div className="devtools" aria-hidden="true">
                 <div className="devtools-top">
-                  <span style={{ color: 'var(--color-primary)' }}>●</span> DevTools — Network · 12 ressources, 248 KB
+                  <span style={{ color: 'var(--color-primary)' }}>●</span> Illustration — DevTools · Network
                 </div>
                 <div className="devtools-body">
                   <div className="req"><span>GET /</span><span className="status">200</span></div>
@@ -829,9 +864,8 @@ export default function LandingPage() {
                 <h2>Trois profils, trois usages concrets.</h2>
               </div>
               <p className="section-copy">
-                Les exemples ci-dessous sont représentatifs des cas d’usage
-                qu’on rencontre. Dès qu’un client beta signe un témoignage public,
-                nous le remplaçons par un vrai nom et un vrai logo.
+                Les scénarios ci-dessous sont fictifs et servent uniquement à illustrer
+                des usages possibles. Ce ne sont ni des témoignages clients ni des résultats mesurés.
               </p>
             </div>
 
@@ -839,30 +873,26 @@ export default function LandingPage() {
               <article className="persona-card">
                 <span className="persona-role">Cabinet d’avocats · 8 associés</span>
                 <p className="persona-quote">
-                  Chaque collaborateur nommait ses actes différemment. Avant un
-                  audit, on passait des heures à refaire la nomenclature. Avec
-                  BIMCHECK, l’associé définit la convention une fois, toute
-                  l’équipe suit.
+                  Un cabinet peut préparer une convention commune, la tester sur un lot
+                  non sensible et mesurer si elle réduit les reprises avant audit.
                 </p>
-                <span className="persona-name">— Profil type · cabinet FR 8 avocats</span>
+                <span className="persona-name">— Scénario fictif · cabinet de 8 avocats</span>
               </article>
               <article className="persona-card">
                 <span className="persona-role">BIM Coordinator · Agence d’architecture</span>
                 <p className="persona-quote">
-                  Nous livrons 80 fichiers à chaque jalon. La convention maison est
-                  dans un Notion. Avant, la coordination passait 4 heures à
-                  renommer avant chaque dépôt. Maintenant : 15 minutes.
+                  Une agence qui livre 80 fichiers par jalon peut comparer son temps de
+                  préparation manuel avec un lot renommé dans l’atelier local.
                 </p>
-                <span className="persona-name">— Profil type · agence FR 18 personnes</span>
+                <span className="persona-name">— Scénario fictif · agence de 18 personnes</span>
               </article>
               <article className="persona-card">
                 <span className="persona-role">DAF · PME industrielle</span>
                 <p className="persona-quote">
-                  Nos factures et justificatifs arrivaient avec des noms en vrac.
-                  La clôture devenait un cauchemar. Maintenant le service
-                  comptable applique la convention en un clic, sans formation.
+                  Une PME peut construire une règle pour ses justificatifs puis vérifier,
+                  sur ses propres données, si le classement devient plus régulier.
                 </p>
-                <span className="persona-name">— Profil type · PME FR 45 salariés</span>
+                <span className="persona-name">— Scénario fictif · PME de 45 salariés</span>
               </article>
             </div>
           </section>
@@ -874,8 +904,8 @@ export default function LandingPage() {
                 <h2>Des prix bas pour ne pas freiner l’équipe.</h2>
               </div>
               <p className="section-copy">
-                Free généreux pour prouver le gain. Team pour la convention partagée.
-                Cabinet pour le multi-équipes — sans features fantômes.
+                Free est ouvert pour mesurer le gain. Team et Cabinet affichent des tarifs
+                et périmètres cibles, clairement marqués non ouverts tant qu’ils ne sont pas livrés.
                 Changez la devise d’affichage (EUR, CHF, USD) ci-dessous.
               </p>
             </div>
@@ -909,7 +939,7 @@ export default function LandingPage() {
             <div className="section-head">
               <div>
                 <span className="kicker">Commencer</span>
-                <h2>Du lot brut au ZIP propre, en 60 secondes.</h2>
+                <h2>Du lot brut au ZIP propre, dans un même atelier local.</h2>
               </div>
               <p className="section-copy">
                 Pas de compte à créer, pas de configuration cloud, pas de carte
@@ -929,7 +959,9 @@ export default function LandingPage() {
           <span>© 2026 BIMCHECK-Rename — Convention de nommage pour équipes</span>
           <span>
             <a href="/pricing">Tarifs</a> ·{' '}
+            <a href="/mentions-legales">Mentions légales</a> ·{' '}
             <a href="/privacy">Confidentialité</a> ·{' '}
+            <a href="/conditions">CGU / CGV</a> ·{' '}
             <a href="/security">Sécurité</a> ·{' '}
             <a href="/pilot">Pilote</a> ·{' '}
             <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>

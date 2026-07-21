@@ -19,9 +19,11 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
   const lastPos = useRef({ x: 0, y: 0 });
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
 
   // Move focus into the dialog on mount + close on Esc
   useEffect(() => {
+    openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     closeButtonRef.current?.focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -30,7 +32,10 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      openerRef.current?.focus();
+    };
   }, [onClose]);
 
   // Confine Tab within the lightbox

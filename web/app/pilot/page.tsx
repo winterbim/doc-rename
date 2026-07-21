@@ -1,14 +1,19 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PilotRequestForm } from '@/components/commercial/PilotRequestForm';
-import { PAID_PILOT_PRICE_LABEL, pilotCta } from '@/lib/pricing';
+import { HAS_DIRECT_CHECKOUT, PAID_ACCOUNTS_AVAILABLE, PAID_PILOT_PRICE_LABEL, pilotCta } from '@/lib/pricing';
 
 export const metadata: Metadata = {
   title: 'Pilote 14 jours',
   description:
-    `Réserver un pilote BIMCHECK-Rename à ${PAID_PILOT_PRICE_LABEL} sur votre convention réelle : onboarding 30 minutes, lot pilote, traitement local navigateur, aucun upload de fichiers.`,
+    `Demander un échange sur le projet de pilote BIMCHECK-Rename annoncé à ${PAID_PILOT_PRICE_LABEL}. La demande ne réserve rien et ne déclenche aucun paiement.`,
   alternates: {
     canonical: '/pilot',
+  },
+  openGraph: {
+    title: 'Demander un pilote BIMCHECK-Rename',
+    description: 'Décrivez votre convention et votre volume. La demande ne déclenche aucun paiement en ligne.',
+    url: '/pilot',
   },
 };
 
@@ -21,7 +26,13 @@ const outcomes = [
 
 const pilotSteps = [
   ['1', 'Cadrage 15 min', 'Vous décrivez la convention, le métier et le volume de fichiers.'],
-  ['2', 'Paiement pilote', `Paiement unique ${PAID_PILOT_PRICE_LABEL}, par lien Stripe si configuré ou facturation manuelle.`],
+  [
+    '2',
+    HAS_DIRECT_CHECKOUT ? 'Paiement pilote' : 'Validation manuelle',
+    HAS_DIRECT_CHECKOUT
+      ? `Paiement unique ${PAID_PILOT_PRICE_LABEL} par lien sécurisé.`
+      : 'Nous confirmons le périmètre et les conditions par écrit ; la demande en ligne ne déclenche aucun paiement.',
+  ],
   ['3', 'Onboarding 30 min', 'On prépare un modèle exploitable et vous testez sur un lot non confidentiel.'],
   ['4', 'Pilote 14 jours', 'Vous renommez vos lots en autonomie, sans compte obligatoire et sans upload fichier.'],
   ['5', 'Décision', 'Team, Cabinet, ou arrêt propre si le gain n’est pas démontré.'],
@@ -41,7 +52,10 @@ export default function PilotPage() {
             </span>
             BIMCHECK-Rename
           </Link>
-          <nav className="flex flex-wrap items-center gap-4 text-sm text-ink-soft" aria-label="Navigation pilote">
+          <nav
+            className="flex flex-wrap items-center gap-3 text-xs text-ink-soft sm:gap-4 sm:text-sm"
+            aria-label="Navigation pilote"
+          >
             <Link href="/app" className="hover:text-brick">Essayer l’app</Link>
             <Link href="/security" className="hover:text-brick">Sécurité</Link>
             <Link href="/privacy" className="hover:text-brick">Confidentialité</Link>
@@ -54,12 +68,12 @@ export default function PilotPage() {
               Pilote commercial
             </p>
             <h1 className="mt-4 max-w-3xl font-sans text-5xl font-semibold leading-tight tracking-tight text-ink sm:text-6xl">
-              Pilote 14 jours sur votre convention réelle.
+              Étudions un pilote de 14 jours sur votre convention.
             </h1>
             <p className="mt-5 max-w-3xl text-xl leading-8 text-ink-soft">
-              BIMCHECK-Rename se vend quand il prouve un gain sur un lot concret :
-              moins de renommage manuel, moins d’erreurs avant dépôt ou partage, et
-              aucun fichier envoyé à un serveur pendant le flux de renommage.
+              Un pilote n’a de sens que s’il prouve un gain sur un lot concret :
+              comparez le temps de préparation et les erreurs avant dépôt ou partage,
+              sans envoyer les fichiers au serveur pendant le flux de renommage.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <a
@@ -80,14 +94,14 @@ export default function PilotPage() {
 
           <aside className="rounded-lg border border-line bg-surface p-5 shadow-sm dark:bg-paper-2">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brick">
-              Offre vendable aujourd’hui
+              {HAS_DIRECT_CHECKOUT ? 'Offre disponible aujourd’hui' : 'Projet pilote — demande d’échange'}
             </p>
             <p className="mt-3 text-4xl font-semibold tracking-tight text-ink">
               {PAID_PILOT_PRICE_LABEL}
             </p>
             <p className="mt-2 text-sm leading-6 text-ink-soft">
-              Paiement unique pour valider la convention, préparer un modèle et tester sur
-              un lot non confidentiel. Objectif : décider vite si Team ou Cabinet vaut le coût.
+              Tarif cible annoncé, à confirmer par écrit avec le périmètre et les conditions avant
+              toute commande. La demande actuelle sert uniquement à organiser un échange.
             </p>
             <ul className="mt-4 grid gap-3 text-sm leading-6 text-ink-soft">
               {outcomes.map((item) => (
@@ -97,9 +111,11 @@ export default function PilotPage() {
                 </li>
               ))}
             </ul>
-            <p className="mt-5 rounded-md bg-paper-2 px-3 py-2 text-xs leading-5 text-ink-mute">
-              Après le pilote : Team 19 € / mois (jusqu’à 10 utilisateurs) ou Cabinet 49 € / mois
-              (illimité + support prioritaire). Activation manuelle sous 1 jour ouvré après paiement.
+            <p className="mt-5 rounded-md bg-paper-2 px-3 py-2 text-xs leading-5 text-ink-soft">
+              Périmètre envisagé : convention préparée, test sur lot non confidentiel et bilan.
+              Tarifs cibles après ouverture : Team 19 € / mois (jusqu’à 10 utilisateurs) ou Cabinet
+              49 € / mois (jusqu’à 1 000 utilisateurs et projets). {!PAID_ACCOUNTS_AVAILABLE && 'Les comptes payants ne sont pas encore ouverts. '}
+              {!HAS_DIRECT_CHECKOUT && 'Aucun paiement n’est encaissé depuis cette page.'}
             </p>
           </aside>
         </section>
@@ -118,19 +134,20 @@ export default function PilotPage() {
           </div>
         </section>
 
-        <section id="demande" className="grid gap-10 py-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-          <div>
+        <section id="demande" className="grid min-w-0 gap-10 py-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+          <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brick">
               Demande pilote
             </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink">
-              Réservez le pilote, puis on part de votre réalité.
+              Décrivez votre besoin, puis partons de votre réalité.
             </h2>
             <p className="mt-4 text-base leading-7 text-ink-soft">
               Le bon critère commercial est simple : est-ce que BIMCHECK-Rename réduit
               vraiment le temps passé à préparer vos fichiers avant dépôt, partage ou
-              archivage ? Si oui, le pilote devient Team ou Cabinet. Sinon, vous gardez
-              le diagnostic et le modèle de convention préparé.
+              archivage ? Si oui, ce travail pourra préparer une future offre Team ou
+              Cabinet lorsqu’elles seront ouvertes. Sinon, vous gardez le diagnostic et
+              le modèle de convention préparé.
             </p>
             <div className="mt-6 rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
               <p className="text-sm font-semibold text-ink">À ne pas envoyer par email</p>
@@ -141,7 +158,7 @@ export default function PilotPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-line bg-surface p-5 shadow-sm dark:bg-paper-2">
+          <div className="min-w-0 rounded-lg border border-line bg-surface p-5 shadow-sm dark:bg-paper-2">
             <PilotRequestForm />
           </div>
         </section>

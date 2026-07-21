@@ -1,4 +1,9 @@
-import { CONTACT_EMAIL } from "@/lib/contact";
+import {
+  CONTACT_EMAIL,
+  LEGAL_ENTITY_STATUS,
+  PUBLISHER_LABEL,
+  PUBLISHER_NAME,
+} from "@/lib/contact";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -8,13 +13,15 @@ export const metadata: Metadata = {
   description:
     "Identification de l’éditeur de BIMCHECK-Rename, hébergement, propriété intellectuelle et droit applicable.",
   alternates: { canonical: "/mentions-legales" },
+  openGraph: {
+    title: "Mentions légales BIMCHECK-Rename",
+    description: "Éditeur, hébergeurs et état actuel des informations légales.",
+    url: "/mentions-legales",
+  },
   robots: { index: true, follow: true },
 };
 
 const LAST_UPDATED = "2026-07-21";
-/** Honest V1 identity until company registration is finalized — contact remains valid. */
-const LEGAL_ENTITY_NOTE =
-  "Éditeur individuel / projet BIMCHECK-Rename (statut d’entreprise en cours de finalisation). Identification complète communiquée sur facture et sur demande écrite.";
 
 export default function MentionsLegalesPage() {
   return (
@@ -47,12 +54,12 @@ export default function MentionsLegalesPage() {
               <table className="w-full border-collapse text-left text-sm">
                 <tbody className="divide-y divide-line">
                   {[
-                    ["Éditeur", "BIMCHECK-Rename — Jawani Fernandes"],
-                    ["Statut", LEGAL_ENTITY_NOTE],
-                    ["Directeur de la publication", "Jawani Fernandes"],
+                    ["Éditeur", PUBLISHER_LABEL],
+                    ["Statut", LEGAL_ENTITY_STATUS],
+                    ["Directeur de la publication", PUBLISHER_NAME],
                     ["Contact", CONTACT_EMAIL],
                     ["Hébergement application", "Vercel Inc. (voir section ci-dessous)"],
-                    ["Backend optionnel (auth / conventions)", "Convex (EU possible selon déploiement)"],
+                    ["Backend demandes commerciales", "Convex, Inc. (conservation des demandes ; auth et conventions seulement si ces fonctions sont ouvertes)"],
                   ].map(([k, v]) => (
                     <tr key={k}>
                       <th scope="row" className="bg-paper-2 px-4 py-3 font-medium text-ink align-top w-1/3">
@@ -101,7 +108,7 @@ export default function MentionsLegalesPage() {
               <Link href="/privacy" className="text-brick hover:underline">
                 politique de confidentialité
               </Link>{" "}
-              (conforme RGPD pour l’UE et nLPD pour la Suisse).
+              (transparence relative au RGPD pour l’UE et à la nLPD pour la Suisse).
             </p>
           </section>
 

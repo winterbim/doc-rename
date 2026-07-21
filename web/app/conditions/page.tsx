@@ -2,6 +2,7 @@ import { CONTACT_EMAIL } from "@/lib/contact";
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { HAS_DIRECT_CHECKOUT, PAID_ACCOUNTS_AVAILABLE } from "@/lib/pricing";
 
 
 export const metadata: Metadata = {
@@ -9,10 +10,15 @@ export const metadata: Metadata = {
   description:
     "CGU/CGV de BIMCHECK-Rename : objet, offres Free/Team/Cabinet, paiement, résiliation, responsabilité et droit applicable (Suisse & France).",
   alternates: { canonical: "/conditions" },
+  openGraph: {
+    title: "Conditions générales d’utilisation et de vente",
+    description: "Conditions applicables à BIMCHECK-Rename et état d’ouverture des offres.",
+    url: "/conditions",
+  },
   robots: { index: true, follow: true },
 };
 
-const LAST_UPDATED = "2026-01-01";
+const LAST_UPDATED = "2026-07-21";
 
 const sections = [
   { href: "#objet", label: "Objet" },
@@ -119,30 +125,43 @@ export default function ConditionsPage() {
           <Section id="offres" title="4. Offres et prix">
             <ul className="list-disc pl-5">
               <li><strong>Free</strong> : 0 € — 5 lots de renommage par jour, sans compte, traitement local.</li>
-              <li><strong>Team</strong> : 19 € / mois — lots illimités, compte, sync des conventions, jusqu’à 10 utilisateurs et 3 projets.</li>
-              <li><strong>Cabinet</strong> : 49 € / mois — membres et projets illimités, support prioritaire.</li>
+              <li><strong>Team</strong> : tarif cible 19 € / mois — lots illimités, compte, sync des conventions, jusqu’à 10 utilisateurs et 3 projets.</li>
+              <li><strong>Cabinet</strong> : tarif cible 49 € / mois — jusqu’à 1 000 membres et projets, support prioritaire.</li>
               <li><strong>Pilote 14 jours</strong> : 49 € (paiement unique) — onboarding guidé, selon offre en vigueur.</li>
             </ul>
             <p>
-              Prix publics de référence en euros (EUR). L’interface peut afficher des
+              Prix de référence en euros (EUR). L’interface peut afficher des
               équivalents CHF ou USD à titre indicatif (conversion arrondie). La facturation
-              suit le lien de paiement Stripe ou le devis. Hors taxes ou TTC selon le statut
-              fiscal de l’éditeur et le pays du client. Le tarif applicable est celui affiché
-              sur la page Tarifs au moment de la souscription.
+              suit le lien de paiement Stripe ou le devis seulement lorsqu’une offre est ouverte.
+              Tant que les comptes payants sont fermés, ces montants ne constituent pas une offre
+              de vente. Avant toute commande, un écrit devra préciser le prix HT/TTC, les taxes,
+              l’identité de facturation et les droits effectivement fournis.
             </p>
           </Section>
 
           <Section id="paiement" title="5. Paiement, reconduction et résiliation">
-            <p>
-              Les paiements sont traités par notre prestataire <strong>Stripe</strong> ; l’éditeur
-              n’a pas accès à vos données de carte. Les abonnements mensuels sont reconduits
-              tacitement à chaque échéance jusqu’à résiliation.
-            </p>
-            <p>
-              Vous pouvez résilier à tout moment ; la résiliation prend effet à la fin de la période
-              en cours, sans remboursement du mois entamé sauf disposition légale impérative
-              contraire. Modalités de résiliation : notification par email à {CONTACT_EMAIL}.
-            </p>
+            {HAS_DIRECT_CHECKOUT && PAID_ACCOUNTS_AVAILABLE ? (
+              <>
+                <p>
+                  Les paiements sont traités par notre prestataire <strong>Stripe</strong> ;
+                  l’éditeur n’a pas accès à vos données de carte. Les abonnements mensuels sont
+                  reconduits tacitement à chaque échéance jusqu’à résiliation.
+                </p>
+                <p>
+                  Vous pouvez résilier à tout moment ; la résiliation prend effet à la fin de la
+                  période en cours, sans remboursement du mois entamé sauf disposition légale
+                  impérative contraire. Modalités de résiliation : notification par email à{' '}
+                  {CONTACT_EMAIL}.
+                </p>
+              </>
+            ) : (
+              <p>
+                Aucun paiement ni abonnement n’est actuellement initié depuis le site public. Les
+                comptes Team et Cabinet ne sont pas ouverts. Les demandes servent à préparer un
+                échange, sans prélèvement ni engagement ; aucune commande n’est acceptée tant que
+                l’identité légale, le traitement fiscal et les droits livrés ne sont pas confirmés par écrit.
+              </p>
+            )}
           </Section>
 
           <Section id="retractation" title="6. Droit de rétractation (consommateurs)">

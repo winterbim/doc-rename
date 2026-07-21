@@ -1,7 +1,12 @@
 'use client';
 import type { WorkspaceFile } from '@/lib/rename-engine/types';
+import { resolveSafeDownloadName } from '@/lib/rename-engine/nomenclature';
 
-interface Props { readonly file: WorkspaceFile }
+interface Props {
+  readonly file: WorkspaceFile;
+  readonly reason?: string;
+  readonly title?: string;
+}
 
 const REASONS: Record<string, string> = {
   '.rvt': "Format propriétaire Autodesk Revit. Une visualisation web complète requiert l'API Autodesk Platform Services (payante).",
@@ -23,14 +28,13 @@ function downloadBlob(file: WorkspaceFile) {
   const url = URL.createObjectURL(file.blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = file.newName ?? file.original;
+  a.download = resolveSafeDownloadName(file.original, file.newName);
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 100);
 }
 
-export function NoPreview({ file }: Props) {
-  const reason =
-    REASONS[file.extension.toLowerCase()] ??
+export function NoPreview({ file, reason: reasonOverride, title = 'Aperçu non disponible' }: Props) {
+  const reason = reasonOverride ?? REASONS[file.extension.toLowerCase()] ??
     "Format non supporté pour l'aperçu dans le navigateur.";
 
   return (
@@ -52,7 +56,7 @@ export function NoPreview({ file }: Props) {
           />
         </svg>
       </div>
-      <p className="font-sans font-semibold text-ink mb-1">Aperçu non disponible</p>
+      <p className="font-sans font-semibold text-ink mb-1">{title}</p>
       <p className="font-sans text-xs uppercase tracking-wider text-ink-mute mb-3">
         {file.extension.replace('.', '')}
       </p>

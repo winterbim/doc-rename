@@ -3,6 +3,7 @@ import "./globals.css";
 import { TelemetryProvider } from "@/components/TelemetryProvider";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import { PUBLISHER_NAME } from "@/lib/contact";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 
@@ -25,7 +26,7 @@ const newsreader = Newsreader({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bimcheck-rename.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rename.bimcheck-consulting.com";
 const appTitle = "BIMCHECK-Rename — Convention de nommage multi-métiers";
 const appDescription =
   "Standardisez les noms de fichiers de votre équipe — BIM, juridique, finance, RH, santé, industrie, immobilier. Local-first : aucun upload, tout reste dans le navigateur.";
@@ -38,8 +39,8 @@ export const metadata: Metadata = {
   },
   description: appDescription,
   applicationName: "BIMCHECK-Rename",
-  authors: [{ name: "Jawani Fernandes" }],
-  creator: "Jawani Fernandes",
+  authors: [{ name: PUBLISHER_NAME }],
+  creator: PUBLISHER_NAME,
   publisher: "BIMCHECK-Rename",
   alternates: {
     canonical: "/",
@@ -73,7 +74,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F8F6F1",
+  themeColor: "#0A0F1E",
   colorScheme: "light dark",
 };
 
@@ -104,6 +105,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const content = (
+    <ConvexClientProvider>
+      <TelemetryProvider>{children}</TelemetryProvider>
+    </ConvexClientProvider>
+  );
+  const hasConvex = Boolean(process.env.NEXT_PUBLIC_CONVEX_URL?.trim());
+
   return (
     <html
       lang="fr"
@@ -113,14 +121,21 @@ export default async function RootLayout({
       <head>
         {/* Early theme script — runs before React hydration to avoid flash */}
         <script dangerouslySetInnerHTML={{ __html: earlyThemeScript }} />
-        <link rel="prefetch" href="/pdf.worker.min.mjs" as="script" />
       </head>
       <body>
-        <ConvexAuthNextjsServerProvider>
-          <ConvexClientProvider>
-            <TelemetryProvider>{children}</TelemetryProvider>
-          </ConvexClientProvider>
-        </ConvexAuthNextjsServerProvider>
+        <a
+          href="#main-content"
+          className="fixed left-3 top-3 z-[100] -translate-y-24 rounded-md bg-ink px-4 py-2 text-sm font-semibold text-paper shadow-lg transition focus:translate-y-0"
+        >
+          Aller au contenu principal
+        </a>
+        <div id="main-content" tabIndex={-1}>
+          {hasConvex ? (
+            <ConvexAuthNextjsServerProvider>{content}</ConvexAuthNextjsServerProvider>
+          ) : (
+            content
+          )}
+        </div>
       </body>
     </html>
   );

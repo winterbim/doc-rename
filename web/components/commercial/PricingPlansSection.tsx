@@ -10,6 +10,7 @@ import {
   getPricingPlans,
   type PricingPlan,
   CURRENCIES,
+  HAS_DIRECT_CHECKOUT,
 } from '@/lib/pricing';
 
 function PlanCard({ plan }: { plan: PricingPlan }) {
@@ -68,15 +69,20 @@ function PlanCard({ plan }: { plan: PricingPlan }) {
         ))}
       </ul>
 
-      <Link href={plan.cta.href} target={plan.cta.checkout ? '_blank' : undefined}>
-        <Button
+      <Button
           variant={plan.highlighted ? 'primary' : 'secondary'}
           className="w-full"
           size="lg"
+          asChild
+        >
+        <Link
+          href={plan.cta.href}
+          target={plan.cta.checkout ? '_blank' : undefined}
+          rel={plan.cta.checkout ? 'noopener noreferrer' : undefined}
         >
           {plan.cta.label}
-        </Button>
-      </Link>
+        </Link>
+      </Button>
     </Card>
   );
 }
@@ -92,8 +98,16 @@ export function PricingPlansSection() {
         <CurrencySwitcher currency={currency} onChange={setCurrency} />
         <p className="max-w-md text-xs text-ink-mute">
           Affichage en {meta.label}. Les montants hors euro sont des conversions
-          indicatives (base EUR). La facturation suit le lien de paiement ou le devis.
+          indicatives (base EUR). La facturation suit un lien sécurisé ou un devis uniquement
+          lorsque la souscription est ouverte.
         </p>
+        {!HAS_DIRECT_CHECKOUT && (
+          <p className="max-w-xl rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            Free est disponible immédiatement. Les comptes Team et Cabinet ne sont pas encore
+            ouverts : la demande sert uniquement à être recontacté et aucun prélèvement en ligne
+            n’est effectué depuis cette page.
+          </p>
+        )}
       </div>
       <div className="grid gap-6 lg:grid-cols-3">
         {plans.map((plan) => (

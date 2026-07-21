@@ -9,6 +9,9 @@ import {
   getPricingPlans,
   getPilotPriceLabel,
   getTeamPlan,
+  canExposeDirectCheckout,
+  isStripePaymentLinkAllowedForMode,
+  normalizeStripePaymentLink,
 } from '../pricing';
 
 describe('pricing — audit-aligned offer', () => {
@@ -55,5 +58,59 @@ describe('pricing — audit-aligned offer', () => {
   it('labels pilot price in selected currency', () => {
     expect(getPilotPriceLabel('EUR')).toBe('49 €');
     expect(getPilotPriceLabel('CHF')).toContain('CHF');
+  });
+
+  it('accepts only HTTPS Payment Links hosted by Stripe', () => {
+    expect(normalizeStripePaymentLink('https://buy.stripe.com/test_123')).toBe(
+      'https://buy.stripe.com/test_123',
+    );
+    expect(normalizeStripePaymentLink(' https://buy.stripe.com/abc?locale=fr ')).toBe(
+      'https://buy.stripe.com/abc?locale=fr',
+    );
+    expect(normalizeStripePaymentLink('https://evil.example/checkout')).toBeUndefined();
+    expect(normalizeStripePaymentLink('http://buy.stripe.com/abc')).toBeUndefined();
+    expect(normalizeStripePaymentLink('https://buy.stripe.com.evil.example/abc')).toBeUndefined();
+    expect(normalizeStripePaymentLink('not-a-url')).toBeUndefined();
+  });
+
+  it('keeps checkout fail-closed until accounts and commercial checkout are both enabled', () => {
+    expect(
+      canExposeDirectCheckout({
+        accountsAvailable: false,
+        checkoutEnabled: true,
+        hasPaymentLink: true,
+      }),
+    ).toBe(false);
+    expect(
+      canExposeDirectCheckout({
+        accountsAvailable: true,
+        checkoutEnabled: false,
+        hasPaymentLink: true,
+      }),
+    ).toBe(false);
+    expect(
+      canExposeDirectCheckout({
+        accountsAvailable: true,
+        checkoutEnabled: true,
+        hasPaymentLink: false,
+      }),
+    ).toBe(false);
+    expect(
+      canExposeDirectCheckout({
+        accountsAvailable: true,
+        checkoutEnabled: true,
+        hasPaymentLink: true,
+      }),
+    ).toBe(true);
+  });
+
+  it('never mixes Stripe test and live Payment Links', () => {
+    const testLink = normalizeStripePaymentLink('https://buy.stripe.com/test_123');
+    const liveLink = normalizeStripePaymentLink('https://buy.stripe.com/abc123');
+    expect(isStripePaymentLinkAllowedForMode(testLink, 'test')).toBe(true);
+    expect(isStripePaymentLinkAllowedForMode(testLink, 'live')).toBe(false);
+    expect(isStripePaymentLinkAllowedForMode(liveLink, 'live')).toBe(true);
+    expect(isStripePaymentLinkAllowedForMode(liveLink, 'test')).toBe(false);
+    expect(isStripePaymentLinkAllowedForMode(testLink, undefined)).toBe(false);
   });
 });

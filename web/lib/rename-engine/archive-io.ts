@@ -23,6 +23,15 @@
  */
 
 import type { ZipEntry } from './zip-io';
+import {
+  checkArchiveEntryCount,
+  checkArchivePath,
+  checkExtractedBatchSize,
+  checkFilename,
+  checkSize,
+  reserveArchiveEntries,
+  type ArchiveEntryBudget,
+} from '../upload-guard';
 
 const ARCHIVE_EXTENSIONS = [
   '.rar',
@@ -71,7 +80,11 @@ let _initialized = false;
  *
  * Throws on unsupported or corrupt archives.
  */
-export async function readOtherArchive(file: File): Promise<ZipEntry[]> {
+export async function readOtherArchive(
+  file: File,
+  entryBudget?: ArchiveEntryBudget,
+  existingExtractedBytes = 0,
+): Promise<ZipEntry[]> {
   // Dynamic import — keeps libarchive.js (~2 MB WASM) out of the main bundle.
   const { Archive } = await import('libarchive.js');
 
@@ -81,44 +94,65 @@ export async function readOtherArchive(file: File): Promise<ZipEntry[]> {
   }
 
   const archive = await Archive.open(file);
-  const entries: Array<{ file: { name: string; size: number; extract: () => Promise<File> }; path: string }> =
-    await archive.getFilesArray();
+  try {
+    const entries: Array<{
+      file: { name: string; size: number; extract: () => Promise<File> };
+      path: string;
+    }> = await archive.getFilesArray();
+    const countCheck = entryBudget
+      ? reserveArchiveEntries(entryBudget, entries.length)
+      : checkArchiveEntryCount(entries.length);
+    if (!countCheck.ok) throw new Error(countCheck.reason);
 
-  const results: ZipEntry[] = [];
+    const results: ZipEntry[] = [];
+    let extractedBytes = 0;
 
-  for (const entry of entries) {
-    const compressedFile = entry.file;
-    const dirPath = entry.path ?? ''; // e.g. "" or "subdir/"
+    for (const entry of entries) {
+      const compressedFile = entry.file;
+      const dirPath = entry.path ?? ''; // e.g. "" or "subdir/"
+      if (!compressedFile || !compressedFile.name) continue;
 
-    if (!compressedFile || !compressedFile.name) continue;
+      const name = compressedFile.name;
+      const fullPath = dirPath ? `${dirPath}${name}` : name;
+      if (fullPath.startsWith('__MACOSX') || fullPath.includes('.DS_Store')) continue;
 
-    const name = compressedFile.name;
-    // Reconstruct full path for DS_Store / __MACOSX filtering
-    const fullPath = dirPath ? `${dirPath}${name}` : name;
+      const pathCheck = checkArchivePath(fullPath);
+      const nameCheck = checkFilename(name);
+      const sizeCheck = checkSize(compressedFile.size);
+      const declaredBatch = checkExtractedBatchSize(
+        existingExtractedBytes + extractedBytes + compressedFile.size,
+      );
+      if (!pathCheck.ok || !nameCheck.ok || !sizeCheck.ok || !declaredBatch.ok) {
+        throw new Error(
+          pathCheck.reason ?? nameCheck.reason ?? sizeCheck.reason ?? declaredBatch.reason,
+        );
+      }
 
-    // Skip macOS metadata artefacts (same filter as readZip).
-    if (
-      fullPath.startsWith('__MACOSX') ||
-      fullPath.includes('.DS_Store')
-    ) {
-      continue;
+      const extracted = await compressedFile.extract();
+      const blob = extracted as unknown as Blob;
+      const actualSize = checkSize(blob.size);
+      const actualBatch = checkExtractedBatchSize(
+        existingExtractedBytes + extractedBytes + blob.size,
+      );
+      if (!actualSize.ok || !actualBatch.ok) {
+        throw new Error(actualSize.reason ?? actualBatch.reason);
+      }
+      extractedBytes += blob.size;
+
+      const folder = dirPath.endsWith('/') ? dirPath.slice(0, -1) : dirPath;
+      results.push({
+        path: fullPath,
+        folder,
+        name,
+        blob: async () => blob,
+        size: blob.size,
+        unsafePath: fullPath,
+        isDir: false,
+      });
     }
 
-    // Normalise folder: strip trailing slash
-    const folder = dirPath.endsWith('/') ? dirPath.slice(0, -1) : dirPath;
-
-    // Capture reference for closure (avoid loop-variable capture)
-    const capturedFile = compressedFile;
-
-    results.push({
-      path: fullPath,
-      folder,
-      name,
-      blob: () => capturedFile.extract().then((f) => f as unknown as Blob),
-      size: compressedFile.size,
-      isDir: false,
-    });
+    return results;
+  } finally {
+    await archive.close();
   }
-
-  return results;
 }

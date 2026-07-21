@@ -512,7 +512,10 @@ export function exportFieldsState(state: FieldsState): string {
 }
 
 function escapeCsvCell(value: unknown): string {
-  const str = String(value ?? '');
+  const raw = String(value ?? '');
+  // Spreadsheet applications execute cells beginning with these characters as
+  // formulas. Prefix user-controlled values so an exported convention remains data.
+  const str = /^[\s]*[=+\-@]/.test(raw) || /^[\t\r]/.test(raw) ? `'${raw}` : raw;
   return /[";\n\r]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
 }
 
@@ -749,6 +752,15 @@ export function importFieldsState(json: string): FieldsState {
     (Array.isArray(raw.activeFields) ? raw.activeFields : null) ??
     [];
 
+  const hasRecognizedShape =
+    Array.isArray(raw.activeFieldIds) ||
+    Array.isArray(raw.activeFields) ||
+    (raw.values !== null && typeof raw.values === 'object') ||
+    (raw.fieldValues !== null && typeof raw.fieldValues === 'object');
+  if (!hasRecognizedShape) {
+    throw new Error('Le JSON ne contient pas de configuration de nomenclature importable.');
+  }
+
   const activeFieldIds = (rawIds as unknown[])
     .filter((id): id is string => typeof id === 'string' && _fieldMap.has(id));
 
@@ -774,4 +786,18 @@ export function importFieldsState(json: string): FieldsState {
     values,
     workLotPart,
   };
+}
+
+/** Import an app nomenclature JSON, including its optional separator. */
+export function importNomenclatureJson(json: string): {
+  fields: FieldsState;
+  separator?: '_' | '-' | '.';
+} {
+  const fields = importFieldsState(json);
+  const raw = JSON.parse(json) as { separator?: unknown };
+  const separator = raw.separator;
+  if (separator !== undefined && separator !== '_' && separator !== '-' && separator !== '.') {
+    throw new Error('Le séparateur du modèle JSON est invalide.');
+  }
+  return separator === undefined ? { fields } : { fields, separator };
 }

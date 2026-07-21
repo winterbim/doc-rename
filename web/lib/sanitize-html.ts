@@ -13,5 +13,33 @@
  */
 export async function sanitizeDocumentHtml(dirty: string): Promise<string> {
   const DOMPurify = (await import('dompurify')).default;
-  return DOMPurify.sanitize(dirty, { USE_PROFILES: { html: true } });
+  DOMPurify.addHook('uponSanitizeAttribute', (_node, data) => {
+    const name = data.attrName.toLowerCase();
+    const value = data.attrValue.trim();
+    if (name === 'src') {
+      data.keepAttr = /^(?:blob:|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(value);
+    } else if (name === 'href') {
+      data.keepAttr = /^(?:https?:|mailto:|#|\/)/i.test(value);
+    } else if (name === 'style' || name === 'srcset') {
+      data.keepAttr = false;
+    }
+  });
+  try {
+    return DOMPurify.sanitize(dirty, {
+      ALLOWED_TAGS: [
+        'p', 'br', 'span', 'strong', 'b', 'em', 'i', 'u', 's',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'ul', 'ol', 'li', 'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td',
+        'a', 'img', 'blockquote', 'pre', 'code', 'hr', 'sup', 'sub',
+      ],
+      ALLOWED_ATTR: [
+        'href', 'title', 'alt', 'src', 'colspan', 'rowspan', 'scope',
+        'width', 'height', 'class',
+      ],
+      FORBID_ATTR: ['style', 'srcset'],
+      FORBID_TAGS: ['form', 'iframe', 'object', 'embed', 'video', 'audio', 'source'],
+    });
+  } finally {
+    DOMPurify.removeAllHooks();
+  }
 }

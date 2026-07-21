@@ -8,6 +8,8 @@ import { ImagePreview } from './ImagePreview';
 import { TextPreview } from './TextPreview';
 import { NoPreview } from './NoPreview';
 import { ViewerSkeleton } from './ViewerSkeleton';
+import { useFocusTrap } from '@/lib/hooks/useFocusTrap';
+import { checkPreviewSize } from '@/lib/preview-guard';
 
 // PDF preview is SSR-disabled (PDF.js requires window/canvas)
 const PdfPreview = dynamic(
@@ -90,6 +92,17 @@ const DXF_EXTENSIONS = new Set(['.dxf']);
 function pickPreviewComponent(file: WorkspaceFile): React.ReactNode {
   const ext = file.extension.toLowerCase();
   const baseName = file.original.split(/[\\/]/).pop()?.toLowerCase() ?? file.original.toLowerCase();
+  const previewSize = checkPreviewSize(ext, file.category, file.blob.size);
+
+  if (!previewSize.ok) {
+    return (
+      <NoPreview
+        file={file}
+        title="Aperçu désactivé pour ce fichier"
+        reason={`${previewSize.reason} Le renommage et le téléchargement restent disponibles.`}
+      />
+    );
+  }
 
   if (ext === '.pdf') {
     return <PdfPreview file={file} />;
@@ -133,6 +146,10 @@ export function FileViewer() {
 
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
+  const wasOpenRef = useRef(false);
+
+  useFocusTrap(panelRef, Boolean(file));
 
   const close = useCallback(() => {
     dispatch({ type: 'PREVIEW_CLOSE' });
@@ -148,12 +165,22 @@ export function FileViewer() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [file, close]);
 
-  // Focus close button when panel opens
+  // Move focus into the modal, then restore it to the preview trigger.
   useEffect(() => {
-    if (file) {
+    if (file && !wasOpenRef.current) {
+      openerRef.current = document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+      wasOpenRef.current = true;
       closeButtonRef.current?.focus();
+    } else if (!file && wasOpenRef.current) {
+      openerRef.current?.focus();
+      openerRef.current = null;
+      wasOpenRef.current = false;
     }
   }, [file]);
+
+  useEffect(() => () => openerRef.current?.focus(), []);
 
   if (!file) return null;
 
@@ -170,10 +197,9 @@ export function FileViewer() {
       <div
         ref={panelRef}
         role="dialog"
-        aria-modal="false"
+        aria-modal="true"
         aria-label={`Aperçu de ${file.original}`}
-        className="fixed bottom-6 right-6 top-28 z-[500] flex flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-xl dark:bg-paper-2 dark:border-line-2"
-        style={{ width: 'min(48vw, 720px)' }}
+        className="fixed bottom-4 left-4 right-4 top-20 z-[500] flex flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-xl dark:bg-paper-2 dark:border-line-2 sm:bottom-6 sm:left-auto sm:right-6 sm:top-28 sm:w-[min(48vw,720px)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Panel header */}

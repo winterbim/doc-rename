@@ -109,6 +109,15 @@ describe('appReducer output normalization', () => {
     );
 
     expect(next.files[0].newName).toBe('FACADE ETE.PDF');
+    expect(next.files[0].status).toBe('renamed');
+  });
+
+  it('does not mark a traversal-like manual override as downloadable', () => {
+    const next = appReducer(
+      { ...initialState, files: [makeFile({ status: 'ready', newName: undefined })] },
+      { type: 'FILE_RENAME_OVERRIDE', fileId: 'f1', newName: '../../document.pdf' },
+    );
+    expect(next.files[0].status).toBe('error');
   });
 
   it('normalizes simple replace results', () => {
@@ -128,5 +137,45 @@ describe('appReducer output normalization', () => {
     );
 
     expect(next.files[0].newName).toBe('FACADE.PDF');
+    expect(next.files[0].status).toBe('renamed');
+  });
+
+  it.each([
+    { regex: false, find: 'PLAN', replace: '../../evil', expected: '../../EVIL.PDF' },
+    { regex: true, find: '^PLAN', replace: 'CON', expected: 'CON.PDF' },
+  ])('marks invalid replace results as errors', ({ regex, find, replace, expected }) => {
+    const next = appReducer(
+      {
+        ...initialState,
+        files: [makeFile({ newName: 'PLAN.pdf' })],
+      },
+      {
+        type: 'FILES_REPLACE_TEXT',
+        find,
+        replace,
+        caseSensitive: true,
+        regex,
+        fileIds: ['f1'],
+      },
+    );
+
+    expect(next.files[0].newName).toBe(expected);
+    expect(next.files[0].status).toBe('error');
+  });
+
+  it('validates batch replacement names before marking them downloadable', () => {
+    const next = appReducer(
+      {
+        ...initialState,
+        files: [makeFile({ newName: 'PLAN.pdf' })],
+      },
+      {
+        type: 'FILES_REPLACE_BATCH',
+        updates: [{ id: 'f1', newName: '../outside.pdf' }],
+      },
+    );
+
+    expect(next.files[0].newName).toBe('../OUTSIDE.PDF');
+    expect(next.files[0].status).toBe('error');
   });
 });

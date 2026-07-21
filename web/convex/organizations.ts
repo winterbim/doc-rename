@@ -1,12 +1,15 @@
 import { v } from 'convex/values';
 import { query, mutation } from './_generated/server';
 import { auth } from './auth';
+import { requireEmail, requireSlug, requireText } from './validation';
+import { requirePaidSaasEnabled } from './paidFeature';
 
 /**
  * List organizations the current user belongs to.
  */
 export const listMyOrganizations = query({
   handler: async (ctx) => {
+    requirePaidSaasEnabled();
     const userId = await auth.getUserId(ctx);
     if (!userId) return [];
 
@@ -16,7 +19,7 @@ export const listMyOrganizations = query({
       .collect();
 
     const orgs = await Promise.all(
-      memberships.map(async (m) => {
+      memberships.filter((m) => m.status === 'active').map(async (m) => {
         const org = await ctx.db.get(m.orgId);
         return org ? { ...org, role: m.role, memberId: m._id } : null;
       }),
@@ -34,27 +37,39 @@ export const createOrganization = mutation({
     name: v.string(),
     slug: v.string(),
     primaryIndustry: v.optional(v.string()),
-    plan: v.union(v.literal('team'), v.literal('cabinet')),
   },
   handler: async (ctx, args) => {
+    requirePaidSaasEnabled();
     const userId = await auth.getUserId(ctx);
     if (!userId) throw new Error('Not authenticated');
 
+    const user = await ctx.db.get(userId);
+    const plan = user?.plan;
+    if (plan !== 'team' && plan !== 'cabinet') {
+      throw new Error('A paid Team or Cabinet plan is required');
+    }
+
+    const name = requireText(args.name, 'Organization name', 120);
+    const slug = requireSlug(args.slug);
+    const primaryIndustry = args.primaryIndustry
+      ? requireText(args.primaryIndustry, 'Primary industry', 80)
+      : undefined;
+
     const existing = await ctx.db
       .query('organizations')
-      .withIndex('by_slug', (q) => q.eq('slug', args.slug))
+      .withIndex('by_slug', (q) => q.eq('slug', slug))
       .unique();
     if (existing) throw new Error('Slug already taken');
 
-    const limits = args.plan === 'cabinet'
+    const limits = plan === 'cabinet'
       ? { maxMembers: 1000, maxProjects: 1000 }
       : { maxMembers: 10, maxProjects: 3 };
 
     const orgId = await ctx.db.insert('organizations', {
-      name: args.name,
-      slug: args.slug,
-      primaryIndustry: args.primaryIndustry,
-      plan: args.plan,
+      name,
+      slug,
+      primaryIndustry,
+      plan,
       ownerId: userId,
       ...limits,
     });
@@ -87,6 +102,7 @@ export const inviteMember = mutation({
     role: v.union(v.literal('admin'), v.literal('member')),
   },
   handler: async (ctx, args) => {
+    requirePaidSaasEnabled();
     const userId = await auth.getUserId(ctx);
     if (!userId) throw new Error('Not authenticated');
 
@@ -94,7 +110,7 @@ export const inviteMember = mutation({
       .query('members')
       .withIndex('by_user_org', (q) => q.eq('userId', userId).eq('orgId', args.orgId))
       .unique();
-    if (!membership || membership.role !== 'admin') {
+    if (!membership || membership.status !== 'active' || membership.role !== 'admin') {
       throw new Error('Only admins can invite members');
     }
 
@@ -109,19 +125,19 @@ export const inviteMember = mutation({
       throw new Error('Member limit reached');
     }
 
+    const email = requireEmail(args.email);
     const existing = await ctx.db
       .query('members')
-      .withIndex('by_invited_email', (q) => q.eq('invitedEmail', args.email))
+      .withIndex('by_invited_email', (q) => q.eq('invitedEmail', email))
       .filter((q) => q.eq(q.field('orgId'), args.orgId))
       .unique();
     if (existing) throw new Error('Invitation already sent');
 
     await ctx.db.insert('members', {
       orgId: args.orgId,
-      userId: userId, // placeholder until invitee accepts
       role: args.role,
       status: 'pending',
-      invitedEmail: args.email,
+      invitedEmail: email,
     });
 
     return { success: true };
@@ -136,6 +152,7 @@ export const acceptInvitation = mutation({
     orgId: v.id('organizations'),
   },
   handler: async (ctx, args) => {
+    requirePaidSaasEnabled();
     const userId = await auth.getUserId(ctx);
     if (!userId) throw new Error('Not authenticated');
 

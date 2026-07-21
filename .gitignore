@@ -54,3 +54,5 @@ web/playwright-report/
 .cursor/
 skills-lock.json
 .blackboxcli/
+/.vercel/
+/.env.local

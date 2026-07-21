@@ -16,6 +16,7 @@ import { loadPersistedState, persistState } from '@/lib/persistence';
 import { clearViewerCacheFor, clearAllViewerCaches } from '@/lib/viewer-cache';
 import { setupPdfWorker } from '@/lib/pdf-config';
 import { appendErrorEntry } from '@/components/ErrorBoundary';
+import { PAID_ACCOUNTS_ENABLED } from '@/lib/features';
 
 /**
  * Hook: revoke object URLs and clear parsed caches for files that have been
@@ -110,6 +111,15 @@ export function RenamerShell() {
   useGlobalErrorHandler();
   const { state } = useAppContext();
   const [rightPaneOpen, setRightPaneOpen] = useState(false);
+  const [desktopLayout, setDesktopLayout] = useState(false);
+
+  useEffect(() => {
+    const query = globalThis.matchMedia('(min-width: 1024px)');
+    const update = () => setDesktopLayout(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
 
   // Clear stale viewer caches when files are removed
   useViewerCacheCleanup(state);
@@ -120,6 +130,7 @@ export function RenamerShell() {
   useEffect(() => {
     clearAllViewerCaches();
     setupPdfWorker();
+    return clearAllViewerCaches;
   }, []);
 
   // Auto-open right pane when user selects files (so Simple Replace surfaces)
@@ -133,8 +144,8 @@ export function RenamerShell() {
     <div className="flex min-h-screen flex-col bg-paper lg:h-screen lg:overflow-hidden">
       <Header />
 
-      {/* UPGRADE BANNER — soft paywall for team sync */}
-      <div className="border-b border-border bg-gradient-to-r from-indigo-600 to-indigo-700 px-5 py-2.5">
+      {/* UPGRADE BANNER — shown only when team accounts are operational. */}
+      {PAID_ACCOUNTS_ENABLED && <div className="border-b border-border bg-gradient-to-r from-indigo-600 to-indigo-700 px-5 py-2.5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-xs sm:text-sm text-white/90">
             <span className="font-semibold text-white">Nouveau :</span>{' '}
@@ -150,7 +161,7 @@ export function RenamerShell() {
             </svg>
           </a>
         </div>
-      </div>
+      </div>}
 
       {/* STICKY TOOLBAR — always visible primary actions */}
       <div className="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface/95 dark:bg-paper-2/95 backdrop-blur px-5 py-2 shadow-sm">
@@ -177,7 +188,7 @@ export function RenamerShell() {
 
       <main className="flex flex-1 gap-0 lg:min-h-0 lg:overflow-hidden">
         {/* LEFT PANE — Nomenclature */}
-        <aside
+        {desktopLayout && <aside
           className="hidden lg:flex w-80 shrink-0 flex-col gap-0 border-r border-line bg-surface dark:bg-paper-2 min-h-0 overflow-y-auto"
           aria-label="Configuration de la nomenclature"
         >
@@ -185,7 +196,7 @@ export function RenamerShell() {
           <div className="p-4 flex-1">
             <NomenclatureBuilder />
           </div>
-        </aside>
+        </aside>}
 
         {/* CENTER PANE — Files */}
         <section
@@ -194,7 +205,7 @@ export function RenamerShell() {
         >
           <div className="flex-1 p-5">
             {/* Mobile: collapsed nomenclature */}
-            <div className="lg:hidden mb-5 rounded-xl border border-line bg-surface dark:bg-paper-2 p-4 shadow-sm">
+            {!desktopLayout && <div className="lg:hidden mb-5 rounded-xl border border-line bg-surface dark:bg-paper-2 p-4 shadow-sm">
               <details>
                 <summary className="cursor-pointer text-sm font-semibold text-ink list-none flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-brick" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -207,7 +218,7 @@ export function RenamerShell() {
                   <NomenclatureBuilder />
                 </div>
               </details>
-            </div>
+            </div>}
 
             <FilesList />
           </div>

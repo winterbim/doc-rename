@@ -16,6 +16,6 @@ jobs:
       - name: ZAP baseline scan
         uses: zaproxy/action-baseline@v0.14.0
         with:
-          target: 'https://bimdoc-renamer.vercel.app'
+          target: 'https://bimcheck-rename.vercel.app'
           fail_action: false
           artifact_name: zap-baseline-report

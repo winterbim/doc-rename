@@ -7,28 +7,122 @@
  * Pricing doctrine: docs/product/PRICING_AUDIT.md
  */
 
+import { PAID_ACCOUNTS_ENABLED } from './features';
+
 /* ---------------------------------------------------------------------------
  * Stripe links (optional)
  * --------------------------------------------------------------------------- */
 
-const TEAM_LINK =
-  process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM_EUR?.trim() ||
-  process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM?.trim() ||
-  process.env.NEXT_PUBLIC_STRIPE_LINK_PRO?.trim();
+/**
+ * Accept only Stripe-hosted Payment Links. This prevents a deployment typo or
+ * poisoned environment variable from turning a pricing CTA into an open
+ * redirect to an arbitrary host.
+ */
+export function normalizeStripePaymentLink(raw: string | null | undefined): string | undefined {
+  const value = raw?.trim();
+  if (!value) return undefined;
 
-const CABINET_LINK =
-  process.env.NEXT_PUBLIC_STRIPE_LINK_CABINET_EUR?.trim() ||
-  process.env.NEXT_PUBLIC_STRIPE_LINK_CABINET?.trim();
+  try {
+    const url = new URL(value);
+    if (
+      url.protocol !== 'https:' ||
+      url.hostname !== 'buy.stripe.com' ||
+      url.username ||
+      url.password
+    ) {
+      return undefined;
+    }
+    return url.toString();
+  } catch {
+    return undefined;
+  }
+}
 
-const PILOT_LINK = process.env.NEXT_PUBLIC_STRIPE_LINK_PILOT?.trim();
+export function isStripePaymentLinkAllowedForMode(
+  link: string | undefined,
+  mode: string | undefined,
+): boolean {
+  if (!link) return false;
+  try {
+    const url = new URL(link);
+    if (url.protocol !== 'https:' || url.hostname !== 'buy.stripe.com') return false;
+    const isTestLink = url.pathname.startsWith('/test_');
+    return (mode === 'test' && isTestLink) || (mode === 'live' && !isTestLink);
+  } catch {
+    return false;
+  }
+}
+
+const PUBLIC_STRIPE_MODE = process.env.NEXT_PUBLIC_STRIPE_MODE?.trim();
+
+const firstStripeLink = (...values: Array<string | undefined>): string | undefined => {
+  for (const value of values) {
+    const link = normalizeStripePaymentLink(value);
+    if (link && isStripePaymentLinkAllowedForMode(link, PUBLIC_STRIPE_MODE)) return link;
+  }
+  return undefined;
+};
+
+const TEAM_LINK = firstStripeLink(
+  process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM_EUR,
+  process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM,
+  process.env.NEXT_PUBLIC_STRIPE_LINK_PRO,
+);
+
+const CABINET_LINK = firstStripeLink(
+  process.env.NEXT_PUBLIC_STRIPE_LINK_CABINET_EUR,
+  process.env.NEXT_PUBLIC_STRIPE_LINK_CABINET,
+);
+
+const PILOT_LINK = firstStripeLink(process.env.NEXT_PUBLIC_STRIPE_LINK_PILOT);
 
 /** Optional per-currency checkout URLs (override when set). */
-const TEAM_LINK_CHF = process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM_CHF?.trim();
-const TEAM_LINK_USD = process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM_USD?.trim();
-const CABINET_LINK_CHF = process.env.NEXT_PUBLIC_STRIPE_LINK_CABINET_CHF?.trim();
-const CABINET_LINK_USD = process.env.NEXT_PUBLIC_STRIPE_LINK_CABINET_USD?.trim();
-const PILOT_LINK_CHF = process.env.NEXT_PUBLIC_STRIPE_LINK_PILOT_CHF?.trim();
-const PILOT_LINK_USD = process.env.NEXT_PUBLIC_STRIPE_LINK_PILOT_USD?.trim();
+const TEAM_LINK_CHF = firstStripeLink(process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM_CHF);
+const TEAM_LINK_USD = firstStripeLink(process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM_USD);
+const CABINET_LINK_CHF = firstStripeLink(process.env.NEXT_PUBLIC_STRIPE_LINK_CABINET_CHF);
+const CABINET_LINK_USD = firstStripeLink(process.env.NEXT_PUBLIC_STRIPE_LINK_CABINET_USD);
+const PILOT_LINK_CHF = firstStripeLink(process.env.NEXT_PUBLIC_STRIPE_LINK_PILOT_CHF);
+const PILOT_LINK_USD = firstStripeLink(process.env.NEXT_PUBLIC_STRIPE_LINK_PILOT_USD);
+
+/**
+ * Paid collaboration is a separate launch decision from OAuth itself. Both
+ * switches are required so enabling a login provider cannot advertise an
+ * unfinished organisation/licensing workflow.
+ */
+export const PAID_ACCOUNTS_AVAILABLE =
+  PAID_ACCOUNTS_ENABLED;
+
+/**
+ * Checkout is deliberately fail-closed: a leftover Payment Link alone can
+ * never expose a purchase button. Authentication and the separately reviewed
+ * checkout switch must both be enabled for the same deployment.
+ */
+export function canExposeDirectCheckout(options: {
+  accountsAvailable: boolean;
+  checkoutEnabled: boolean;
+  hasPaymentLink: boolean;
+}): boolean {
+  return options.accountsAvailable && options.checkoutEnabled && options.hasPaymentLink;
+}
+
+const HAS_CONFIGURED_PAYMENT_LINK = Boolean(
+  TEAM_LINK ||
+  CABINET_LINK ||
+  PILOT_LINK ||
+  TEAM_LINK_CHF ||
+  TEAM_LINK_USD ||
+  CABINET_LINK_CHF ||
+  CABINET_LINK_USD ||
+  PILOT_LINK_CHF ||
+  PILOT_LINK_USD,
+);
+
+/** True only after auth, commercial review and at least one Payment Link are enabled. */
+export const HAS_DIRECT_CHECKOUT = canExposeDirectCheckout({
+  accountsAvailable: PAID_ACCOUNTS_AVAILABLE,
+  checkoutEnabled: process.env.NEXT_PUBLIC_PAID_CHECKOUT_ENABLED === 'true',
+  hasPaymentLink: HAS_CONFIGURED_PAYMENT_LINK,
+});
 
 /* ---------------------------------------------------------------------------
  * Currency
@@ -140,7 +234,7 @@ export const freeCta: PlanCta = {
 
 export function getTeamCta(currency: CurrencyCode = DEFAULT_CURRENCY): PlanCta {
   return buildCta(
-    teamLinkFor(currency),
+    HAS_DIRECT_CHECKOUT ? teamLinkFor(currency) : undefined,
     'S’abonner — Team',
     'Demander Team',
     '/pilot?plan=team',
@@ -149,7 +243,7 @@ export function getTeamCta(currency: CurrencyCode = DEFAULT_CURRENCY): PlanCta {
 
 export function getCabinetCta(currency: CurrencyCode = DEFAULT_CURRENCY): PlanCta {
   return buildCta(
-    cabinetLinkFor(currency),
+    HAS_DIRECT_CHECKOUT ? cabinetLinkFor(currency) : undefined,
     'S’abonner — Cabinet',
     'Contacter les ventes',
     '/pilot?plan=cabinet',
@@ -159,9 +253,9 @@ export function getCabinetCta(currency: CurrencyCode = DEFAULT_CURRENCY): PlanCt
 export function getPilotCta(currency: CurrencyCode = DEFAULT_CURRENCY): PlanCta {
   const price = formatMoney(convertFromEur(PILOT_PRICE_EUR, currency), currency);
   return buildCta(
-    pilotLinkFor(currency),
+    HAS_DIRECT_CHECKOUT ? pilotLinkFor(currency) : undefined,
     `Réserver le pilote — ${price}`,
-    `Réserver le pilote — ${price}`,
+    `Demander le pilote — tarif annoncé ${price}`,
     '/pilot',
   );
 }
@@ -226,18 +320,26 @@ export function getTeamPlan(currency: CurrencyCode = DEFAULT_CURRENCY): PricingP
     priceUnit: meta.symbol,
     currency,
     billing: '/mois',
-    description: 'Pour l’équipe qui impose une convention unique — prix d’entrée accessible.',
-    features: [
+    description: PAID_ACCOUNTS_AVAILABLE
+      ? 'Pour l’équipe qui impose une convention unique — prix d’entrée accessible.'
+      : 'Tarif cible ; comptes équipe et souscriptions pas encore ouverts.',
+    features: PAID_ACCOUNTS_AVAILABLE ? [
       'Tout Free + lots illimités',
       'Compte (Google / GitHub)',
       'Sauvegarde cloud des conventions (JSON, pas les fichiers)',
       'Organisation jusqu’à 10 personnes',
       'Jusqu’à 3 projets',
       'Support email',
+    ] : [
+      'Périmètre cible : lots illimités',
+      'Périmètre cible : compte équipe',
+      'Périmètre cible : conventions JSON partagées',
+      'Périmètre cible : jusqu’à 10 personnes et 3 projets',
+      'Accès non encore ouvert — demande sans paiement',
     ],
     cta: getTeamCta(currency),
     highlighted: true,
-    badge: 'Le plus choisi',
+    badge: 'Petites équipes',
   };
 }
 
@@ -252,13 +354,20 @@ export function getCabinetPlan(currency: CurrencyCode = DEFAULT_CURRENCY): Prici
     priceUnit: meta.symbol,
     currency,
     billing: '/mois',
-    description: 'Multi-équipes, projets illimités, support prioritaire.',
-    features: [
+    description: PAID_ACCOUNTS_AVAILABLE
+      ? 'Périmètre multi-équipes avec support prioritaire.'
+      : 'Tarif cible ; comptes Cabinet et souscriptions pas encore ouverts.',
+    features: PAID_ACCOUNTS_AVAILABLE ? [
       'Tout Team +',
-      'Utilisateurs et projets illimités',
+      'Jusqu’à 1 000 utilisateurs et projets',
       'Support prioritaire',
       'Onboarding assisté sur demande',
       'Facturation sur devis / virement possible',
+    ] : [
+      'Périmètre cible : tout Team',
+      'Périmètre cible : jusqu’à 1 000 utilisateurs et projets',
+      'Périmètre cible : support prioritaire',
+      'Accès non encore ouvert — demande sans paiement',
     ],
     cta: getCabinetCta(currency),
   };
@@ -286,14 +395,39 @@ export const planComparisonRows: readonly {
   {
     feature: 'Lots de renommage / jour',
     free: String(FREE_DAILY_LOTS),
-    team: 'Illimité',
-    cabinet: 'Illimité',
+    team: PAID_ACCOUNTS_AVAILABLE ? 'Illimité' : 'Non ouvert',
+    cabinet: PAID_ACCOUNTS_AVAILABLE ? 'Illimité' : 'Non ouvert',
   },
-  { feature: 'Compte utilisateur', free: false, team: true, cabinet: true },
-  { feature: 'Sync cloud des conventions', free: false, team: true, cabinet: true },
-  { feature: 'Membres organisation', free: '—', team: 'Jusqu’à 10', cabinet: 'Illimité' },
-  { feature: 'Projets', free: 'Local', team: '3', cabinet: 'Illimités' },
-  { feature: 'Support', free: 'Docs', team: 'Email', cabinet: 'Prioritaire' },
+  {
+    feature: 'Compte utilisateur',
+    free: false,
+    team: PAID_ACCOUNTS_AVAILABLE,
+    cabinet: PAID_ACCOUNTS_AVAILABLE,
+  },
+  {
+    feature: 'Sync cloud des conventions',
+    free: false,
+    team: PAID_ACCOUNTS_AVAILABLE,
+    cabinet: PAID_ACCOUNTS_AVAILABLE,
+  },
+  {
+    feature: 'Membres organisation',
+    free: '—',
+    team: PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 10' : 'Non ouvert',
+    cabinet: PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 1 000' : 'Non ouvert',
+  },
+  {
+    feature: 'Projets',
+    free: 'Local',
+    team: PAID_ACCOUNTS_AVAILABLE ? '3' : 'Non ouvert',
+    cabinet: PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 1 000' : 'Non ouvert',
+  },
+  {
+    feature: 'Support',
+    free: 'Documentation',
+    team: PAID_ACCOUNTS_AVAILABLE ? 'Email' : 'Sur demande',
+    cabinet: PAID_ACCOUNTS_AVAILABLE ? 'Prioritaire' : 'Sur demande',
+  },
 ];
 
 export function formatPlanPrice(plan: PricingPlan): string {

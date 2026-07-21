@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useQuery } from 'convex/react';
+import { useEffect, useMemo, useRef } from 'react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useAuthStatus } from '@/lib/auth-status';
 import {
@@ -28,16 +28,26 @@ function isPaid(plan: AccessPlan): boolean {
 
 /**
  * Effective SaaS plan for the current browser session.
- * Priority: deploy env (manual provision after Stripe) → Convex user.plan → free.
+ * Priority: deploy env (manual override) → signed Stripe/Convex entitlement → free.
  */
 export function useAccessPlan(): AccessPlanState {
   const { isAuthenticated, isLoading: authLoading } = useAuthStatus();
   const envPlan = getConfiguredAccessPlan();
+  const claimAttempted = useRef(false);
+  const claimPendingEntitlement = useMutation(api.billing.claimPendingEntitlement);
 
   const cloudUser = useQuery(
     api.users.currentUser,
     isAuthenticated ? {} : 'skip',
   );
+
+  useEffect(() => {
+    if (!isAuthenticated || claimAttempted.current) return;
+    claimAttempted.current = true;
+    void claimPendingEntitlement({}).catch(() => {
+      // The current plan query remains authoritative; retry on the next session.
+    });
+  }, [claimPendingEntitlement, isAuthenticated]);
 
   return useMemo(() => {
     const cloudPlan =

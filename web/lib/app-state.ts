@@ -12,7 +12,7 @@ import {
   setActiveFields,
   type FieldsState,
 } from '@/lib/rename-engine/fields';
-import { normalizeOutputName } from '@/lib/rename-engine/nomenclature';
+import { normalizeOutputName, validateFilename } from '@/lib/rename-engine/nomenclature';
 import {
   createDefaultState as createDefaultCleanerState,
   type CleanerState,
@@ -320,7 +320,14 @@ export function appReducer(state: AppState, action: Action): AppState {
         ...state,
         files: state.files.map((f) =>
           f.id === action.fileId
-            ? { ...f, newName: normalizeOutputName(action.newName), status: 'renamed' as const }
+            ? (() => {
+                const newName = normalizeOutputName(action.newName);
+                return {
+                  ...f,
+                  newName,
+                  status: validateFilename(newName).valid ? ('renamed' as const) : ('error' as const),
+                };
+              })()
             : f
         ),
       };
@@ -389,7 +396,12 @@ export function appReducer(state: AppState, action: Action): AppState {
           return f;
         }
         if (result === source) return f;
-        return { ...f, newName: normalizeOutputName(result), status: 'renamed' as const };
+        const newName = normalizeOutputName(result);
+        return {
+          ...f,
+          newName,
+          status: validateFilename(newName).valid ? ('renamed' as const) : ('error' as const),
+        };
       });
       return { ...state, files: updatedFiles };
     }
@@ -412,7 +424,15 @@ export function appReducer(state: AppState, action: Action): AppState {
             ? { mappedFields: upd.mappedFields }
             : {}),
           ...(upd.newName !== undefined
-            ? { newName: normalizeOutputName(upd.newName), status: 'renamed' as const }
+            ? (() => {
+                const newName = normalizeOutputName(upd.newName);
+                return {
+                  newName,
+                  status: validateFilename(newName).valid
+                    ? ('renamed' as const)
+                    : ('error' as const),
+                };
+              })()
             : {}),
         };
       });

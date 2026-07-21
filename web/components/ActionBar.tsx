@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
 import { useAppContext } from '@/lib/app-state';
-import { batchGenerate, normalizeOutputName } from '@/lib/rename-engine/nomenclature';
+import { batchGenerate, cleanFilename, normalizeOutputName } from '@/lib/rename-engine/nomenclature';
 import { getActiveFieldsForProfile, normalizeFieldValuesForGeneration } from '@/lib/profiles';
 import { normalizeZipArchiveName, writeZip } from '@/lib/rename-engine/zip-io';
 import { useFileIngestion } from '@/lib/hooks/useFileIngestion';
@@ -19,7 +19,7 @@ import { Button } from './ui/Button';
 function normalizeZipFolder(folder: string): string {
   return folder
     .split('/')
-    .map(normalizeOutputName)
+    .map(cleanFilename)
     .filter((part) => part && part !== '.' && part !== '..')
     .join('/');
 }
@@ -79,6 +79,16 @@ export function ActionBar() {
     [dispatch],
   );
 
+  const handleScopeKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+      event.preventDefault();
+      const nextScope = applyScope === 'all' && hasSelection ? 'selection' : 'all';
+      handleScopeChange(nextScope);
+    },
+    [applyScope, hasSelection, handleScopeChange],
+  );
+
   // --- Rename ---
 
   const handleRename = useCallback(() => {
@@ -88,7 +98,7 @@ export function ActionBar() {
       refreshUsage();
       dispatch({
         type: 'TOAST_SHOW',
-        msg: 'Limite Free atteinte pour aujourd’hui. Passez en Pro pour des lots illimités.',
+        msg: 'Limite Free atteinte pour aujourd’hui. Consultez l’offre Team pour les lots illimités.',
       });
       return;
     }
@@ -224,7 +234,7 @@ export function ActionBar() {
               href="/pricing"
               className="font-semibold text-brick underline underline-offset-2 hover:text-brick-deep"
             >
-              Passer Team
+              Voir Team
             </a>
           </>
         ) : (
@@ -238,6 +248,7 @@ export function ActionBar() {
           className="flex items-center gap-1.5 rounded-full border border-line bg-paper-2/60 px-1 py-1 text-xs font-sans"
           role="group"
           aria-label="Appliquer à"
+          onKeyDown={handleScopeKeyDown}
         >
           <span className="pl-1.5 pr-0.5 text-ink-mute shrink-0 hidden sm:inline">
             Appliquer à :
@@ -248,6 +259,7 @@ export function ActionBar() {
             type="button"
             role="radio"
             aria-checked={applyScope === 'selection'}
+            tabIndex={applyScope === 'selection' && !selectionDisabled ? 0 : -1}
             disabled={selectionDisabled}
             onClick={() => handleScopeChange('selection')}
             className={[
@@ -267,6 +279,7 @@ export function ActionBar() {
             type="button"
             role="radio"
             aria-checked={applyScope === 'all'}
+            tabIndex={applyScope === 'all' ? 0 : -1}
             onClick={() => handleScopeChange('all')}
             className={[
               'rounded-full px-3 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick',
@@ -280,9 +293,44 @@ export function ActionBar() {
         </div>
       )}
 
-      {/* Primary actions */}
+      {/* Start with ingestion: in an empty workspace this is the only useful
+          primary action. Once files exist, renaming becomes the primary step. */}
       <Button
-        variant="primary"
+        variant={hasFiles ? 'secondary' : 'primary'}
+        onClick={handleOpenAddPicker}
+        loading={isUploading}
+        aria-label={hasFiles ? 'Ajouter des fichiers' : 'Choisir des fichiers'}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 4v6h6M20 20v-6h-6M4 10a8 8 0 0114-5M20 14a8 8 0 01-14 5"
+          />
+        </svg>
+        {hasFiles ? 'Ajouter des fichiers' : 'Choisir des fichiers'}
+      </Button>
+      <input
+        ref={addInputRef}
+        type="file"
+        multiple
+        accept=".pdf,.doc,.docx,.xls,.xlsx,.dwg,.dxf,.ifc,.rvt,.nwd,.png,.jpg,.jpeg,.zip,.rar,.7z,.tar,.gz,.tgz,.bz2,.xz"
+        className="sr-only"
+        aria-hidden="true"
+        tabIndex={-1}
+        onChange={handleAddInputChange}
+      />
+
+      <Button
+        variant={hasFiles ? 'primary' : 'secondary'}
         onClick={handleRename}
         disabled={!hasTarget || freeLimitReached}
         loading={isRenaming}
@@ -302,42 +350,6 @@ export function ActionBar() {
         </svg>
         {renameLabel}
       </Button>
-
-      {/* Add more files — shortcut to the upload picker, available even when
-          the dropzone is scrolled out of view. */}
-      <Button
-        variant="secondary"
-        onClick={handleOpenAddPicker}
-        loading={isUploading}
-        aria-label="Ajouter des fichiers à la liste"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4 4v6h6M20 20v-6h-6M4 10a8 8 0 0114-5M20 14a8 8 0 01-14 5"
-          />
-        </svg>
-        Ajouter des fichiers
-      </Button>
-      <input
-        ref={addInputRef}
-        type="file"
-        multiple
-        accept=".pdf,.doc,.docx,.xls,.xlsx,.dwg,.dxf,.ifc,.rvt,.nwd,.png,.jpg,.jpeg,.zip,.rar,.7z,.tar,.gz,.tgz,.bz2,.xz"
-        className="sr-only"
-        aria-hidden="true"
-        tabIndex={-1}
-        onChange={handleAddInputChange}
-      />
 
       <Button
         variant="secondary"
@@ -382,7 +394,7 @@ export function ActionBar() {
         variant="ghost"
         onClick={handleReset}
         disabled={!hasFiles}
-        aria-label="Supprimer tous les fichiers de la liste"
+        aria-label="Tout effacer — supprimer tous les fichiers de la liste"
       >
         Tout effacer
       </Button>

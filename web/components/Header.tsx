@@ -5,6 +5,7 @@ import { useAuthStatus } from '@/lib/auth-status';
 import { ThemeToggle } from './ThemeToggle';
 import { Badge } from './ui/Badge';
 import { Button } from './ui/Button';
+import { PAID_ACCOUNTS_ENABLED } from '@/lib/features';
 
 /**
  * App header — modern brand bar with navigation, auth and upgrade CTA.
@@ -27,7 +28,7 @@ export function Header() {
             BIMCHECK-Rename
           </h1>
           <p className="mt-0.5 text-xs font-sans text-ink-mute">
-            Convention de nommage en équipe
+            Convention de nommage local-first
           </p>
         </div>
       </Link>
@@ -53,10 +54,10 @@ export function Header() {
           <Badge variant="soft" size="sm" className="bg-indigo-400/20 text-indigo-50 border-0">
             Team
           </Badge>
-          Passer Team
+          Voir Team
         </Link>
 
-        {isLoading ? (
+        {PAID_ACCOUNTS_ENABLED && (isLoading ? (
           <span className="hidden sm:inline-flex h-8 w-16 animate-pulse rounded-md bg-slate-200 dark:bg-slate-800" />
         ) : isAuthenticated ? (
           <Button variant="ghost" size="sm" asChild>
@@ -66,7 +67,7 @@ export function Header() {
           <Button variant="secondary" size="sm" asChild>
             <Link href="/login">Se connecter</Link>
           </Button>
-        )}
+        ))}
 
         <span className="hidden lg:inline-flex text-[10px] uppercase tracking-wider font-sans font-medium text-ink-mute">
           v0.3.0

@@ -55,10 +55,23 @@ export default function AppPage() {
   const ctx = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   return (
-    <AppContext.Provider value={ctx}>
-      <ErrorBoundary>
-        <RenamerShell />
-      </ErrorBoundary>
-    </AppContext.Provider>
+    <>
+      <noscript>
+        <main className="flex min-h-screen items-center justify-center bg-paper px-6 text-ink">
+          <div className="max-w-xl rounded-xl border border-line bg-surface p-8 text-center">
+            <h1 className="text-2xl font-semibold">JavaScript est requis pour renommer vos fichiers.</h1>
+            <p className="mt-3 text-sm leading-6 text-ink-soft">
+              Le traitement s’exécute localement dans votre navigateur. Activez JavaScript puis
+              rechargez cette page ; aucun document ne sera envoyé au serveur.
+            </p>
+          </div>
+        </main>
+      </noscript>
+      <AppContext.Provider value={ctx}>
+        <ErrorBoundary>
+          <RenamerShell />
+        </ErrorBoundary>
+      </AppContext.Provider>
+    </>
   );
 }

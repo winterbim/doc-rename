@@ -16,14 +16,63 @@ export default defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.number()),
     isAnonymous: v.optional(v.boolean()),
-    // Plan billing status (managed by Stripe webhooks in production)
+    // Entitlement set by trusted operations today; reserved Stripe IDs allow
+    // a signed webhook migration without changing the user record shape.
     plan: v.optional(v.union(v.literal('free'), v.literal('team'), v.literal('cabinet'))),
     stripeCustomerId: v.optional(v.string()),
     stripeSubscriptionId: v.optional(v.string()),
+    stripeSubscriptionStatus: v.optional(v.string()),
   })
     .index('by_email', ['email'])
     .index('by_phone', ['phone'])
-    .index('by_stripe_customer', ['stripeCustomerId']),
+    .index('by_stripe_customer', ['stripeCustomerId'])
+    .index('by_stripe_subscription', ['stripeSubscriptionId']),
+
+  /** Idempotency ledger: Stripe event IDs are applied at most once. */
+  stripeEvents: defineTable({
+    eventId: v.string(),
+    eventType: v.string(),
+    eventCreated: v.number(),
+    livemode: v.boolean(),
+    processedAt: v.number(),
+    outcome: v.string(),
+  }).index('by_event_id', ['eventId']),
+
+  /** Paid entitlement waiting for an account with the same verified email. */
+  pendingEntitlements: defineTable({
+    email: v.string(),
+    plan: v.union(v.literal('team'), v.literal('cabinet')),
+    stripeCustomerId: v.optional(v.string()),
+    stripeSubscriptionId: v.string(),
+    status: v.string(),
+    updatedAt: v.number(),
+  })
+    .index('by_email', ['email'])
+    .index('by_subscription', ['stripeSubscriptionId']),
+
+  /**
+   * Commercial requests submitted from the public site. Document contents and
+   * filenames are deliberately absent: this table only holds contact details.
+   */
+  pilotRequests: defineTable({
+    name: v.string(),
+    email: v.string(),
+    company: v.string(),
+    role: v.string(),
+    industry: v.string(),
+    currentTool: v.string(),
+    monthlyFiles: v.string(),
+    convention: v.string(),
+    message: v.string(),
+    offer: v.union(v.literal('pilot'), v.literal('team'), v.literal('cabinet')),
+    ipHash: v.string(),
+    consentVersion: v.string(),
+    submittedAt: v.number(),
+    status: v.literal('new'),
+  })
+    .index('by_email', ['email'])
+    .index('by_ip_hash', ['ipHash'])
+    .index('by_submitted_at', ['submittedAt']),
 
   /**
    * Organizations / teams.
@@ -45,7 +94,7 @@ export default defineSchema({
    */
   members: defineTable({
     orgId: v.id('organizations'),
-    userId: v.id('users'),
+    userId: v.optional(v.id('users')),
     role: v.union(v.literal('admin'), v.literal('member')),
     status: v.union(v.literal('active'), v.literal('pending')),
     invitedEmail: v.optional(v.string()),

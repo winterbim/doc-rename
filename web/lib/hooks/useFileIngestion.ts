@@ -8,10 +8,13 @@ import { detectCategory } from '@/lib/rename-engine/detection';
 import { prefetchForExtension } from '@/lib/viewer-prefetch';
 import {
   checkFilename,
+  checkArchivePath,
   checkSize,
   checkBatchSize,
+  checkExtractedBatchSize,
+  checkArchiveEntryCount,
   checkZipMagic,
-  MAX_FILE_SIZE,
+  reserveArchiveEntries,
 } from '@/lib/upload-guard';
 import type { WorkspaceFile } from '@/lib/rename-engine/types';
 
@@ -50,36 +53,74 @@ function makeWorkspaceFile(originalName: string, blob: Blob, folder: string, siz
   };
 }
 
-async function expandZip(file: File, onError: (msg: string) => void): Promise<WorkspaceFile[]> {
-  try {
-    const entries = await readZip(file);
-    const results: WorkspaceFile[] = [];
-    for (const entry of entries) {
-      if (entry.isDir) continue;
-      const blob = await entry.blob();
-      results.push(makeWorkspaceFile(entry.name, blob, entry.folder, entry.size ?? blob.size));
+type ExtractionBudget = { bytes: number; archiveBytes: number; entries: number };
+
+async function materializeArchiveEntries(
+  entries: Awaited<ReturnType<typeof readZip>>,
+  budget: ExtractionBudget,
+  onError: (msg: string) => void,
+): Promise<WorkspaceFile[]> {
+  const results: WorkspaceFile[] = [];
+  for (const entry of entries) {
+    if (entry.isDir) continue;
+    const safePath = checkArchivePath(entry.unsafePath ?? entry.path);
+    const safeName = checkFilename(entry.name);
+    if (!safePath.ok || !safeName.ok) {
+      onError(`${entry.path} : ${safePath.reason ?? safeName.reason}`);
+      continue;
     }
-    return results;
-  } catch {
-    onError(`Impossible de lire l’archive ZIP : ${file.name}`);
+    if (entry.size !== undefined) {
+      const declaredSize = checkSize(entry.size);
+      const declaredBatch = checkBatchSize(budget.bytes + entry.size);
+      const declaredArchiveBatch = checkExtractedBatchSize(budget.archiveBytes + entry.size);
+      if (!declaredSize.ok || !declaredBatch.ok || !declaredArchiveBatch.ok) {
+        onError(`${entry.path} : ${declaredSize.reason ?? declaredBatch.reason ?? declaredArchiveBatch.reason}`);
+        continue;
+      }
+    }
+
+    try {
+      const blob = await entry.blob();
+      const actualSize = checkSize(blob.size);
+      const actualBatch = checkBatchSize(budget.bytes + blob.size);
+      const actualArchiveBatch = checkExtractedBatchSize(budget.archiveBytes + blob.size);
+      if (!actualSize.ok || !actualBatch.ok || !actualArchiveBatch.ok) {
+        onError(`${entry.path} : ${actualSize.reason ?? actualBatch.reason ?? actualArchiveBatch.reason}`);
+        continue;
+      }
+      budget.bytes += blob.size;
+      budget.archiveBytes += blob.size;
+      results.push(makeWorkspaceFile(entry.name, blob, entry.folder, blob.size));
+    } catch {
+      onError(`${entry.path} : extraction impossible, fichier ignoré.`);
+    }
+  }
+  return results;
+}
+
+async function expandZip(
+  file: File,
+  budget: ExtractionBudget,
+  onError: (msg: string) => void,
+): Promise<WorkspaceFile[]> {
+  try {
+    const entries = await readZip(file, budget);
+    return materializeArchiveEntries(entries, budget, onError);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'erreur inattendue';
+    onError(`Impossible de lire l’archive ZIP ${file.name} : ${message}`);
     return [];
   }
 }
 
-async function expandOtherArchive(file: File, onError: (msg: string) => void): Promise<WorkspaceFile[]> {
+async function expandOtherArchive(
+  file: File,
+  budget: ExtractionBudget,
+  onError: (msg: string) => void,
+): Promise<WorkspaceFile[]> {
   try {
-    const entries = await readOtherArchive(file);
-    const results: WorkspaceFile[] = [];
-    for (const entry of entries) {
-      if (entry.isDir) continue;
-      const blob = await entry.blob();
-      if (blob.size > MAX_FILE_SIZE) {
-        onError(`${entry.name} : fichier extrait trop volumineux (${MAX_FILE_SIZE / 1024 / 1024} Mo maximum), ignoré.`);
-        continue;
-      }
-      results.push(makeWorkspaceFile(entry.name, blob, entry.folder, entry.size ?? blob.size));
-    }
-    return results;
+    const entries = await readOtherArchive(file, budget, budget.archiveBytes);
+    return materializeArchiveEntries(entries, budget, onError);
   } catch (err) {
     const label = archiveLabel(file);
     const msg = err instanceof Error ? err.message : String(err);
@@ -88,9 +129,24 @@ async function expandOtherArchive(file: File, onError: (msg: string) => void): P
   }
 }
 
-async function expandFile(file: File, onError: (msg: string) => void): Promise<WorkspaceFile[]> {
-  if (isZip(file)) return expandZip(file, onError);
-  if (isOtherArchive(file)) return expandOtherArchive(file, onError);
+async function expandFile(
+  file: File,
+  budget: ExtractionBudget,
+  onError: (msg: string) => void,
+): Promise<WorkspaceFile[]> {
+  if (isZip(file)) return expandZip(file, budget, onError);
+  if (isOtherArchive(file)) return expandOtherArchive(file, budget, onError);
+  const entryCount = reserveArchiveEntries(budget, 1);
+  if (!entryCount.ok) {
+    onError(`${file.name}: ${entryCount.reason}`);
+    return [];
+  }
+  const batch = checkBatchSize(budget.bytes + file.size);
+  if (!batch.ok) {
+    onError(`${file.name}: ${batch.reason}`);
+    return [];
+  }
+  budget.bytes += file.size;
   return [makeWorkspaceFile(file.name, file, '', file.size)];
 }
 
@@ -124,53 +180,65 @@ export function useFileIngestion(): UseFileIngestionReturn {
     async (nativeFiles: File[]) => {
       dispatch({ type: 'UPLOAD_START' });
       const workspaceFiles: WorkspaceFile[] = [];
-
-      let totalBytes = 0;
-      const accepted: File[] = [];
-      for (const file of nativeFiles) {
-        const fn = checkFilename(file.name);
-        if (!fn.ok) {
-          dispatch({ type: 'TOAST_SHOW', msg: `${file.name}: ${fn.reason}` });
-          continue;
+      try {
+        const nativeEntryCount = checkArchiveEntryCount(nativeFiles.length);
+        if (!nativeEntryCount.ok) {
+          dispatch({ type: 'TOAST_SHOW', msg: nativeEntryCount.reason ?? 'Trop de fichiers.' });
+          return;
         }
-        const sz = checkSize(file.size);
-        if (!sz.ok) {
-          dispatch({ type: 'TOAST_SHOW', msg: `${file.name}: ${sz.reason}` });
-          continue;
-        }
-        if (isZip(file)) {
-          const magic = await checkZipMagic(file);
-          if (!magic.ok) {
-            dispatch({ type: 'TOAST_SHOW', msg: `${file.name}: ${magic.reason}` });
+        let totalBytes = 0;
+        const accepted: File[] = [];
+        for (const file of nativeFiles) {
+          const fn = checkFilename(file.name);
+          if (!fn.ok) {
+            dispatch({ type: 'TOAST_SHOW', msg: `${file.name}: ${fn.reason}` });
             continue;
           }
+          const sz = checkSize(file.size);
+          if (!sz.ok) {
+            dispatch({ type: 'TOAST_SHOW', msg: `${file.name}: ${sz.reason}` });
+            continue;
+          }
+          if (isZip(file)) {
+            const magic = await checkZipMagic(file);
+            if (!magic.ok) {
+              dispatch({ type: 'TOAST_SHOW', msg: `${file.name}: ${magic.reason}` });
+              continue;
+            }
+          }
+          totalBytes += file.size;
+          accepted.push(file);
         }
-        totalBytes += file.size;
-        accepted.push(file);
-      }
 
-      const batch = checkBatchSize(totalBytes);
-      if (!batch.ok) {
-        dispatch({ type: 'TOAST_SHOW', msg: batch.reason ?? 'Lot trop volumineux.' });
-        dispatch({ type: 'UPLOAD_END' });
-        return;
-      }
+        const batch = checkBatchSize(totalBytes);
+        if (!batch.ok) {
+          dispatch({ type: 'TOAST_SHOW', msg: batch.reason ?? 'Lot trop volumineux.' });
+          return;
+        }
 
-      const onError = (msg: string) => dispatch({ type: 'TOAST_SHOW', msg });
-      for (const file of accepted) {
-        const expanded = await expandFile(file, onError);
-        workspaceFiles.push(...expanded);
-      }
+        const onError = (msg: string) => dispatch({ type: 'TOAST_SHOW', msg });
+        const extractionBudget: ExtractionBudget = { bytes: 0, archiveBytes: 0, entries: 0 };
+        for (const file of accepted) {
+          const expanded = await expandFile(file, extractionBudget, onError);
+          workspaceFiles.push(...expanded);
+        }
 
-      if (workspaceFiles.length > 0) {
-        dispatch({ type: 'FILES_ADD', files: workspaceFiles });
+        if (workspaceFiles.length > 0) {
+          dispatch({ type: 'FILES_ADD', files: workspaceFiles });
+          dispatch({
+            type: 'TOAST_SHOW',
+            msg: formatAddedFiles(workspaceFiles.length),
+          });
+          prefetchUniqueExtensions(workspaceFiles);
+        }
+      } catch (error) {
         dispatch({
           type: 'TOAST_SHOW',
-          msg: formatAddedFiles(workspaceFiles.length),
+          msg: `Import interrompu : ${error instanceof Error ? error.message : 'erreur inattendue'}`,
         });
-        prefetchUniqueExtensions(workspaceFiles);
+      } finally {
+        dispatch({ type: 'UPLOAD_END' });
       }
-      dispatch({ type: 'UPLOAD_END' });
     },
     [dispatch],
   );

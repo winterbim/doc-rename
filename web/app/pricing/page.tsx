@@ -12,21 +12,29 @@ import {
   CABINET_PRICE_EUR,
   FREE_DAILY_LOTS,
   PILOT_PRICE_EUR,
+  HAS_DIRECT_CHECKOUT,
+  PAID_ACCOUNTS_AVAILABLE,
 } from '@/lib/pricing';
 
 export const metadata: Metadata = {
   title: 'Tarifs',
-  description: `BIMCHECK-Rename — Free pour essayer, Team à ${TEAM_PRICE_EUR}€/mois, Cabinet à ${CABINET_PRICE_EUR}€/mois. Devise EUR, CHF ou USD. Local-first.`,
+  description: `BIMCHECK-Rename Free est ouvert. Team à ${TEAM_PRICE_EUR} €/mois et Cabinet à ${CABINET_PRICE_EUR} €/mois sont des tarifs cibles non ouverts. Local-first.`,
+  alternates: { canonical: '/pricing' },
+  openGraph: {
+    title: 'Tarifs BIMCHECK-Rename',
+    description: `Free est ouvert. Tarifs cibles Team ${TEAM_PRICE_EUR} €/mois et Cabinet ${CABINET_PRICE_EUR} €/mois, sans achat en ligne tant que les comptes restent fermés.`,
+    url: '/pricing',
+  },
 };
 
 const faqs = [
   {
     q: 'Puis-je vraiment tout faire en Free ?',
-    a: `Oui pour le renommage local : tous les profils métier, convention personnalisée, export ZIP. Limite : ${FREE_DAILY_LOTS} lots par jour. Pour lots illimités et partager la convention en équipe, passez à Team (${TEAM_PRICE_EUR} €/mois).`,
+    a: `Oui pour le renommage local : tous les profils métier, convention personnalisée, export ZIP. Limite : ${FREE_DAILY_LOTS} lots par jour. Team (${TEAM_PRICE_EUR} €/mois) est un tarif cible ; les comptes équipe ne sont pas encore ouverts.`,
   },
   {
     q: 'Pourquoi des prix aussi bas ?',
-    a: 'Parce que le Free fait déjà le cœur du produit (renommage local). On monétise le volume, la collab et le support — pas un faux CDE. Voir docs/product/PRICING_AUDIT.md.',
+    a: 'Parce que le Free fait déjà le cœur du produit : renommage local, aperçu et ZIP. Les futures offres payantes visent le volume, la collaboration et le support — pas un faux CDE.',
   },
   {
     q: 'Mes fichiers quittent-ils le navigateur ?',
@@ -34,11 +42,13 @@ const faqs = [
   },
   {
     q: 'Puis-je afficher les prix en CHF ou USD ?',
-    a: 'Oui : utilisez le sélecteur de devise en haut des tarifs. Les montants hors euro sont des conversions indicatives (base EUR). La facturation suit Stripe ou le devis.',
+    a: 'Oui : utilisez le sélecteur de devise en haut des tarifs. Les montants hors euro sont des conversions indicatives (base EUR). Aucune facturation n’est ouverte actuellement.',
   },
   {
     q: 'Comment l’accès payant est-il activé ?',
-    a: `Après paiement Stripe ou devis, activation manuelle sous 1 jour ouvré. Pilote guidé disponible à ${PILOT_PRICE_EUR} € (paiement unique).`,
+    a: HAS_DIRECT_CHECKOUT
+      ? `Après paiement Stripe ou devis, activation manuelle sous 1 jour ouvré. Pilote guidé disponible à ${PILOT_PRICE_EUR} € (paiement unique).`
+      : `Les souscriptions en ligne ne sont pas ouvertes. Vous pouvez demander un échange pour Team, Cabinet ou le pilote annoncé à ${PILOT_PRICE_EUR} €, sans paiement ni engagement depuis le site.`,
   },
 ];
 
@@ -70,9 +80,9 @@ export default function PricingPage() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-sm font-bold text-paper">
                 BC
               </span>
-              <span className="font-semibold">BIMCHECK-Rename</span>
+              <span className="hidden font-semibold sm:inline">BIMCHECK-Rename</span>
             </Link>
-            <nav className="flex items-center gap-6 text-sm text-ink-soft">
+            <nav className="flex items-center gap-3 text-xs text-ink-soft sm:gap-6 sm:text-sm">
               <Link href="/" className="hover:text-ink">Accueil</Link>
               <Link href="/app" className="hover:text-ink">Essayer</Link>
               <Link href="/pilot" className="hover:text-ink">Pilote</Link>
@@ -87,14 +97,15 @@ export default function PricingPage() {
           <Container className="relative">
             <div className="mx-auto max-w-3xl text-center">
               <Badge variant="primary" className="mb-6">
-                Prix publics · annulation à tout moment
+                {PAID_ACCOUNTS_AVAILABLE ? 'Prix publics · annulation à tout moment' : 'Free ouvert · tarifs payants cibles'}
               </Badge>
               <h1 className="text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
                 Des tarifs pensés pour ne pas vous faire fuir.
               </h1>
               <p className="mt-6 text-lg text-ink-soft">
                 Free généreux. Team à {TEAM_PRICE_EUR}&nbsp;€/mois. Cabinet à {CABINET_PRICE_EUR}&nbsp;€/mois.
-                Changez la devise d’affichage (EUR, CHF, USD) ci-dessous.
+                Changez la devise d’affichage (EUR, CHF, USD) ci-dessous.{' '}
+                {!PAID_ACCOUNTS_AVAILABLE && 'Les comptes payants ne sont pas encore ouverts.'}
               </p>
             </div>
           </Container>
@@ -102,6 +113,7 @@ export default function PricingPage() {
 
         <section className="bg-bg py-16">
           <Container>
+            <h2 className="sr-only">Choisir une offre BIMCHECK-Rename</h2>
             <PricingPlansSection />
           </Container>
         </section>
@@ -112,11 +124,21 @@ export default function PricingPage() {
               align="center"
               badge="Comparaison"
               title="Tout ce qui est inclus dans chaque plan"
-              description="Uniquement des capacités livrées aujourd’hui — pas de promesses roadmap."
+              description={PAID_ACCOUNTS_AVAILABLE
+                ? 'Capacités disponibles avec chaque plan.'
+                : 'Free est disponible aujourd’hui. Les colonnes Team et Cabinet décrivent un périmètre cible non encore ouvert.'}
             />
 
-            <div className="mt-12 overflow-hidden rounded-2xl border border-border shadow-sm">
-              <table className="w-full text-left">
+            <p className="mt-8 text-center text-xs font-medium text-ink-mute sm:hidden">
+              Faites glisser le tableau pour comparer les trois offres.
+            </p>
+            <div
+              className="mt-3 overflow-x-auto rounded-2xl border border-border shadow-sm sm:mt-12"
+              role="region"
+              aria-label="Comparaison détaillée des offres tarifaires"
+              tabIndex={0}
+            >
+              <table className="w-full min-w-[700px] text-left">
                 <thead className="bg-surface-2">
                   <tr>
                     <th className="px-6 py-4 text-sm font-semibold text-ink">Fonctionnalité</th>
@@ -158,25 +180,26 @@ export default function PricingPage() {
           <Container>
             <Card variant="dark" padding="xl" className="text-center">
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                Commencez gratuitement. Payez seulement si l’équipe suit.
+                {PAID_ACCOUNTS_AVAILABLE
+                  ? 'Commencez gratuitement. Passez à une offre payante seulement si elle est utile.'
+                  : 'Commencez gratuitement. Les offres payantes ne sont pas encore ouvertes.'}
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-slate-300">
-                Testez sur un vrai lot. Si le gain de temps est clair, Team à {TEAM_PRICE_EUR}&nbsp;€
-                suffit pour la plupart des équipes.
+                Testez sur un lot non confidentiel et mesurez le résultat. Le tarif cible Team est
+                de {TEAM_PRICE_EUR}&nbsp;€ / mois, sans possibilité de souscrire aujourd’hui.
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-                <Link href="/app">
-                  <Button variant="accent" size="lg">Essayer gratuitement</Button>
-                </Link>
-                <Link href="/pilot?plan=team">
-                  <Button
+                <Button variant="accent" size="lg" asChild>
+                  <Link href="/app">Essayer gratuitement</Link>
+                </Button>
+                <Button
                     variant="secondary"
                     size="lg"
-                    className="border-slate-600 bg-slate-800 text-slate-50 hover:bg-slate-700"
+                    className="!border-slate-600 !bg-slate-800 !text-white hover:!bg-slate-700"
+                    asChild
                   >
-                    Demander une démo Team
-                  </Button>
-                </Link>
+                  <Link href="/pilot?plan=team">Demander à être recontacté</Link>
+                </Button>
               </div>
             </Card>
           </Container>
@@ -192,6 +215,7 @@ export default function PricingPage() {
             <div className="flex gap-6 text-sm text-ink-soft">
               <Link href="/mentions-legales" className="hover:text-ink">Mentions légales</Link>
               <Link href="/privacy" className="hover:text-ink">Confidentialité</Link>
+              <Link href="/conditions" className="hover:text-ink">CGU / CGV</Link>
               <Link href="/security" className="hover:text-ink">Sécurité</Link>
             </div>
           </div>

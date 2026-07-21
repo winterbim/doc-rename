@@ -108,5 +108,12 @@ Encaissement : Stripe Payment Links (voir `STRIPE_SETUP.md`) ou devis.
 
 ## Propriétaire
 
-Copyright (c) 2026 Jawani Fernandes.  
+Copyright (c) 2026 Winter Fernandes.  
 Tous droits réservés. Licence propriétaire — aucune licence open source.
+
+## Bêta gratuite (prod)
+
+URL : https://rename.bimcheck-consulting.com  
+
+Ouvert ce soir en **bêta gratuite** : Free local-first, formulaire pilote, **pas de vente en ligne**.  
+Comptes payants, OAuth, Stripe live et facturation restent volontairement fermés tant que l’identité légale complète et le parcours licence ne sont pas validés.

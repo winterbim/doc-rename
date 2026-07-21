@@ -1,11 +1,32 @@
 {
-  "$schema": "https://doc-rename-saas.vercel.app/schemas/nomenclature.v1.json",
+  "$schema": "https://rename.bimcheck-consulting.com/schemas/nomenclature.v1.json",
   "name": "ISO 19650 — UK National Annex",
   "description": "Convention de nommage informative ISO 19650 (UK NA). Paramétrable champ par champ pour s'adapter à votre BEP / EIR. Séparateur conventionnel : tiret \"-\".",
   "version": "1.0.0",
   "locale": "fr-FR",
   "separator": "-",
   "case": "UPPER",
+  "activeFieldIds": [
+    "project",
+    "originator",
+    "zone",
+    "level",
+    "custom1",
+    "custom2",
+    "sequence",
+    "revision"
+  ],
+  "values": {
+    "project": "PRJ01",
+    "originator": "AGC",
+    "zone": "ZZ",
+    "level": "GF",
+    "custom1": "DR",
+    "custom2": "A",
+    "sequence": "0001",
+    "revision": "P02"
+  },
+  "workLotPart": null,
   "fields": [
     {
       "code": "Project",

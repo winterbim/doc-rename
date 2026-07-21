@@ -3,11 +3,16 @@ import Link from 'next/link';
 import { CONTACT_EMAIL, buildContactMailto } from '@/lib/contact';
 
 export const metadata: Metadata = {
-  title: 'Sécurité — BIMCHECK-Rename',
+  title: 'Sécurité',
   description:
     "Audit sécurité de BIMCHECK-Rename : architecture local-first, CSP stricte, headers HTTP audités, scans CodeQL et OWASP ZAP en CI. Vérifiable dans DevTools > Réseau.",
   alternates: {
     canonical: '/security',
+  },
+  openGraph: {
+    title: 'Sécurité et architecture local-first de BIMCHECK-Rename',
+    description: 'Contrôles navigateur, en-têtes HTTP et limites de sécurité vérifiables.',
+    url: '/security',
   },
 };
 
@@ -26,7 +31,7 @@ const headers: Array<{ name: string; value: string; why: string }> = [
   {
     name: 'Strict-Transport-Security',
     value: 'max-age=63072000; includeSubDomains; preload',
-    why: 'Force HTTPS pendant 2 ans, soumis à la HSTS preload list.',
+    why: 'Force HTTPS pendant 2 ans. Le paramètre est compatible preload ; l’inscription à la liste n’est pas affirmée.',
   },
   {
     name: 'X-Frame-Options',
@@ -45,8 +50,8 @@ const headers: Array<{ name: string; value: string; why: string }> = [
   },
   {
     name: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
-    why: 'Désactive toutes les API navigateur sensibles, dont FLoC.',
+    value: 'camera=(), microphone=(), geolocation=()',
+    why: 'Désactive les API navigateur sensibles inutiles au service.',
   },
   {
     name: 'Content-Security-Policy',
@@ -64,7 +69,7 @@ const ciChecks: Array<{ name: string; what: string; when: string }> = [
   {
     name: 'OWASP ZAP Baseline',
     what: 'Scan dynamique passif sur l’instance Vercel preview.',
-    when: 'À chaque PR ouverte vers main.',
+    when: 'Chaque semaine et sur déclenchement manuel.',
   },
   {
     name: 'Lighthouse CI',
@@ -74,7 +79,7 @@ const ciChecks: Array<{ name: string; what: string; when: string }> = [
   {
     name: 'npm audit (omit dev)',
     what: 'Vulnérabilités connues sur les dépendances de production.',
-    when: 'Au build de production et avant chaque déploiement.',
+    when: 'Validation manuelle avant mise en production (hors commande next build).',
   },
   {
     name: 'TypeScript --noEmit',
@@ -84,7 +89,7 @@ const ciChecks: Array<{ name: string; what: string; when: string }> = [
 ];
 
 const auditSteps: string[] = [
-  "Ouvrez https://bimcheck-rename.vercel.app/app dans un onglet vierge.",
+  "Ouvrez https://rename.bimcheck-consulting.com/app dans un onglet vierge.",
   'Ouvrez les DevTools du navigateur (F12 ou ⌘⌥I).',
   "Allez dans l’onglet Réseau (Network), filtre « Fetch / XHR ».",
   'Glissez 10 fichiers PDF/DWG/IFC sur la zone de dépôt.',
@@ -118,7 +123,7 @@ export default function SecurityPage() {
             Cette page documente tout ce que vous pouvez auditer.
           </p>
           <p className="mt-5 text-sm font-sans text-ink-mute">
-            Dernière mise à jour : 2026-05-20.
+            Dernière mise à jour : 2026-07-21.
           </p>
         </header>
 
@@ -175,8 +180,8 @@ export default function SecurityPage() {
             2. Headers HTTP audités
           </h2>
           <p className="mt-4 max-w-3xl text-base text-ink-soft">
-            Tous les headers sensibles sont définis au niveau de la plateforme
-            (middleware Vercel + config Next.js) et appliqués à chaque réponse.
+            Tous les headers sensibles sont définis dans la configuration Next.js
+            puis appliqués par la plateforme à chaque réponse.
             Vous pouvez les vérifier avec <code className="rounded bg-paper-2 px-1.5 py-0.5 font-mono text-sm">curl -I</code>.
           </p>
           <div className="mt-6 overflow-x-auto">
@@ -207,26 +212,33 @@ export default function SecurityPage() {
           </h2>
           <p className="mt-4 max-w-3xl text-base text-ink-soft">
             La CSP applique le principe du moindre privilège : seul ce qui est
-            nécessaire est autorisé. Aucun <code className="rounded bg-paper-2 px-1 font-mono text-xs">unsafe-eval</code>,
-            aucun script tiers inline non hashé.
+            nécessaire est autorisé. En production, les scripts sont limités à l’origine du site
+            et aux scripts inline nécessaires au runtime Next.js. La directive
+            <code className="mx-1 rounded bg-paper-2 px-1 font-mono text-xs">unsafe-eval</code>
+            est réservée au serveur de développement et n’est pas envoyée en production.
           </p>
           <pre className="mt-6 overflow-x-auto rounded-lg border border-line bg-ink p-5 text-xs leading-relaxed text-paper">
 {`default-src 'self';
-script-src 'self' 'unsafe-inline'  // strict-dynamic à venir
-style-src  'self' 'unsafe-inline';
+script-src 'self' 'unsafe-inline';
+style-src  'self' 'unsafe-inline' https://fonts.googleapis.com;
 img-src    'self' data: blob:;
-font-src   'self' data:;
-connect-src 'self' https://*.sentry.io https://*.posthog.com;
+font-src   'self' https://fonts.gstatic.com data:;
+connect-src 'self' blob: https://*.convex.cloud wss://*.convex.cloud
+            https://*.ingest.sentry.io https://*.sentry.io
+            https://app.posthog.com https://eu.i.posthog.com https://us.i.posthog.com;
 worker-src 'self' blob:;
 frame-ancestors 'none';
 base-uri 'self';
 form-action 'self';
 object-src 'none';
+manifest-src 'self';
 upgrade-insecure-requests;`}
           </pre>
           <p className="mt-4 text-sm text-muted">
-            Note : <code className="rounded bg-paper-2 px-1 font-mono text-xs">unsafe-inline</code> reste
-            nécessaire en V1 pour le CSS-in-JS de la landing. Suppression prévue avec migration nonces (Q3 2026).
+            Objectif de durcissement : supprimer progressivement
+            <code className="mx-1 rounded bg-paper-2 px-1 font-mono text-xs">unsafe-inline</code>
+            après migration vers des nonces. Les connexions Sentry et PostHog restent inactives
+            tant que la télémétrie n’est pas explicitement activée par configuration.
           </p>
         </section>
 
@@ -235,8 +247,8 @@ upgrade-insecure-requests;`}
             4. CI sécurité automatique
           </h2>
           <p className="mt-4 max-w-3xl text-base text-ink-soft">
-            Chaque commit passe par un pipeline d’analyse statique et dynamique.
-            Aucun build ne part en production sans passer toutes les vérifications.
+            La CI vérifie chaque changement avec les tests et l’analyse statique ; les audits
+            dynamiques ZAP et Lighthouse complètent ce contrôle selon leur fréquence indiquée.
           </p>
           <div className="mt-6 grid gap-3">
             {ciChecks.map((c) => (
@@ -283,13 +295,13 @@ upgrade-insecure-requests;`}
                 <li>• posthog-js — analytics produit, jamais sur contenu</li>
               </ul>
               <p className="mt-3 text-xs text-muted">
-                Les deux sont désactivables via env vars vides. Aucune donnée
-                personnelle n’est envoyée par défaut.
+                Les deux restent désactivés tant que la télémétrie n’est pas
+                explicitement activée. Aucune donnée personnelle n’est envoyée par défaut.
               </p>
             </div>
           </div>
           <p className="mt-5 text-sm text-muted">
-            Audit npm prod : <code className="rounded bg-paper-2 px-1 font-mono text-xs">npm audit --omit=dev</code> exécuté à chaque build.
+            Audit npm prod : <code className="rounded bg-paper-2 px-1 font-mono text-xs">npm audit --omit=dev</code> fait partie de la validation avant mise en production ; il n’est pas présenté comme une étape automatique du build Next.js.
           </p>
         </section>
 
@@ -299,20 +311,21 @@ upgrade-insecure-requests;`}
           </h2>
           <p className="mt-4 max-w-3xl text-base text-ink-soft">
             En cas de vulnérabilité découverte (CVE dans une dépendance, faille
-            applicative, etc.), nous suivons un protocole simple :
+            applicative, etc.), les objectifs opérationnels suivants servent de guide.
+            Ils ne constituent pas encore un SLA contractuel :
           </p>
           <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-ink-soft">
-            <li>Évaluation gravité : critique (24 h), élevée (72 h), moyenne (7 j), faible (sprint).</li>
+            <li>Qualifier la gravité et prioriser les cas critiques avant les défauts moins sensibles.</li>
             <li>Correctif déployé via Vercel sans coupure de service.</li>
-            <li>Communication publique sur <code className="rounded bg-paper-2 px-1 font-mono text-xs">/changelog</code> (à venir) pour les incidents critiques et élevés.</li>
-            <li>Notification email aux clients Team / Cabinet impactés.</li>
+            <li>Préparer une communication proportionnée si un incident affecte réellement des utilisateurs.</li>
+            <li>Formaliser les délais et notifications avant l’ouverture d’un service payant.</li>
           </ol>
           <p className="mt-5 text-sm">
             Pour signaler une faille de manière confidentielle :{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-brick font-semibold underline underline-offset-2">
               {CONTACT_EMAIL}
             </a>
-            . Réponse sous 48 h ouvrées.
+            . Aucun fichier confidentiel ne doit être joint au premier message.
           </p>
         </section>
 
@@ -350,14 +363,14 @@ upgrade-insecure-requests;`}
             </div>
           </div>
           <p className="mt-6 text-sm">
-            Documents Entreprise disponibles sur demande sous NDA :
-            <span className="text-ink-soft"> livre blanc sécurité (10 p.), modèle DPA, architecture de référence, matrice tarifaire.</span>
+            Les documents Entreprise (DPA, architecture de référence et matrice tarifaire)
+            ne sont pas encore publiés. Toute disponibilité devra être confirmée par écrit.
           </p>
           <a
             href={buildContactMailto('Entreprise - évaluation sécurité')}
             className="mt-5 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-brick"
           >
-            Demander le livre blanc sécurité →
+            Décrire un besoin Entreprise →
           </a>
         </section>
 

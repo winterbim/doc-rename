@@ -4,6 +4,7 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
+  KeyboardSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -12,6 +13,7 @@ import {
   DragOverlay,
 } from '@dnd-kit/core';
 import {
+  sortableKeyboardCoordinates,
   SortableContext,
   arrayMove,
   verticalListSortingStrategy,
@@ -22,7 +24,7 @@ import { useAppContext } from '@/lib/app-state';
 import {
   exportFieldsState,
   exportFieldsStateCsv,
-  importFieldsState,
+  importNomenclatureJson,
   importFieldsStateFromTable,
   type FieldsState,
 } from '@/lib/rename-engine/fields';
@@ -83,13 +85,21 @@ export function NomenclatureBuilder() {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
-    })
+    }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
-  function applyImportedFields(next: FieldsState, message: string) {
+  function applyImportedFields(
+    next: FieldsState,
+    message: string,
+    separator?: '_' | '-' | '.',
+  ) {
     dispatch({
       type: 'STATE_HYDRATE',
-      slices: { fields: { activeFieldIds: next.activeFieldIds, values: next.values } },
+      slices: {
+        fields: { activeFieldIds: next.activeFieldIds, values: next.values },
+        ...(separator ? { separator } : {}),
+      },
     });
     dispatch({ type: 'TOAST_SHOW', msg: message });
   }
@@ -113,7 +123,12 @@ export function NomenclatureBuilder() {
 
     const lowerName = file.name.toLowerCase();
     if (lowerName.endsWith('.json')) {
-      applyImportedFields(importFieldsState(await file.text()), 'Modèle de nomenclature JSON importé.');
+      const imported = importNomenclatureJson(await file.text());
+      applyImportedFields(
+        imported.fields,
+        'Modèle de nomenclature JSON importé.',
+        imported.separator,
+      );
       return;
     }
 

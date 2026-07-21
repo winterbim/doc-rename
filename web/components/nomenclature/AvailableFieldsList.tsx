@@ -45,20 +45,18 @@ function DraggableAvailableItem({
     <li
       ref={setNodeRef}
       style={style}
-      className="inline-flex items-center gap-1 rounded border border-line bg-paper-2/50 px-2 py-1 text-[11px] text-ink cursor-grab active:cursor-grabbing hover:border-brick/40 hover:bg-paper-2 hover:text-brick-deep transition-colors select-none"
-      title={`${field.name} - cliquer ou glisser pour activer`}
-      aria-label={`Champ disponible: ${field.name}. Cliquer ou glisser pour activer.`}
-      {...attributes}
-      {...listeners}
-      onClick={handleActivate}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          handleActivate();
-        }
-      }}
     >
-      <span className="font-mono text-[10px] text-ink-mute shrink-0">{field.code}</span>
+      <button
+        type="button"
+        className="inline-flex items-center gap-1 rounded border border-line bg-paper-2/50 px-2 py-1 text-[11px] text-ink cursor-grab active:cursor-grabbing hover:border-brick/40 hover:bg-paper-2 hover:text-brick-deep transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
+        title={`${field.name} - cliquer ou glisser pour activer`}
+        aria-label={`Champ disponible: ${field.name}. Cliquer ou glisser pour activer.`}
+        {...attributes}
+        {...listeners}
+        onClick={handleActivate}
+      >
+        <span className="font-mono text-[10px] text-ink-mute shrink-0">{field.code}</span>
+      </button>
     </li>
   );
 }

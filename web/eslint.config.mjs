@@ -14,6 +14,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "coverage/**",
     "test-results/**",
+    "convex/_generated/**",
     "public/libarchive-worker.js",
     "public/libarchive.js/**",
     "public/pdf.worker.min.mjs",

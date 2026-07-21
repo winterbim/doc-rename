@@ -23,6 +23,7 @@ import {
   exportFieldsState,
   exportFieldsStateCsv,
   importFieldsState,
+  importNomenclatureJson,
   importFieldsStateFromTable,
 } from '../fields';
 import type { FieldDefinition } from '../types';
@@ -538,6 +539,43 @@ describe('exportFieldsState / importFieldsState', () => {
   it('importFieldsState throws SyntaxError on bad JSON', () => {
     expect(() => importFieldsState('not-json')).toThrow(SyntaxError);
   });
+
+  it('rejects unrelated JSON instead of reporting a false import success', () => {
+    expect(() => importFieldsState(JSON.stringify({ fields: [{ code: 'Project' }] }))).toThrow(
+      /configuration de nomenclature importable/i,
+    );
+  });
+
+  it('imports the exact public ISO 19650 template and its separator', async () => {
+    const { readFile } = await import('node:fs/promises');
+    const template = await readFile(
+      'public/templates/iso-19650-uk-na.json',
+      'utf8',
+    );
+    const imported = importNomenclatureJson(template);
+
+    expect(imported.separator).toBe('-');
+    expect(imported.fields.activeFieldIds).toEqual([
+      'project',
+      'originator',
+      'zone',
+      'level',
+      'custom1',
+      'custom2',
+      'sequence',
+      'revision',
+    ]);
+    expect(imported.fields.values).toMatchObject({
+      project: 'PRJ01',
+      originator: 'AGC',
+      zone: 'ZZ',
+      level: 'GF',
+      custom1: 'DR',
+      custom2: 'A',
+      sequence: '0001',
+      revision: 'P02',
+    });
+  });
 });
 
 describe('exportFieldsStateCsv / importFieldsStateFromTable', () => {
@@ -569,6 +607,19 @@ describe('exportFieldsStateCsv / importFieldsStateFromTable', () => {
     expect(restored.values.building).toBe('BAT-A');
     expect(restored.values.docType).toBe('PLA');
   });
+
+  it.each(['=HYPERLINK("https://evil.example")', '+cmd|calc', '-1+2', '@SUM(A1:A2)', '\t=1+1']) (
+    'neutralizes spreadsheet formula input %s',
+    (value) => {
+      const csv = exportFieldsStateCsv({
+        activeFieldIds: ['project'],
+        values: { project: value },
+        workLotPart: null,
+      });
+      expect(csv).toContain("'");
+      expect(csv).not.toMatch(new RegExp(`;${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')};`));
+    },
+  );
 
   it('imports a two-column table pasted from Excel', () => {
     const table = 'Code Projet\talpha\nRévision\tb\nSéquence\t7';

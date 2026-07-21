@@ -13,6 +13,8 @@ interface State {
 
 const STORAGE_KEY = 'bimdoc_error_log';
 const MAX_ENTRIES = 50;
+const RETENTION_MS = 7 * 24 * 60 * 60 * 1_000;
+const DOCUMENT_NAME = /\b[^\s"'<>/\\]+\.(?:pdf|docx?|xlsx?|csv|dwg|dxf|ifc|rvt|nwd|png|jpe?g|zip|rar|7z)\b/gi;
 
 export interface ErrorEntry {
   id: string;
@@ -24,12 +26,44 @@ export interface ErrorEntry {
   url: string;
 }
 
+function redact(value: string | undefined): string | undefined {
+  return value
+    ?.replace(DOCUMENT_NAME, '[nom de fichier masqué]')
+    .replace(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g, '[email masqué]')
+    .slice(0, 8_000);
+}
+
+function safeUrl(value: string): string {
+  try {
+    const url = new URL(value);
+    return `${url.origin}${url.pathname}`;
+  } catch {
+    return '';
+  }
+}
+
+function retainedEntries(value: unknown, now = Date.now()): ErrorEntry[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((entry): entry is ErrorEntry => {
+    if (!entry || typeof entry !== 'object') return false;
+    const candidate = entry as Partial<ErrorEntry>;
+    const timestamp = typeof candidate.ts === 'string' ? Date.parse(candidate.ts) : Number.NaN;
+    return Number.isFinite(timestamp) && timestamp >= now - RETENTION_MS;
+  });
+}
+
 export function appendErrorEntry(entry: ErrorEntry): void {
   if (typeof window === 'undefined') return;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    const list: ErrorEntry[] = raw ? (JSON.parse(raw) as ErrorEntry[]) : [];
-    list.unshift(entry);
+    const list = retainedEntries(raw ? JSON.parse(raw) : []);
+    list.unshift({
+      ...entry,
+      message: redact(entry.message) ?? 'Erreur locale',
+      stack: redact(entry.stack),
+      componentStack: redact(entry.componentStack),
+      url: safeUrl(entry.url),
+    });
     if (list.length > MAX_ENTRIES) list.length = MAX_ENTRIES;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
   } catch {
@@ -58,7 +92,9 @@ export function getErrorLog(): ErrorEntry[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as ErrorEntry[]) : [];
+    const entries = retainedEntries(raw ? JSON.parse(raw) : []);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    return entries;
   } catch {
     return [];
   }
@@ -109,6 +145,13 @@ export class ErrorBoundary extends Component<Props, State> {
               className="rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink transition-colors hover:border-brick hover:text-brick dark:bg-paper-2"
             >
               Télécharger le journal
+            </button>
+            <button
+              type="button"
+              onClick={clearErrorLog}
+              className="rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink transition-colors hover:border-brick hover:text-brick dark:bg-paper-2"
+            >
+              Effacer le journal
             </button>
           </div>
         </div>

@@ -10,6 +10,8 @@ const PUBLIC_PATH_PREFIXES = [
   '/',
   '/access',
   '/api/access',
+  '/api/pilot-requests',
+  '/api/stripe/webhook',
   '/privacy',
   '/favicon.ico',
   '/manifest.webmanifest',
@@ -54,6 +56,13 @@ const convexAuthMiddleware = convexAuthNextjsMiddleware(
 );
 
 export function proxy(request: NextRequest) {
+  if (request.nextUrl.hostname === 'bimcheck-rename.vercel.app') {
+    const canonical = new URL(
+      `${request.nextUrl.pathname}${request.nextUrl.search}`,
+      'https://rename.bimcheck-consulting.com',
+    );
+    return NextResponse.redirect(canonical, 308);
+  }
   // Second argument is Convex auth options bag; empty object is valid at runtime.
   return convexAuthMiddleware(request, {} as Parameters<typeof convexAuthMiddleware>[1]);
 }

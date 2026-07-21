@@ -4,6 +4,7 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
+  KeyboardSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -15,13 +16,14 @@ import {
   useSortable,
   verticalListSortingStrategy,
   arrayMove,
+  sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { WorkspaceFile } from '@/lib/rename-engine/types';
 import { useEscapeKey } from '@/lib/hooks/useEscapeKey';
 import { useFocusTrap } from '@/lib/hooks/useFocusTrap';
-import { normalizeOutputName } from '@/lib/rename-engine/nomenclature';
+import { normalizeOutputName, validateFilename } from '@/lib/rename-engine/nomenclature';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -235,10 +237,12 @@ export function NameEditorModal({
   }
 
   const preview = normalizeOutputName(segments.map((s) => s.text).join(separator) + extension);
+  const previewValidation = validateFilename(preview);
 
   // DnD
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const draggingSeg = segments.find((s) => s.id === activeDragId) ?? null;
@@ -282,8 +286,7 @@ export function NameEditorModal({
   }
 
   function handleApply() {
-    const name = preview;
-    onApply(name);
+    if (previewValidation.valid) onApply(preview);
   }
 
   // Esc to close
@@ -480,6 +483,11 @@ export function NameEditorModal({
             >
               {preview || <span className="text-ink-mute italic">Aucun segment</span>}
             </p>
+            {!previewValidation.valid && (
+              <p className="mt-2 text-xs text-brick-deep" role="alert">
+                {previewValidation.errors.join('. ')}. Corrigez le nom avant de l’appliquer.
+              </p>
+            )}
           </div>
         </div>
 
@@ -495,7 +503,7 @@ export function NameEditorModal({
           <button
             type="button"
             onClick={handleApply}
-            disabled={!preview || segments.every((s) => !s.text.trim())}
+            disabled={!preview || !previewValidation.valid || segments.every((s) => !s.text.trim())}
             className="rounded-full bg-ink px-4 py-2 text-sm font-sans font-medium text-paper hover:bg-brick disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick focus-visible:ring-offset-1 transition-colors"
           >
             Appliquer

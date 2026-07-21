@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CONTACT_EMAIL } from "@/lib/contact";
+import { CONTACT_EMAIL, PUBLISHER_NAME } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Confidentialité, sécurité et conditions",
@@ -8,6 +8,11 @@ export const metadata: Metadata = {
     "Politique de confidentialité BIMCHECK-Rename : traitement local des fichiers, migration SaaS, RGPD, CNIL, sécurité, cookies et conditions d'utilisation.",
   alternates: {
     canonical: "/privacy",
+  },
+  openGraph: {
+    title: "Confidentialité BIMCHECK-Rename",
+    description: "Traitement local des documents, données du formulaire et droits des utilisateurs.",
+    url: "/privacy",
   },
 };
 
@@ -115,7 +120,7 @@ export default function PrivacyPage() {
                   <tr>
                     <td className="border-b border-line px-4 py-3 text-ink">Compte SaaS</td>
                     <td className="border-b border-line px-4 py-3">Email, identifiant, plan, équipe</td>
-                    <td className="border-b border-line px-4 py-3">Accès Free, Pro, Team et quotas</td>
+                    <td className="border-b border-line px-4 py-3">Accès Free, Team, Cabinet et quotas lorsque les comptes seront ouverts</td>
                     <td className="border-b border-line px-4 py-3">Exécution du contrat</td>
                   </tr>
                   <tr>
@@ -129,6 +134,12 @@ export default function PrivacyPage() {
                     <td className="border-b border-line px-4 py-3">Emails, demandes, pièces jointes envoyées volontairement</td>
                     <td className="border-b border-line px-4 py-3">Répondre aux demandes et corriger les problèmes</td>
                     <td className="border-b border-line px-4 py-3">Intérêt légitime / contrat</td>
+                  </tr>
+                  <tr>
+                    <td className="border-b border-line px-4 py-3 text-ink">Demande commerciale</td>
+                    <td className="border-b border-line px-4 py-3">Coordonnées, organisation, besoin saisi et empreinte pseudonyme de l’adresse IP</td>
+                    <td className="border-b border-line px-4 py-3">Répondre à la demande et limiter les envois automatisés</td>
+                    <td className="border-b border-line px-4 py-3">Consentement / mesures précontractuelles</td>
                   </tr>
                   <tr>
                     <td className="px-4 py-3 text-ink">Mesure et erreurs</td>
@@ -188,7 +199,7 @@ export default function PrivacyPage() {
               <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-lg font-semibold text-ink">Responsable du traitement</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
-                  BIMCHECK-Rename, représenté par Jawani Fernandes, détermine les finalités et moyens des
+                  BIMCHECK-Rename, représenté par {PUBLISHER_NAME}, détermine les finalités et moyens des
                   traitements nécessaires au service SaaS. Pour les documents que vous traitez
                   localement, vous restez responsable de leur contenu et des personnes concernées
                   dans vos propres fichiers.
@@ -197,9 +208,11 @@ export default function PrivacyPage() {
               <div className="rounded-lg border border-line bg-surface p-4 dark:bg-paper-2">
                 <h3 className="font-sans text-lg font-semibold text-ink">Sous-traitants</h3>
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
-                  Des prestataires peuvent intervenir pour l’hébergement, les emails, le paiement,
-                  les erreurs ou la mesure d’audience. Ils ne doivent pas recevoir le contenu des
-                  fichiers déposés dans le renamer local.
+                  Vercel héberge le site et relaie les formulaires ; Convex conserve les demandes
+                  commerciales et, lorsque les comptes seront activés, leurs données. D’autres
+                  prestataires peuvent intervenir pour les emails, le paiement, les erreurs ou la
+                  mesure d’audience. Aucun ne doit recevoir le contenu des fichiers déposés dans le
+                  renamer local.
                 </p>
               </div>
             </div>
@@ -218,7 +231,9 @@ export default function PrivacyPage() {
               <li>Données de compte: pendant la durée du compte, puis suppression ou anonymisation.</li>
               <li>Données de facturation: durée requise par les obligations comptables et fiscales.</li>
               <li>Support: durée nécessaire au traitement de la demande et au suivi raisonnable.</li>
+              <li>Demandes commerciales: 12 mois maximum après leur enregistrement, sauf obligation légale ou relation contractuelle en cours.</li>
               <li>Journaux techniques: durée courte, proportionnée à la sécurité et au diagnostic.</li>
+              <li>Journal d’erreur local de l’atelier: sept jours maximum, avec noms de fichiers et emails masqués, supprimable depuis l’écran d’erreur.</li>
               <li>Données locales: jusqu’à suppression par l’utilisateur ou le navigateur.</li>
             </ul>
           </section>
@@ -267,11 +282,10 @@ export default function PrivacyPage() {
                 <h3 className="font-sans text-lg font-semibold text-ink">Offres Free, Team et Cabinet</h3>
                 <p className="mt-2 max-w-3xl text-ink-soft">
                   Free : 5 lots de renommage par jour, sans compte, traitement local.
-                  Team : 19 €/mois — lots illimités, compte, synchronisation des conventions
-                  (JSON uniquement), jusqu’à 10 utilisateurs. Cabinet : 49 €/mois —
-                  membres et projets illimités, support prioritaire. Affichage multi-devises
-                  (EUR/CHF/USD) indicatif. Les modalités de paiement, taxes, renouvellement
-                  et résiliation figurent dans les Conditions et sur la page Tarifs.
+                  Les tarifs cibles sont Team à 19 €/mois et Cabinet à 49 €/mois, mais les comptes
+                  et souscriptions payants ne sont pas encore ouverts. Les périmètres envisagés
+                  (conventions JSON partagées, équipes et projets) sont identifiés comme tels sur la
+                  page Tarifs. Aucun paiement n’est déclenché par une demande commerciale.
                 </p>
               </div>
               <div>

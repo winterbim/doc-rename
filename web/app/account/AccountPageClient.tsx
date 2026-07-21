@@ -31,7 +31,6 @@ function AccountContent() {
   const access = useAccessPlan();
 
   const [orgName, setOrgName] = useState('');
-  const [orgPlan, setOrgPlan] = useState<'team' | 'cabinet'>('team');
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,7 +45,6 @@ function AccountContent() {
       await createOrg({
         name: orgName.trim(),
         slug,
-        plan: orgPlan,
       });
       setOrgName('');
     } catch (err) {
@@ -193,26 +191,9 @@ function AccountContent() {
                   value={orgName}
                   onChange={(e) => setOrgName(e.target.value)}
                 />
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant={orgPlan === 'team' ? 'primary' : 'secondary'}
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => setOrgPlan('team')}
-                  >
-                    Team
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={orgPlan === 'cabinet' ? 'primary' : 'secondary'}
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => setOrgPlan('cabinet')}
-                  >
-                    Cabinet
-                  </Button>
-                </div>
+                <p className="text-xs text-ink-mute">
+                  L’équipe reprend automatiquement le plan vérifié de votre compte.
+                </p>
                 {error && <p className="text-xs text-red-600">{error}</p>}
                 <Button
                   type="submit"

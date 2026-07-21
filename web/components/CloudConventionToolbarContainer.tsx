@@ -2,6 +2,7 @@
 
 import { useAuthStatus } from '@/lib/auth-status';
 import { CloudConventionToolbar, CloudConventionToolbarLogin } from './CloudConventionToolbar';
+import { PAID_ACCOUNTS_ENABLED } from '@/lib/features';
 
 /**
  * Cloud save/load toolbar.
@@ -11,6 +12,8 @@ import { CloudConventionToolbar, CloudConventionToolbarLogin } from './CloudConv
  */
 export function CloudConventionToolbarContainer() {
   const { isAuthenticated, isLoading } = useAuthStatus();
+
+  if (!PAID_ACCOUNTS_ENABLED) return null;
 
   if (isLoading) {
     return (

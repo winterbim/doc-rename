@@ -13,6 +13,8 @@ import {
   CABINET_PRICE_EUR,
   PILOT_PRICE_EUR,
   CURRENCIES,
+  HAS_DIRECT_CHECKOUT,
+  PAID_ACCOUNTS_AVAILABLE,
 } from '@/lib/pricing';
 
 /**
@@ -38,6 +40,12 @@ export function LandingPricing() {
         <p className="small-note" style={{ margin: 0, textAlign: 'center', maxWidth: 420 }}>
           Devise d’affichage : {CURRENCIES[currency].label}. Hors euro = conversion indicative (base EUR).
         </p>
+        {!HAS_DIRECT_CHECKOUT && (
+          <p className="small-note" style={{ margin: 0, textAlign: 'center', maxWidth: 520 }}>
+            Free est ouvert immédiatement. Les comptes Team et Cabinet ne sont pas encore ouverts :
+            vous pouvez seulement demander à être recontacté, sans prélèvement en ligne.
+          </p>
+        )}
       </div>
 
       <div className="pricing grid-3">
@@ -65,17 +73,21 @@ export function LandingPricing() {
         <article className="plan team">
           <div className="plan-top">
             <h3>Team</h3>
-            <span className="badge">Le plus choisi</span>
+            <span className="badge">Petites équipes</span>
           </div>
           <p className="price">
             {teamPrice} <small>{perMonth}</small>
           </p>
-          <p className="muted">Lots illimités + convention partagée en équipe.</p>
+          <p className="muted">
+            {PAID_ACCOUNTS_AVAILABLE
+              ? 'Lots illimités + convention partagée en équipe.'
+              : 'Périmètre cible — accès équipe non encore ouvert.'}
+          </p>
           <ul>
-            <li>Jusqu’à 10 utilisateurs</li>
-            <li>Sync des conventions (JSON)</li>
-            <li>3 projets</li>
-            <li>Support email</li>
+            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 10 utilisateurs' : 'Prévu : jusqu’à 10 utilisateurs'}</li>
+            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Sync des conventions (JSON)' : 'Prévu : sync des conventions JSON'}</li>
+            <li>{PAID_ACCOUNTS_AVAILABLE ? '3 projets' : 'Prévu : 3 projets'}</li>
+            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Support email' : 'Échange commercial uniquement'}</li>
             <li>Sans upload de vos fichiers</li>
           </ul>
           <a
@@ -95,13 +107,15 @@ export function LandingPricing() {
           <p className="price">
             {cabinetPrice} <small>{perMonth}</small>
           </p>
-          <p className="muted">Volume élevé, support prioritaire.</p>
+          <p className="muted">
+            {PAID_ACCOUNTS_AVAILABLE ? 'Volume élevé, support prioritaire.' : 'Périmètre cible — accès Cabinet non encore ouvert.'}
+          </p>
           <ul>
-            <li>Utilisateurs illimités</li>
-            <li>Projets illimités</li>
-            <li>Sync cloud des conventions</li>
-            <li>Support prioritaire</li>
-            <li>Devis / virement possible</li>
+            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 1 000 utilisateurs' : 'Prévu : jusqu’à 1 000 utilisateurs'}</li>
+            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 1 000 projets' : 'Prévu : jusqu’à 1 000 projets'}</li>
+            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Sync cloud des conventions' : 'Prévu : sync cloud des conventions'}</li>
+            <li>{PAID_ACCOUNTS_AVAILABLE ? 'Support prioritaire' : 'Échange commercial uniquement'}</li>
+            <li>Facturation à confirmer par écrit avant toute commande</li>
           </ul>
           <a
             className="button primary"
@@ -122,10 +136,10 @@ export function LandingPricing() {
 
       <div className="paid-pilot">
         <div>
-          <strong>Pilote 14 jours — {pilotLabel}</strong>
+          <strong>Projet pilote 14 jours — tarif annoncé {pilotLabel}</strong>
           <p>
-            Onboarding 30 min, convention reproduite, test sur lot non confidentiel et décision
-            Team/Cabinet. Prix volontairement bas pour valider le gain sans risque.
+            Périmètre proposé : cadrage, convention reproduite, test sur lot non confidentiel et
+            bilan. Conditions et disponibilité à confirmer par écrit ; la demande ne facture rien.
           </p>
         </div>
         <a

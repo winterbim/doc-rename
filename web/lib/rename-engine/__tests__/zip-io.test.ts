@@ -3,7 +3,7 @@
  * Uses jszip to build test ZIPs in memory, then verifies readZip / writeZip.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import JSZip from 'jszip';
 import { readZip, writeZip, isZip, normalizeZipArchiveName } from '../zip-io';
 
@@ -20,6 +20,33 @@ async function buildTestZip(
     zip.file(e.path, e.content);
   }
   return zip.generateAsync({ type: 'blob' });
+}
+
+function replaceAscii(
+  source: ArrayBuffer,
+  original: string,
+  replacement: string,
+  maxReplacements = Number.POSITIVE_INFINITY,
+): ArrayBuffer {
+  const originalBytes = new TextEncoder().encode(original);
+  const replacementBytes = new TextEncoder().encode(replacement);
+  expect(replacementBytes).toHaveLength(originalBytes.length);
+
+  const output = new Uint8Array(source.slice(0));
+  let replacements = 0;
+  for (
+    let offset = 0;
+    offset <= output.length - originalBytes.length && replacements < maxReplacements;
+    offset += 1
+  ) {
+    const matches = originalBytes.every((byte, index) => output[offset + index] === byte);
+    if (!matches) continue;
+    output.set(replacementBytes, offset);
+    replacements += 1;
+    offset += originalBytes.length - 1;
+  }
+  expect(replacements).toBeGreaterThan(0);
+  return output.buffer;
 }
 
 // ---------------------------------------------------------------------------
@@ -55,11 +82,26 @@ describe('isZip', () => {
 
 describe('normalizeZipArchiveName', () => {
   it('uppercases, strips accents and appends .ZIP', () => {
-    expect(normalizeZipArchiveName('livrables été')).toBe('LIVRABLES ETE.ZIP');
+    expect(normalizeZipArchiveName('livrables été')).toBe('LIVRABLES_ETE.ZIP');
   });
 
   it('does not duplicate the zip extension', () => {
     expect(normalizeZipArchiveName('plans.zip')).toBe('PLANS.ZIP');
+  });
+
+  it.each(['../../outside', 'plans/final', 'bad\u0000name', 'CON'])(
+    'returns a portable outer archive name for hostile input %s',
+    (input) => {
+      const output = normalizeZipArchiveName(input);
+      expect(output).toMatch(/^[A-Z0-9_]+\.ZIP$/);
+      expect(output).not.toContain('/');
+      expect(output).not.toContain('\\');
+    },
+  );
+
+  it('bounds the outer archive name to one portable filesystem component', () => {
+    const output = normalizeZipArchiveName('a'.repeat(1_000));
+    expect(new TextEncoder().encode(output).byteLength).toBeLessThanOrEqual(255);
   });
 });
 
@@ -108,6 +150,86 @@ describe('readZip — basic', () => {
     const b = await entry!.blob();
     const text = await b.text();
     expect(text).toBe('world');
+  });
+
+  it('reports the uncompressed size, not the compressed byte count', async () => {
+    const content = 'A'.repeat(20_000);
+    const blob = await buildTestZip([{ path: 'compressible.txt', content }]);
+    const [entry] = (await readZip(blob)).filter((item) => !item.isDir);
+    expect(entry.size).toBe(content.length);
+  });
+
+  it('rejects traversal before JSZip can sanitize and hide the original path', async () => {
+    const blob = await buildTestZip([{ path: '../outside.pdf', content: 'blocked' }]);
+    await expect(readZip(blob)).rejects.toThrow(/chemin dangereux/i);
+  });
+
+  it('rejects ambiguous empty path segments before invoking JSZip', async () => {
+    const blob = await buildTestZip([{ path: 'safe/xfile.pdf', content: 'blocked' }]);
+    const mutated = replaceAscii(await blob.arrayBuffer(), 'safe/xfile.pdf', 'safe//file.pdf');
+    const loadSpy = vi.spyOn(JSZip, 'loadAsync');
+
+    try {
+      await expect(readZip(mutated)).rejects.toThrow(/chemin dangereux/i);
+      expect(loadSpy).not.toHaveBeenCalled();
+    } finally {
+      loadSpy.mockRestore();
+    }
+  });
+
+  it('rejects duplicate central paths instead of allowing JSZip to overwrite one', async () => {
+    const blob = await buildTestZip([
+      { path: 'safe/one.pdf', content: 'one' },
+      { path: 'safe/two.pdf', content: 'two' },
+    ]);
+    const mutated = replaceAscii(await blob.arrayBuffer(), 'safe/two.pdf', 'safe/one.pdf');
+    await expect(readZip(mutated)).rejects.toThrow(/collision de chemins/i);
+  });
+
+  it('rejects case-insensitive and Unicode-normalized path collisions', async () => {
+    const caseCollision = await buildTestZip([
+      { path: 'plans/PLAN.pdf', content: 'one' },
+      { path: 'plans/plan.pdf', content: 'two' },
+    ]);
+    const unicodeCollision = await buildTestZip([
+      { path: 'café.pdf', content: 'one' },
+      { path: 'cafe\u0301.pdf', content: 'two' },
+    ]);
+
+    await expect(readZip(caseCollision)).rejects.toThrow(/collision de chemins/i);
+    await expect(readZip(unicodeCollision)).rejects.toThrow(/collision de chemins/i);
+  });
+
+  it('rejects a local filename that differs from its central-directory name', async () => {
+    const blob = await buildTestZip([{ path: 'safe/one.pdf', content: 'blocked' }]);
+    const mutated = replaceAscii(
+      await blob.arrayBuffer(),
+      'safe/one.pdf',
+      'safe/two.pdf',
+      1,
+    );
+    await expect(readZip(mutated)).rejects.toThrow(/noms local et central différents/i);
+  });
+
+  it('rejects trailing bytes after the declared ZIP comment', async () => {
+    const blob = await buildTestZip([{ path: 'safe.pdf', content: 'ok' }]);
+    const data = new Uint8Array(await blob.arrayBuffer());
+    const withTrailingJunk = new Uint8Array(data.length + 1);
+    withTrailingJunk.set(data);
+    withTrailingJunk[data.length] = 0x41;
+
+    await expect(readZip(withTrailingJunk.buffer)).rejects.toThrow(/données finales/i);
+  });
+
+  it('applies the entry cap cumulatively across separate archives', async () => {
+    const budget = { entries: 4_999 };
+    const blob = await buildTestZip([
+      { path: 'first.pdf', content: 'one' },
+      { path: 'second.pdf', content: 'two' },
+    ]);
+
+    await expect(readZip(blob, budget)).rejects.toThrow(/entrées maximum/i);
+    expect(budget.entries).toBe(4_999);
   });
 });
 
@@ -255,4 +377,26 @@ describe('writeZip', () => {
     expect(file).toBeDefined();
     expect(file!.folder).toBe('a/b');
   });
+
+  it('rejects unsafe output paths', async () => {
+    await expect(
+      writeZip([{ path: '../outside.pdf', blob: new Blob(['x']) }]),
+    ).rejects.toThrow(/Chemin relatif interdit/i);
+  });
+
+  it('rejects case-insensitive duplicate output paths instead of overwriting data', async () => {
+    await expect(
+      writeZip([
+        { path: 'plans/PLAN.pdf', blob: new Blob(['first']) },
+        { path: 'plans/plan.PDF', blob: new Blob(['second']) },
+      ]),
+    ).rejects.toThrow(/même chemin ZIP/i);
+  });
+
+  it.each(['safe/./file.pdf', 'safe//file.pdf', 'COM9.txt', 'plan.pdf.']) (
+    'rejects non-portable output path %s',
+    async (path) => {
+      await expect(writeZip([{ path, blob: new Blob(['x']) }])).rejects.toThrow();
+    },
+  );
 });
