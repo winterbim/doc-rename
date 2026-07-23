@@ -28,6 +28,11 @@ export function FilesList() {
     visibleIds.length > 0 && visibleIds.every((id) => selectedSet.has(id));
 
   const renamedCount = files.filter((file) => file.status === 'renamed').length;
+  // P2-5 : l'upsell pilote ne s'affiche jamais sur le seul lot exemple — il faut
+  // au moins un fichier réellement importé (non démo) et renommé.
+  const renamedRealCount = files.filter(
+    (file) => file.status === 'renamed' && !file.isDemo,
+  ).length;
 
   const handleSelectAllToggle = () => {
     if (allVisibleSelected) {
@@ -79,7 +84,7 @@ export function FilesList() {
           {/* Search + extension filter */}
           <SearchAndFilter />
 
-          {renamedCount > 0 && (
+          {renamedRealCount > 0 && (
             <section
               className="rounded-lg border border-brick/30 bg-brick/5 px-4 py-3"
               aria-label="Conversion pilote BIM"

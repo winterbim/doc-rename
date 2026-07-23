@@ -141,6 +141,8 @@ export interface WorkspaceFile {
   mappedFields: Record<string, string>;
   autoDetected: Partial<Record<string, string>>;
   cleanedBaseName?: string | null;
+  /** True pour les fichiers du lot exemple — exclu du quota Free et de l'upsell. */
+  isDemo?: boolean;
 }
 
 // ---------------------------------------------------------------------------

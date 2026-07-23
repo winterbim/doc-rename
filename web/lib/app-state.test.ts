@@ -108,7 +108,8 @@ describe('appReducer output normalization', () => {
       { type: 'FILE_RENAME_OVERRIDE', fileId: 'f1', newName: 'façade été.pdf' },
     );
 
-    expect(next.files[0].newName).toBe('FACADE ETE.PDF');
+    // P0-2 : aucun espace en sortie — les espaces deviennent le séparateur actif.
+    expect(next.files[0].newName).toBe('FACADE_ETE.PDF');
     expect(next.files[0].status).toBe('renamed');
   });
 

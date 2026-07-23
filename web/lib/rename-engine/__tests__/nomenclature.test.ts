@@ -142,10 +142,46 @@ describe('normalizeBIM', () => {
 });
 
 describe('normalizeOutputName', () => {
-  it('uppercases and strips accents in a full filename', () => {
+  it('uppercases, strips accents and replaces spaces with the separator', () => {
     expect(normalizeOutputName('plan façade révision é.pdf')).toBe(
-      'PLAN FACADE REVISION E.PDF',
+      'PLAN_FACADE_REVISION_E.PDF',
     );
+  });
+
+  it('uses the provided separator for spaces', () => {
+    expect(normalizeOutputName('facade etage 1 FINAL v2.pdf', '-')).toBe(
+      'FACADE-ETAGE-1-FINAL-V2.PDF',
+    );
+  });
+
+  it('collapses runs of spaces/separators and trims edges', () => {
+    expect(normalizeOutputName('  plan   rdc  copie .dwg', '_')).toBe(
+      'PLAN_RDC_COPIE.DWG',
+    );
+  });
+
+  it('supports the dot separator without eating the extension', () => {
+    expect(normalizeOutputName('maquette structure export.ifc', '.')).toBe(
+      'MAQUETTE.STRUCTURE.EXPORT.IFC',
+    );
+  });
+
+  it('strips non-ASCII symbols (em dash, degree, curly quote)', () => {
+    expect(normalizeOutputName('plan — étage n°2 ’v1.pdf')).toBe(
+      'PLAN_ETAGE_N2_V1.PDF',
+    );
+  });
+
+  it('is idempotent', () => {
+    const once = normalizeOutputName('rapport synthese v3.docx');
+    expect(normalizeOutputName(once)).toBe(once);
+  });
+
+  it('output is always printable ASCII + uppercase', () => {
+    const out = normalizeOutputName('bordereau diffusion revA — ç°’.csv');
+    expect(out).toMatch(/^[\x20-\x7E]*$/);
+    expect(out).toBe(out.toUpperCase());
+    expect(out).not.toMatch(/\s/);
   });
 });
 

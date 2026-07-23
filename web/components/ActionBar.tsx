@@ -94,7 +94,11 @@ export function ActionBar() {
   const handleRename = useCallback(() => {
     if (!hasTarget) return;
 
-    if (usageLimitEnabled && getRemainingFreeRenames() <= 0) {
+    // Le lot exemple est une démonstration : il ne consomme jamais le quota
+    // Free et n'est pas bloqué par la limite quotidienne (P1-1).
+    const isDemoLot = targetFiles.every((f) => f.isDemo === true);
+
+    if (!isDemoLot && usageLimitEnabled && getRemainingFreeRenames() <= 0) {
       refreshUsage();
       dispatch({
         type: 'TOAST_SHOW',
@@ -102,8 +106,6 @@ export function ActionBar() {
       });
       return;
     }
-
-    dispatch({ type: 'RENAME_ALL_START' });
 
     const ctx = {
       activeFields: getActiveFieldsForProfile(
@@ -116,17 +118,40 @@ export function ActionBar() {
       workLotPart: fields.workLotPart ?? undefined,
     };
 
+    // P0-2 : jamais de repli silencieux sur upper(nom_original). Si aucun champ
+    // actif n'a de valeur (globale ou mappée par fichier), on guide l'utilisateur
+    // au lieu de renommer.
+    const hasAnyPart =
+      Boolean(ctx.workLotPart) ||
+      ctx.activeFields.some(
+        (f) =>
+          f.id !== 'filename' &&
+          (Boolean(ctx.fieldValues[f.id]) ||
+            targetFiles.some((file) => Boolean(file.mappedFields?.[f.id]))),
+      );
+    if (!hasAnyPart) {
+      dispatch({
+        type: 'TOAST_SHOW',
+        msg: 'Complétez au moins un champ de la nomenclature (colonne de gauche) pour composer le nom — sans champ rempli, rien n’est renommé.',
+      });
+      return;
+    }
+
+    dispatch({ type: 'RENAME_ALL_START' });
+
     try {
       // batchGenerate accepts any subset of files
       const results = batchGenerate(targetFiles, ctx);
       dispatch({ type: 'RENAME_ALL_COMPLETE', results });
       const renamed = results.filter((r) => r.errors.length === 0).length;
       let quotaMsg = '';
-      if (usageLimitEnabled && renamed > 0) {
+      if (!isDemoLot && usageLimitEnabled && renamed > 0) {
         const nextUsage = recordFreeRenames(1);
         const remaining = Math.max(0, FREE_DAILY_RENAME_LIMIT - nextUsage.count);
         setRemainingFreeRenames(remaining);
         quotaMsg = ` Il reste ${remaining}/${FREE_DAILY_RENAME_LIMIT} lot(s) Free aujourd’hui.`;
+      } else if (isDemoLot) {
+        quotaMsg = ' Lot exemple : non décompté de votre quota.';
       }
       dispatch({
         type: 'TOAST_SHOW',

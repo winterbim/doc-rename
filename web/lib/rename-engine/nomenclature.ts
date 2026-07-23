@@ -91,13 +91,43 @@ export function normalizeBIM(str: string): string {
   );
 }
 
+/** Separators légaux pour la sortie ; tout autre caractère retombe sur '_'. */
+const OUTPUT_SEPARATORS = new Set(['_', '-', '.']);
+
+function escapeRegExp(char: string): string {
+  return char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 /**
  * Normalize any final output filename shown to the user or written to disk.
- * This is intentionally conservative: it preserves the user's separators and
- * extension while enforcing the BIMCHECK-Rename invariant: uppercase, no accents.
+ * Enforces the BIMCHECK-Rename invariant on every output path:
+ * - uppercase, accents translittérés (normalizeBIM) ;
+ * - aucun caractère non-ASCII (— ° ’ etc. sont supprimés) ;
+ * - aucun espace : les espaces deviennent le séparateur choisi
+ *   (aucune convention de nommage ne conserve d'espaces) ;
+ * - les répétitions de séparateur sont réduites, les bords nettoyés ;
+ * - l'extension est préservée et mise en majuscules.
  */
-export function normalizeOutputName(name: string): string {
-  return normalizeBIM(name);
+export function normalizeOutputName(name: string, separator = '_'): string {
+  if (!name) return '';
+  const sep = OUTPUT_SEPARATORS.has(separator) ? separator : '_';
+  const sepPattern = escapeRegExp(sep);
+
+  const { baseName, extension } = parseFilename(name);
+
+  const base = normalizeBIM(baseName)
+    // Invariant sortie : ASCII imprimable uniquement
+    .replace(/[^\x20-\x7E]/g, '')
+    // Les espaces (et runs d'espaces) deviennent le séparateur
+    .replace(/\s+/g, sep)
+    // Réduire les répétitions du séparateur introduites par le nettoyage
+    .replace(new RegExp(`${sepPattern}{2,}`, 'g'), sep)
+    // Pas de séparateur en début/fin de nom de base
+    .replace(new RegExp(`^${sepPattern}+|${sepPattern}+$`, 'g'), '');
+
+  const ext = extension.replace(/[^\x20-\x7E]/g, '').replace(/\s+/g, '').toUpperCase();
+
+  return base + ext;
 }
 
 // ---------------------------------------------------------------------------

@@ -166,7 +166,7 @@ function formatAddedFiles(count: number): string {
 
 export interface UseFileIngestionReturn {
   /** Validates, expands archives, dispatches FILES_ADD, prefetches viewers. */
-  processFiles: (nativeFiles: File[]) => Promise<void>;
+  processFiles: (nativeFiles: File[], options?: { demo?: boolean }) => Promise<void>;
 }
 
 /**
@@ -177,7 +177,7 @@ export function useFileIngestion(): UseFileIngestionReturn {
   const { dispatch } = useAppContext();
 
   const processFiles = useCallback(
-    async (nativeFiles: File[]) => {
+    async (nativeFiles: File[], options?: { demo?: boolean }) => {
       dispatch({ type: 'UPLOAD_START' });
       const workspaceFiles: WorkspaceFile[] = [];
       try {
@@ -224,7 +224,10 @@ export function useFileIngestion(): UseFileIngestionReturn {
         }
 
         if (workspaceFiles.length > 0) {
-          dispatch({ type: 'FILES_ADD', files: workspaceFiles });
+          const files = options?.demo
+            ? workspaceFiles.map((f) => ({ ...f, isDemo: true }))
+            : workspaceFiles;
+          dispatch({ type: 'FILES_ADD', files });
           dispatch({
             type: 'TOAST_SHOW',
             msg: formatAddedFiles(workspaceFiles.length),

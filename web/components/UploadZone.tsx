@@ -2,6 +2,8 @@
 
 import { useFileDrop } from '@/lib/hooks/useFileDrop';
 import { useFileIngestion } from '@/lib/hooks/useFileIngestion';
+import { useAppContext } from '@/lib/app-state';
+import { getActiveFieldsForProfile } from '@/lib/profiles';
 
 interface UploadZoneProps {
   /** When true, renders as a compact bar (~40px) instead of the full drop zone. */
@@ -30,6 +32,7 @@ function createDemoFiles(): File[] {
 
 export function UploadZone({ compact = false }: UploadZoneProps) {
   const { processFiles } = useFileIngestion();
+  const { state, dispatch } = useAppContext();
 
   const { isDragging, handleDragEnter, handleDragOver, handleDragLeave, handleDrop, openFilePicker, inputRef } =
     useFileDrop({ onFiles: processFiles });
@@ -59,7 +62,24 @@ export function UploadZone({ compact = false }: UploadZoneProps) {
   );
 
   const handleLoadDemo = () => {
-    void processFiles(createDemoFiles());
+    void processFiles(createDemoFiles(), { demo: true });
+
+    // P0-2 : la démo doit démontrer la convention, pas la casse. On pré-remplit
+    // les champs actifs vides avec leur valeur d'exemple (les placeholders sont
+    // les segments du modèle affiché : PROJET, BAT, CVC, PLAN, ENT, 001…) pour
+    // que « Renommer tout » produise immédiatement des noms structurés.
+    const activeDefs = getActiveFieldsForProfile(
+      state.fields,
+      state.profileId,
+      state.profileEntities[state.profileId] ?? [],
+    );
+    for (const def of activeDefs) {
+      if (def.id === 'filename') continue;
+      const current = state.fields.values[def.id];
+      if (!current && def.placeholder && def.inputType !== 'date') {
+        dispatch({ type: 'FIELD_VALUE_SET', fieldId: def.id, value: def.placeholder });
+      }
+    }
   };
 
   /* ── Compact bar (shown when files are already loaded) ── */

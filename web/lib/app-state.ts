@@ -293,7 +293,7 @@ export function appReducer(state: AppState, action: Action): AppState {
         if (!res) return f;
         return {
           ...f,
-          newName: normalizeOutputName(res.newName),
+          newName: normalizeOutputName(res.newName, state.separator),
           status: res.errors.length > 0 ? ('error' as const) : ('renamed' as const),
         };
       });
@@ -321,7 +321,7 @@ export function appReducer(state: AppState, action: Action): AppState {
         files: state.files.map((f) =>
           f.id === action.fileId
             ? (() => {
-                const newName = normalizeOutputName(action.newName);
+                const newName = normalizeOutputName(action.newName, state.separator);
                 return {
                   ...f,
                   newName,
@@ -396,7 +396,7 @@ export function appReducer(state: AppState, action: Action): AppState {
           return f;
         }
         if (result === source) return f;
-        const newName = normalizeOutputName(result);
+        const newName = normalizeOutputName(result, state.separator);
         return {
           ...f,
           newName,
@@ -425,7 +425,7 @@ export function appReducer(state: AppState, action: Action): AppState {
             : {}),
           ...(upd.newName !== undefined
             ? (() => {
-                const newName = normalizeOutputName(upd.newName);
+                const newName = normalizeOutputName(upd.newName, state.separator);
                 return {
                   newName,
                   status: validateFilename(newName).valid
