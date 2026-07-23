@@ -28,11 +28,11 @@ const s = (sec: number) => Math.round(sec * FPS);
 // ---- Timeline (frames) ----
 const INTRO = s(3.6);
 const DEMO_START_FROM = s(1.1);
-const DEMO_LEN = s(15.4);
+const DEMO_LEN = s(17.4);
 const PROFILS_START_FROM = s(1.2);
-const PROFILS_LEN = s(11.9);
+const PROFILS_LEN = s(12.8);
 const CABINET_START_FROM = s(1.3);
-const CABINET_LEN = s(22.8);
+const CABINET_LEN = s(23.2);
 const OFFER = s(8);
 const OUTRO = s(5.6);
 
@@ -350,7 +350,7 @@ function Offer() {
           at={10}
           name="Free"
           price="0 €"
-          lines={['5 lots / jour', 'Tous les profils métier', 'Export ZIP + aperçu']}
+          lines={['3 lots / jour', 'Tous les profils métier', 'Export ZIP + aperçu']}
         />
         <PlanCard
           at={18}
@@ -465,9 +465,9 @@ export function MainDemo() {
           badgeIndex="1"
           badgeLabel="Renommer un lot en 3 clics"
           captions={[
-            { from: 0.4, to: 4.6, text: <>Chargez un lot — <Em>vos fichiers restent dans votre navigateur</Em></> },
-            { from: 4.9, to: 9.6, text: <>« Renommer tout » : <Em>la convention s’applique à tout le lot</Em></> },
-            { from: 9.9, to: 15.0, text: <>Export <Em>ZIP propre</Em>, arborescence conservée</> },
+            { from: 0.4, to: 5.2, text: <>Chargez un lot — <Em>vos fichiers restent dans votre navigateur</Em></> },
+            { from: 5.5, to: 11.0, text: <>« Renommer tout » : <Em>la convention s’applique à tout le lot</Em></> },
+            { from: 11.3, to: 17.0, text: <>Export <Em>ZIP propre</Em>, arborescence conservée</> },
           ]}
         />
       </Sequence>
@@ -479,8 +479,8 @@ export function MainDemo() {
           badgeIndex="2"
           badgeLabel="9 profils métier"
           captions={[
-            { from: 0.4, to: 5.6, text: <><Em>BIM, Juridique, Finance, Santé…</Em> un clic suffit</> },
-            { from: 5.9, to: 11.5, text: <>Champs, codes et modèles <Em>adaptés à chaque métier</Em></> },
+            { from: 0.4, to: 6.0, text: <><Em>BIM, Juridique, Finance, Santé…</Em> un clic suffit</> },
+            { from: 6.3, to: 12.4, text: <>Champs, codes et modèles <Em>adaptés à chaque métier</Em></> },
           ]}
         />
       </Sequence>
@@ -492,10 +492,10 @@ export function MainDemo() {
           badgeIndex="3"
           badgeLabel="Cabinet — multi-clients"
           captions={[
-            { from: 0.4, to: 6.2, text: <>Enregistrez <Em>une convention par client</Em></> },
-            { from: 6.5, to: 12.4, text: <>Changez de client <Em>en un clic</Em> — tout se recharge</> },
-            { from: 12.7, to: 18.0, text: <>Le lot suivant se renomme <Em>sans reconfigurer</Em></> },
-            { from: 18.3, to: 22.4, text: <>Rapport <Em>CSV d’audit</Em> : traçabilité totale</> },
+            { from: 0.4, to: 6.4, text: <>Enregistrez <Em>une convention par client</Em></> },
+            { from: 6.7, to: 12.8, text: <>Changez de client <Em>en un clic</Em> — tout se recharge</> },
+            { from: 13.1, to: 18.4, text: <>Le lot suivant se renomme <Em>sans reconfigurer</Em></> },
+            { from: 18.7, to: 22.9, text: <>Rapport <Em>CSV d’audit</Em> : traçabilité totale</> },
           ]}
         />
       </Sequence>

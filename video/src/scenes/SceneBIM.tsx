@@ -59,7 +59,7 @@ export function SceneBIM() {
                   }}
                 >
                   <div style={{ fontSize: 13, color: colors.inkSoft }}>
-                    Free · 4 / 5 lots aujourd’hui
+                    Free · 2 / 3 lots aujourd’hui
                   </div>
                   <div style={{ display: 'flex', gap: 10 }}>
                     <div

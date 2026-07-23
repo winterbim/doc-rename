@@ -576,8 +576,8 @@ const faqs: {
   {
     question: 'Free, Team, Cabinet : que paie-t-on vraiment ?',
     answer: HAS_DIRECT_CHECKOUT
-      ? 'Free : 5 lots par jour, sans compte. Team (19 €/mois) et Cabinet (49 €/mois) : lots illimités après paiement Stripe, licence activée automatiquement sur le navigateur. Le pilote 14 jours est un paiement unique avec onboarding.'
-      : 'Free : 5 lots par jour, sans compte. Les offres payantes lèvent la limite quotidienne dès que le paiement en ligne est disponible.',
+      ? 'Free : 3 lots par jour, sans compte. Team (19 €/mois) et Cabinet (49 €/mois) : lots illimités après paiement Stripe, licence activée automatiquement sur le navigateur. Le pilote 14 jours est un paiement unique avec onboarding.'
+      : 'Free : 3 lots par jour, sans compte. Les offres payantes lèvent la limite quotidienne dès que le paiement en ligne est disponible.',
   },
   {
     question: 'Comment la licence payante s’active-t-elle ?',

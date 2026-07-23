@@ -7,6 +7,6 @@ export const contentType = 'image/png';
 export default function OpenGraphImage() {
   return buildOgImage(
     'Rentabilisé dès le premier jalon.',
-    'Free 5 lots/jour · Team 19 €/mois · Cabinet 49 €/mois',
+    'Free 3 lots/jour · Team 19 €/mois · Cabinet 49 €/mois',
   );
 }

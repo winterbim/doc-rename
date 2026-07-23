@@ -20,7 +20,7 @@ test.describe('lot exemple', () => {
     await expect(page.getByText(/5 fichiers ajoutés/i)).toBeVisible();
 
     // Compteur avant renommage
-    await expect(page.getByText(/5 lot\(s\) restant\(s\)/i)).toBeVisible();
+    await expect(page.getByText(/3 lot\(s\) restant\(s\)/i)).toBeVisible();
 
     // Renommer tout
     await page.getByRole('button', { name: /Renommer tout/i }).click();
@@ -28,7 +28,7 @@ test.describe('lot exemple', () => {
 
     // P1-1 : le quota est inchangé (toast explicite + compteur toujours à 5)
     await expect(page.getByText(/non décompté de votre quota/i)).toBeVisible();
-    await expect(page.getByText(/5 lot\(s\) restant\(s\)/i)).toBeVisible();
+    await expect(page.getByText(/3 lot\(s\) restant\(s\)/i)).toBeVisible();
 
     // P0-2 : les nouveaux noms suivent le modèle BIM par défaut (Livraison CDE) :
     // PROJET_BAT_CVC_PLAN_ENT_<seq>_<original nettoyé>.<EXT>

@@ -281,7 +281,7 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="font-sans text-lg font-semibold text-ink">Offres Free, Team et Cabinet</h3>
                 <p className="mt-2 max-w-3xl text-ink-soft">
-                  Free : 5 lots de renommage par jour, sans compte, traitement local.
+                  Free : 3 lots de renommage par jour, sans compte, traitement local.
                   Team (19 €/mois) et Cabinet (49 €/mois) se paient en ligne via Stripe ;
                   la licence (lots illimités) s’active automatiquement après paiement sur le
                   navigateur, sans compte obligatoire. Un pilote 14 jours est disponible en

@@ -12,7 +12,7 @@ bimcheck-consulting.com. Contact : bimcheck-consulting@proton.me.
 ## Pages
 
 - [Accueil](https://rename.bimcheck-consulting.com/) : présentation, exemples avant/après, FAQ (11 questions).
-- [Tarifs](https://rename.bimcheck-consulting.com/pricing) : Free (5 lots/jour, sans compte), Team 19 €/mois, Cabinet 49 €/mois, comparatif et FAQ.
+- [Tarifs](https://rename.bimcheck-consulting.com/pricing) : Free (3 lots/jour, sans compte), Team 19 €/mois, Cabinet 49 €/mois, comparatif et FAQ.
 - [Pilote](https://rename.bimcheck-consulting.com/pilot) : pilote guidé 14 jours (49 €, paiement unique).
 - [Guide ISO 19650](https://rename.bimcheck-consulting.com/iso-19650) : champs de nommage BIM, exemples, modèle JSON téléchargeable.
 - [Sécurité](https://rename.bimcheck-consulting.com/security) : architecture local-first, CSP, en-têtes, périmètre des données.

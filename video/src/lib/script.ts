@@ -38,7 +38,7 @@ export const subtitles: Cue[] = [
 
   cue(46.3, 51.0, 'Avant / Après, ligne par ligne.'),
   cue(51.2, 55.6, 'Corrigez une entrée, puis renommez le lot.'),
-  cue(55.8, 59.8, 'Free : 5 lots par jour. Team : illimité.'),
+  cue(55.8, 59.8, 'Free : 3 lots par jour. Team : illimité.'),
 
   cue(60.3, 65.0, 'Téléchargez le ZIP, arborescence intacte.'),
   cue(65.2, 71.8, 'Prêt pour CDE, GED ou partage client.'),
@@ -55,7 +55,7 @@ export const subtitlesShort: Cue[] = [
   cue(3.4, 7.0, 'BIMCHECK-Rename — convention multi-métiers.'),
   cue(7.2, 12.0, 'Importez. Composez. Contrôlez. Exportez.'),
   cue(12.2, 16.8, '100 % navigateur — aucun upload fichier.'),
-  cue(17.0, 22.2, 'Free 5 lots/jour · Team 19 € · licence auto.'),
+  cue(17.0, 22.2, 'Free 3 lots/jour · Team 19 € · licence auto.'),
   cue(22.4, 26.6, 'ZIP propre, prêt à déposer.'),
   cue(26.8, 29.8, 'rename.bimcheck-consulting.com'),
 ];

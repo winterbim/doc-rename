@@ -189,7 +189,7 @@ export function formatMoney(amount: number, currency: CurrencyCode): string {
  * Base prices (EUR) — after pricing audit 2026-07-21
  * --------------------------------------------------------------------------- */
 
-export const FREE_DAILY_LOTS = 5;
+export const FREE_DAILY_LOTS = 3;
 
 /** Entry paid tier — team flat fee, intentionally under 20 €. */
 export const TEAM_PRICE_EUR = 19;

@@ -3,7 +3,7 @@ import type { AccessPlan } from '@/lib/usage-limits';
 /**
  * Échelle produit — source unique des capacités par plan.
  *
- * Free (0 €)    : découvrir — 5 lots/jour, volumes d'essai.
+ * Free (0 €)    : découvrir — 3 lots/jour, volumes d'essai.
  * Team (19 €)   : industrialiser UNE équipe — lots illimités, volumes équipe,
  *                 rapport de renommage TXT.
  * Cabinet (49 €): gérer PLUSIEURS clients — bibliothèque de conventions

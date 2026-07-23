@@ -329,7 +329,7 @@ test('explains the JavaScript requirement without scripting', async ({ browser }
 test('enforces the Free quota and exposes the Team upgrade path', async ({ page }) => {
   await page.goto('/app');
 
-  await expect(page.getByText(/5 lot\(s\) restant\(s\)/i)).toBeVisible();
+  await expect(page.getByText(/3 lot\(s\) restant\(s\)/i)).toBeVisible();
 
   // P1-1 : le lot exemple ne consomme plus le quota — on brûle donc le quota
   // avec un vrai fichier importé et un champ rempli (garde P0-2).
@@ -345,8 +345,8 @@ test('enforces the Free quota and exposes the Team upgrade path', async ({ page 
     name: /Renommer tout selon la nomenclature active/i,
   });
 
-  // Burn the free daily quota (5 lots)
-  for (let remaining = 4; remaining >= 0; remaining -= 1) {
+  // Burn the free daily quota (3 lots)
+  for (let remaining = 2; remaining >= 0; remaining -= 1) {
     await renameButton.click();
     await expect(page.getByText(new RegExp(`${remaining} lot\\(s\\) restant`, 'i'))).toBeVisible();
   }

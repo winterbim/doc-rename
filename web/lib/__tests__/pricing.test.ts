@@ -19,7 +19,8 @@ describe('pricing — audit-aligned offer', () => {
     expect(TEAM_PRICE_EUR).toBeLessThanOrEqual(25);
     expect(CABINET_PRICE_EUR).toBeLessThanOrEqual(60);
     expect(PILOT_PRICE_EUR).toBeLessThanOrEqual(60);
-    expect(FREE_DAILY_LOTS).toBeGreaterThanOrEqual(5);
+    // Décision produit 2026-07-23 : 3 lots/jour en Free (incitation à l'upgrade).
+    expect(FREE_DAILY_LOTS).toBe(3);
   });
 
   it('converts EUR base to CHF and USD with rounded amounts', () => {

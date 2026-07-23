@@ -103,7 +103,7 @@ export function ScenePrivacy() {
               {
                 title: 'Free',
                 price: '0 €',
-                lines: ['5 lots / jour', 'Sans compte', 'Tous les profils métier'],
+                lines: ['3 lots / jour', 'Sans compte', 'Tous les profils métier'],
                 highlight: false,
               },
               {
