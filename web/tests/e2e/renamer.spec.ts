@@ -137,6 +137,10 @@ test('keeps filename and file content local through import, rename and ZIP downl
   ).toBeVisible();
   await expect(page.getByText('Prêt').first()).toBeVisible();
 
+  // P0-2 : le renommage exige au moins un champ rempli (plus de repli silencieux
+  // sur upper(nom_original)) — on renseigne le projet.
+  await page.getByPlaceholder('PROJET', { exact: true }).fill('CONF01');
+
   await renameButton.click();
   await expect(page.getByText('Renommé', { exact: true })).toBeVisible();
   const downloadPromise = page.waitForEvent('download');
@@ -326,7 +330,16 @@ test('enforces the Free quota and exposes the Team upgrade path', async ({ page 
   await page.goto('/app');
 
   await expect(page.getByText(/5 lot\(s\) restant\(s\)/i)).toBeVisible();
-  await page.getByRole('button', { name: /Charger un lot exemple/i }).click();
+
+  // P1-1 : le lot exemple ne consomme plus le quota — on brûle donc le quota
+  // avec un vrai fichier importé et un champ rempli (garde P0-2).
+  await uploadInput(page).setInputFiles({
+    name: 'rapport quota.pdf',
+    mimeType: 'application/pdf',
+    buffer: Buffer.from('%PDF-1.4\n% quota fixture\n'),
+  });
+  await expect(page.getByText('rapport quota.pdf', { exact: true })).toBeVisible();
+  await page.getByPlaceholder('PROJET', { exact: true }).fill('QUOTA');
 
   const renameButton = page.getByRole('button', {
     name: /Renommer tout selon la nomenclature active/i,
@@ -367,8 +380,8 @@ test('completes a real BIM renaming journey and downloads the ZIP', async ({ pag
 
   await expect(page.getByText('Renommé', { exact: true }).first()).toBeVisible();
   await expect(page.getByText(/MUSEE_BAT01_ARC_PLAN_BOUYGUES_BATIMENT_/).first()).toBeVisible();
-  await expect(page.getByText(/Lot prêt à déposer/i)).toBeVisible();
-  await expect(page.getByRole('link', { name: /pilote|Team|S’abonner|Réserver/i }).first()).toBeVisible();
+  // P2-5 : l'upsell pilote ne s'affiche jamais sur le seul lot exemple.
+  await expect(page.getByText(/Lot prêt à déposer/i)).toHaveCount(0);
 
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Télécharger tout (ZIP)', exact: true }).click();
