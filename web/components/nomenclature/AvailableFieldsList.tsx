@@ -55,7 +55,7 @@ function DraggableAvailableItem({
         {...listeners}
         onClick={handleActivate}
       >
-        <span className="font-mono text-[10px] text-ink-mute shrink-0">{field.code}</span>
+        <span className="shrink-0">{field.name}</span>
       </button>
     </li>
   );

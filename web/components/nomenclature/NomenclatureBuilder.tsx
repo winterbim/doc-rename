@@ -58,7 +58,6 @@ function OverlayCard({ field }: { field: FieldDefinition }) {
       >
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 8h16M4 16h16" />
       </svg>
-      <span className="font-mono text-xs text-ink-mute shrink-0">{field.code}</span>
       <span className="flex-1 truncate font-medium">{field.name}</span>
     </div>
   );
@@ -366,6 +365,17 @@ export function NomenclatureBuilder() {
               Modèle de nomenclature
             </h2>
             <TemplatePicker />
+            {state.profileId === 'bim-construction' && (
+              <a
+                href="/iso-19650"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-brick hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
+              >
+                Guide des champs ISO 19650
+                <span aria-hidden="true">↗</span>
+              </a>
+            )}
           </section>
 
           <section aria-labelledby="section-sep">
