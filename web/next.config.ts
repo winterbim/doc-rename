@@ -40,6 +40,11 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  reactStrictMode: true,
+  // Anti-copie : jamais de source maps en production — le bundle servi reste
+  // minifié. (C'est le défaut Next.js, rendu explicite pour qu'une future
+  // activation soit un choix conscient, pas un accident.)
+  productionBrowserSourceMaps: false,
   // A parent lockfile exists on this workstation. Pin Turbopack to this app so
   // dependency resolution never starts from /home/wina. Do not set
   // outputFileTracingRoot here: Vercel's configured `web` root manages it and
