@@ -162,6 +162,21 @@ html, body {
 }
 
 /* ---------------------------------------------------------------------------
+ * Atelier /app — verrou de scroll du document en desktop.
+ * Le shell est déjà h-dvh/overflow-hidden ; ce verrou empêche le navigateur
+ * d'autoriser un scroll fantôme du document (header expulsé + bande vide
+ * sous l'app) quand un descendant fait déborder scrollHeight.
+ * --------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  html:has([data-app-shell]) {
+    /* clip (et non hidden) : le document n'est plus un conteneur de scroll,
+       même pour scrollTo/scrollIntoView — le header ne peut plus sortir. */
+    overflow: clip;
+    height: 100%;
+  }
+}
+
+/* ---------------------------------------------------------------------------
  * DocxPreview — rendered DOCX HTML
  * --------------------------------------------------------------------------- */
 .docx-render {

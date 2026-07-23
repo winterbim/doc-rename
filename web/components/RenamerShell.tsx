@@ -189,7 +189,10 @@ export function RenamerShell() {
   }, [state.ui.selectedIds.length, rightPaneOpen]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-paper lg:h-screen lg:overflow-hidden">
+    <div
+      data-app-shell
+      className="flex min-h-dvh flex-col overscroll-none bg-paper lg:fixed lg:inset-0 lg:min-h-0 lg:overflow-hidden"
+    >
       <Header />
 
       {/* UPGRADE BANNER — shown only when team accounts are operational. */}
@@ -237,7 +240,7 @@ export function RenamerShell() {
       <main className="flex flex-1 gap-0 lg:min-h-0 lg:overflow-hidden">
         {/* LEFT PANE — Nomenclature */}
         {desktopLayout && <aside
-          className="hidden lg:flex w-80 shrink-0 flex-col gap-0 border-r border-line bg-surface dark:bg-paper-2 min-h-0 overflow-y-auto"
+          className="hidden lg:flex w-80 xl:w-[22rem] 2xl:w-96 shrink-0 flex-col gap-0 border-r border-line bg-surface dark:bg-paper-2 min-h-0 overflow-y-auto"
           aria-label="Configuration de la nomenclature"
         >
           <div className="border-t-2 border-gold" aria-hidden="true" />
@@ -251,7 +254,9 @@ export function RenamerShell() {
           className="flex flex-1 min-w-0 flex-col min-h-0 overflow-y-auto"
           aria-label="Fichiers à renommer"
         >
-          <div className="flex-1 p-5">
+          {/* Largeur bornée + centrée : l'atelier ne flotte plus dans le vide
+              sur les grands écrans. */}
+          <div className="mx-auto w-full max-w-6xl flex-1 p-5">
             {/* Mobile: collapsed nomenclature */}
             {!desktopLayout && <div className="lg:hidden mb-5 rounded-xl border border-line bg-surface dark:bg-paper-2 p-4 shadow-sm">
               <details>
