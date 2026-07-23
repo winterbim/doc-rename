@@ -98,8 +98,10 @@ export function PricingPlansSection() {
         <CurrencySwitcher currency={currency} onChange={setCurrency} />
         <p className="max-w-md text-xs text-ink-mute">
           Affichage en {meta.label}. Les montants hors euro sont des conversions
-          indicatives (base EUR). La facturation suit un lien sécurisé ou un devis uniquement
-          lorsque la souscription est ouverte.
+          indicatives (base EUR).{' '}
+          {HAS_DIRECT_CHECKOUT
+            ? 'Paiement sécurisé Stripe — le montant exact et la devise de règlement sont confirmés sur la page de paiement.'
+            : 'La facturation suit un lien sécurisé ou un devis uniquement lorsque la souscription est ouverte.'}
         </p>
         {!HAS_DIRECT_CHECKOUT && (
           <p className="max-w-xl rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">

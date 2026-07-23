@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: 'Puis-je afficher les prix en CHF ou USD ?',
-    a: 'Oui : utilisez le sélecteur de devise en haut des tarifs. Les montants hors euro sont des conversions indicatives (base EUR). La facturation Stripe est en EUR.',
+    a: 'Oui : utilisez le sélecteur de devise en haut des tarifs. Les montants hors euro sont des conversions indicatives (base EUR). Le prix de référence est en EUR ; Stripe peut proposer un règlement dans votre devise locale — le taux et les éventuels frais de conversion sont affichés avant paiement.',
   },
   {
     q: 'Comment l’accès payant est-il activé ?',
