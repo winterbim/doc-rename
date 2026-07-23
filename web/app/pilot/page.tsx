@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PilotRequestForm } from '@/components/commercial/PilotRequestForm';
 import { HAS_DIRECT_CHECKOUT, PAID_ACCOUNTS_AVAILABLE, PAID_PILOT_PRICE_LABEL, pilotCta } from '@/lib/pricing';
+import { CONTACT_EMAIL, CONTACT_RESPONSE_TIME } from '@/lib/contact';
 
 export const metadata: Metadata = {
   title: 'Pilote 14 jours',
@@ -166,6 +167,13 @@ export default function PilotPage() {
 
           <div className="min-w-0 rounded-lg border border-line bg-surface p-5 shadow-sm dark:bg-paper-2">
             <PilotRequestForm />
+            <p className="mt-4 text-xs text-ink-mute">
+              {CONTACT_RESPONSE_TIME} sur toute demande de pilote — contact :{' '}
+              <a className="text-brick underline underline-offset-2" href={`mailto:${CONTACT_EMAIL}`}>
+                {CONTACT_EMAIL}
+              </a>
+              .
+            </p>
           </div>
         </section>
       </div>

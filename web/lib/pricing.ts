@@ -405,12 +405,26 @@ export const teamPlan = getTeamPlan('EUR');
 export const cabinetPlan = getCabinetPlan('EUR');
 export const pricingPlans = getPricingPlans('EUR');
 
-export const planComparisonRows: readonly {
+type PlanComparisonRow = {
   feature: string;
   free: boolean | string;
   team: boolean | string;
   cabinet: boolean | string;
-}[] = [
+};
+
+/**
+ * P1-2 — le tableau comparatif ne vend que ce qui existe. Les capacités
+ * cloud non ouvertes (compte, sync, membres, projets) vivent dans
+ * `planRoadmapItems` tant que PAID_ACCOUNTS_AVAILABLE est faux.
+ */
+const ACCOUNT_COMPARISON_ROWS: readonly PlanComparisonRow[] = [
+  { feature: 'Compte utilisateur', free: false, team: true, cabinet: true },
+  { feature: 'Sync cloud des conventions', free: false, team: true, cabinet: true },
+  { feature: 'Membres organisation', free: '—', team: 'Jusqu’à 10', cabinet: 'Jusqu’à 1 000' },
+  { feature: 'Projets', free: 'Local', team: '3', cabinet: 'Jusqu’à 1 000' },
+];
+
+export const planComparisonRows: readonly PlanComparisonRow[] = [
   { feature: 'Renommage local (fichiers hors serveur)', free: true, team: true, cabinet: true },
   { feature: 'Tous les profils métier', free: true, team: true, cabinet: true },
   { feature: 'Convention personnalisée', free: true, team: true, cabinet: true },
@@ -421,36 +435,51 @@ export const planComparisonRows: readonly {
     cabinet: HAS_DIRECT_CHECKOUT || PAID_ACCOUNTS_AVAILABLE ? 'Illimité' : 'Sur activation',
   },
   {
-    feature: 'Compte utilisateur',
-    free: false,
-    team: PAID_ACCOUNTS_AVAILABLE,
-    cabinet: PAID_ACCOUNTS_AVAILABLE,
-  },
-  {
-    feature: 'Sync cloud des conventions',
-    free: false,
-    team: PAID_ACCOUNTS_AVAILABLE,
-    cabinet: PAID_ACCOUNTS_AVAILABLE,
-  },
-  {
-    feature: 'Membres organisation',
+    feature: 'Licence activée automatiquement après paiement',
     free: '—',
-    team: PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 10' : 'Non ouvert',
-    cabinet: PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 1 000' : 'Non ouvert',
+    team: HAS_DIRECT_CHECKOUT ? true : 'Dès ouverture',
+    cabinet: HAS_DIRECT_CHECKOUT ? true : 'Dès ouverture',
   },
   {
-    feature: 'Projets',
-    free: 'Local',
-    team: PAID_ACCOUNTS_AVAILABLE ? '3' : 'Non ouvert',
-    cabinet: PAID_ACCOUNTS_AVAILABLE ? 'Jusqu’à 1 000' : 'Non ouvert',
+    feature: 'Multi-équipes / volume',
+    free: '—',
+    team: '1 équipe',
+    cabinet: 'Multi-équipes',
+  },
+  {
+    feature: 'Onboarding guidé',
+    free: '—',
+    team: 'Sur demande',
+    cabinet: 'Inclus',
+  },
+  {
+    feature: 'Facture Stripe',
+    free: '—',
+    team: true,
+    cabinet: true,
   },
   {
     feature: 'Support',
     free: 'Documentation',
-    team: PAID_ACCOUNTS_AVAILABLE ? 'Email' : 'Sur demande',
-    cabinet: PAID_ACCOUNTS_AVAILABLE ? 'Prioritaire' : 'Sur demande',
+    team: 'Email — réponse sous 24 h ouvrées',
+    cabinet: 'Prioritaire',
   },
+  // Dès que les comptes cloud ouvrent, ces lignes redeviennent des capacités réelles.
+  ...(PAID_ACCOUNTS_AVAILABLE ? ACCOUNT_COMPARISON_ROWS : []),
 ];
+
+/**
+ * Feuille de route affichée sous le tableau (transparence sans vendre du
+ * non-disponible). Vide quand les comptes cloud sont ouverts.
+ */
+export const planRoadmapItems: readonly string[] = PAID_ACCOUNTS_AVAILABLE
+  ? []
+  : [
+      'Compte utilisateur et connexion équipe',
+      'Sync cloud des conventions (JSON de règles — jamais vos fichiers)',
+      'Membres et rôles d’organisation',
+      'Projets partagés',
+    ];
 
 export function formatPlanPrice(plan: PricingPlan): string {
   if (plan.price === 0) return 'Gratuit';

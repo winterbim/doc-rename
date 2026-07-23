@@ -6,6 +6,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { Badge } from './ui/Badge';
 import { Button } from './ui/Button';
 import { PAID_ACCOUNTS_ENABLED } from '@/lib/features';
+import { MobileNav } from './commercial/MobileNav';
 
 /**
  * App header — modern brand bar with navigation, auth and upgrade CTA.
@@ -14,7 +15,7 @@ export function Header() {
   const { isAuthenticated, isLoading } = useAuthStatus();
 
   return (
-    <header className="flex items-center justify-between border-b border-border bg-surface px-4 py-3 sm:px-6">
+    <header className="relative flex items-center justify-between border-b border-border bg-surface px-4 py-3 sm:px-6">
       {/* Left: brand mark + title */}
       <Link href="/" className="flex items-center gap-3">
         <span
@@ -74,6 +75,22 @@ export function Header() {
         </span>
 
         <ThemeToggle />
+
+        {/* P1-3 — navigation mobile (la nav inline est masquée sous md) */}
+        <div className="md:hidden">
+          <MobileNav
+            label="Navigation"
+            buttonClassName="inline-flex h-9 w-9 items-center justify-center rounded-md border border-line bg-surface text-ink hover:border-brick focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brick"
+            panelClassName="absolute left-3 right-3 top-full z-50 mt-1 rounded-xl border border-line bg-surface p-2 shadow-lg"
+            linkClassName="block rounded-lg px-3.5 py-2.5 text-sm font-semibold text-ink hover:bg-paper-2 focus-visible:bg-paper-2 focus-visible:outline-none"
+            links={[
+              { href: '/', label: 'Accueil' },
+              { href: '/pricing', label: 'Tarifs' },
+              { href: '/pilot', label: 'Pilote' },
+              { href: '/iso-19650', label: 'Guide ISO 19650' },
+            ]}
+          />
+        </div>
       </div>
     </header>
   );

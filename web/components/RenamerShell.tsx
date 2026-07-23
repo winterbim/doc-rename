@@ -12,6 +12,7 @@ import { SimpleReplacePanel } from './replace/SimpleReplacePanel';
 import { PrefixActionsPanel } from './prefixes/PrefixActionsPanel';
 import { FileViewer } from './viewer/FileViewer';
 import { useAppContext, type AppState } from '@/lib/app-state';
+import { coercePublicProfileId, type IndustryProfileId } from '@/lib/profiles';
 import { loadPersistedState, persistState } from '@/lib/persistence';
 import { clearViewerCacheFor, clearAllViewerCaches } from '@/lib/viewer-cache';
 import { setupPdfWorker } from '@/lib/pdf-config';
@@ -97,6 +98,52 @@ function usePersistence() {
   }, [state]);
 }
 
+/** Slugs FR des CTA de la landing → ids de profil (P1-4, continuité landing → app). */
+const PROFILE_URL_SLUGS: Record<string, IndustryProfileId> = {
+  bim: 'bim-construction',
+  'bim-construction': 'bim-construction',
+  juridique: 'legal',
+  legal: 'legal',
+  finance: 'finance',
+  rh: 'hr',
+  hr: 'hr',
+  sante: 'healthcare',
+  healthcare: 'healthcare',
+  admin: 'administration',
+  administratif: 'administration',
+  administration: 'administration',
+  industrie: 'industry',
+  industry: 'industry',
+  immobilier: 'real-estate',
+  'real-estate': 'real-estate',
+  perso: 'custom',
+  custom: 'custom',
+};
+
+/**
+ * Hook: applique `/app?profil=<slug>` au montage. Déclaré APRÈS usePersistence
+ * pour que le paramètre d'URL (intention explicite) gagne sur le profil
+ * restauré du localStorage.
+ */
+function useProfileFromUrl() {
+  const { dispatch } = useAppContext();
+  const appliedRef = useRef(false);
+
+  useEffect(() => {
+    if (appliedRef.current) return;
+    appliedRef.current = true;
+    const params = new URLSearchParams(globalThis.location.search);
+    const raw = (params.get('profil') ?? params.get('profile'))?.toLowerCase();
+    if (!raw) return;
+    const target = PROFILE_URL_SLUGS[raw];
+    if (!target) return;
+    // Dispatch inconditionnel : l'URL est une intention explicite et doit
+    // gagner sur le profil restauré par STATE_HYDRATE (dispatché juste avant,
+    // dans usePersistence — l'ordre des reducers garantit que l'URL gagne).
+    dispatch({ type: 'PROFILE_CHANGE', profileId: coercePublicProfileId(target) });
+  }, [dispatch]);
+}
+
 /**
  * Main layout:
  *   Header (logo + theme + lang)
@@ -108,6 +155,7 @@ function usePersistence() {
  */
 export function RenamerShell() {
   usePersistence();
+  useProfileFromUrl();
   useGlobalErrorHandler();
   const { state } = useAppContext();
   const [rightPaneOpen, setRightPaneOpen] = useState(false);

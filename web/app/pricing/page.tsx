@@ -6,8 +6,10 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { PricingPlansSection } from '@/components/commercial/PricingPlansSection';
+import { LEGAL_FOOTER_LINE } from '@/lib/contact';
 import {
   planComparisonRows,
+  planRoadmapItems,
   TEAM_PRICE_EUR,
   CABINET_PRICE_EUR,
   FREE_DAILY_LOTS,
@@ -32,8 +34,8 @@ const faqs = [
     a: `Oui pour le renommage local : tous les profils métier, convention personnalisée, export ZIP. Limite : ${FREE_DAILY_LOTS} lots par jour. Team (${TEAM_PRICE_EUR} €/mois) lève cette limite.`,
   },
   {
-    q: 'Pourquoi des prix aussi bas ?',
-    a: 'Parce que le Free fait déjà le cœur du produit : renommage local, aperçu et ZIP. Les offres payantes ajoutent le volume, le support et l’accompagnement.',
+    q: 'Que comprend exactement chaque offre ?',
+    a: 'Free couvre le cœur du produit : renommage local, aperçu et ZIP, limité à quelques lots par jour. Team lève la limite de volume pour une équipe avec support email. Cabinet ajoute le multi-équipes, l’onboarding guidé et le support prioritaire. Chaque abonnement donne lieu à une facture Stripe.',
   },
   {
     q: 'Mes fichiers quittent-ils le navigateur ?',
@@ -48,6 +50,10 @@ const faqs = [
     a: HAS_DIRECT_CHECKOUT
       ? `Paiement Stripe live, puis activation automatique de la licence (lots illimités) sur la page de confirmation. Pilote guidé : ${PILOT_PRICE_EUR} € (paiement unique, 14 jours).`
       : `Dès que le paiement Stripe live est branché, l’activation de licence est automatique après paiement. En attendant : demande via /pilot.`,
+  },
+  {
+    q: 'Comment résilier mon abonnement ?',
+    a: 'En self-service depuis le portail client Stripe : le lien « Gérer mon abonnement » figure dans votre email de confirmation Stripe (reçu de paiement). La résiliation prend effet en fin de période. Vous pouvez aussi résilier par simple email — voir les CGU/CGV.',
   },
 ];
 
@@ -72,6 +78,20 @@ function CheckOrValue({ value }: { value: boolean | string }) {
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-bg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.q,
+              acceptedAnswer: { '@type': 'Answer', text: faq.a },
+            })),
+          }),
+        }}
+      />
       <header className="border-b border-border bg-surface">
         <Container>
           <div className="flex h-16 items-center justify-between">
@@ -101,7 +121,7 @@ export default function PricingPage() {
                   : 'Free ouvert'}
               </Badge>
               <h1 className="text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-                Des tarifs pensés pour ne pas vous faire fuir.
+                Rentabilisé dès le premier jalon.
               </h1>
               <p className="mt-6 text-lg text-ink-soft">
                 Free généreux. Team à {TEAM_PRICE_EUR}&nbsp;€/mois. Cabinet à {CABINET_PRICE_EUR}&nbsp;€/mois.
@@ -164,6 +184,28 @@ export default function PricingPage() {
                 </tbody>
               </table>
             </div>
+
+            {planRoadmapItems.length > 0 && (
+              <aside
+                aria-labelledby="roadmap-title"
+                className="mx-auto mt-10 max-w-3xl rounded-2xl border border-dashed border-border-2 bg-bg px-6 py-5"
+              >
+                <h3 id="roadmap-title" className="text-sm font-semibold uppercase tracking-wide text-ink-mute">
+                  Feuille de route
+                </h3>
+                <p className="mt-2 text-sm text-ink-soft">
+                  En préparation — non inclus dans les offres actuelles, annoncé ici par transparence :
+                </p>
+                <ul className="mt-3 grid gap-1.5 text-sm text-ink-soft sm:grid-cols-2">
+                  {planRoadmapItems.map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <span aria-hidden="true" className="mt-1 h-1.5 w-1.5 flex-none rounded-full bg-border-2" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </aside>
+            )}
           </Container>
         </section>
 
@@ -217,6 +259,8 @@ export default function PricingPage() {
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <p className="text-sm text-ink-mute">
               © {new Date().getFullYear()} BIMCHECK-Rename. Tous droits réservés.
+              <br />
+              <small>{LEGAL_FOOTER_LINE}</small>
             </p>
             <div className="flex gap-6 text-sm text-ink-soft">
               <Link href="/mentions-legales" className="hover:text-ink">Mentions légales</Link>

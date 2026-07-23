@@ -5,10 +5,11 @@ import {
   HAS_DIRECT_CHECKOUT,
   PAID_ACCOUNTS_AVAILABLE,
 } from '@/lib/pricing';
-import { CONTACT_EMAIL } from '@/lib/contact';
+import { CONTACT_EMAIL, CONTACT_RESPONSE_TIME, LEGAL_FOOTER_LINE } from '@/lib/contact';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LandingPricing } from '@/components/commercial/LandingPricing';
+import { MobileNav } from '@/components/commercial/MobileNav';
 
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://rename.bimcheck-consulting.com';
@@ -75,7 +76,7 @@ const LANDING_CSS = `
     --color-primary: #67E8F9;
     --color-primary-2: rgba(103, 232, 249, .09);
     --color-success: #2DD4BF;
-    --color-accent: #818CF8;
+    --color-accent: #22D3EE;
     --color-surface: #0E1628;
     --color-surface-2: #111D31;
     --color-border: rgba(148, 163, 184, .16);
@@ -89,6 +90,7 @@ const LANDING_CSS = `
   .wrap { width: min(1200px, calc(100% - 40px)); margin: 0 auto; }
 
   .topbar {
+    position: relative;
     display: flex; align-items: center; justify-content: space-between;
     gap: 24px; padding: 20px 0;
   }
@@ -100,7 +102,7 @@ const LANDING_CSS = `
 
   .mark {
     width: 32px; height: 32px; display: grid; place-items: center;
-    background: linear-gradient(135deg, #67E8F9, #6366F1); color: #06121F;
+    background: linear-gradient(135deg, #22D3EE, #0E7490); color: #06121F;
     border-radius: 8px; font-size: 12px; font-weight: 800;
     box-shadow: 0 10px 30px -12px rgba(34, 211, 238, .75);
   }
@@ -115,10 +117,34 @@ const LANDING_CSS = `
   .nav a { text-decoration: none; }
   .nav a:hover { color: var(--color-ink); }
 
+  .burger {
+    display: none; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--color-border); background: var(--color-surface);
+    color: var(--color-ink);
+  }
+  .burger:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+  .mobile-panel {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 50;
+    padding: 10px;
+    background: var(--color-surface); border: 1px solid var(--color-border);
+    border-radius: 14px; box-shadow: 0 24px 60px -24px rgba(15, 23, 42, .35);
+  }
+  .mobile-panel nav { display: grid; gap: 2px; }
+  .mobile-panel a {
+    display: block; padding: 12px 14px; border-radius: 10px;
+    color: var(--color-ink); text-decoration: none; font-weight: 600; font-size: 15px;
+  }
+  .mobile-panel a:hover, .mobile-panel a:focus-visible { background: var(--color-surface-2); }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+
   .pill-link {
     display: inline-flex; align-items: center; justify-content: center;
     min-height: 40px; padding: 0 18px; border-radius: 8px;
-    background: linear-gradient(135deg, #67E8F9, #6366F1); color: #06121F; text-decoration: none;
+    background: linear-gradient(135deg, #22D3EE, #0E7490); color: #06121F; text-decoration: none;
     font-weight: 650; font-size: 14px;
     transition: transform .18s ease, background .18s ease;
     box-shadow: 0 12px 32px -14px rgba(34, 211, 238, .7);
@@ -166,7 +192,7 @@ const LANDING_CSS = `
     border: 1px solid transparent; text-decoration: none; font-weight: 650;
     transition: transform .18s ease, background .18s ease, color .18s ease, box-shadow .18s ease;
   }
-  .button.primary { background: linear-gradient(135deg, #67E8F9, #6366F1); color: #06121F; box-shadow: 0 12px 32px -14px rgba(34, 211, 238, .7); }
+  .button.primary { background: linear-gradient(135deg, #22D3EE, #0E7490); color: #06121F; box-shadow: 0 12px 32px -14px rgba(34, 211, 238, .7); }
   .button.primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
   .button.secondary { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
   .button.secondary:hover { border-color: var(--color-border-2); background: var(--color-surface-2); }
@@ -376,7 +402,7 @@ const LANDING_CSS = `
   .plan .button { margin-top: auto; width: fit-content; }
   .pro .button.primary { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
   .pro .button.primary:hover { background: var(--color-accent); border-color: var(--color-accent); color: #06121F; }
-  .team .button.primary { background: linear-gradient(135deg, #67E8F9, #6366F1); border-color: transparent; color: #06121F; }
+  .team .button.primary { background: linear-gradient(135deg, #22D3EE, #0E7490); border-color: transparent; color: #06121F; }
   .team .button.primary:hover { filter: brightness(1.08); }
   .paid-pilot {
     margin-top: 22px; border: 1px solid rgba(103, 232, 249, .2); border-radius: 16px;
@@ -386,7 +412,7 @@ const LANDING_CSS = `
   .paid-pilot strong { display: block; font-size: 22px; letter-spacing: -.02em; font-weight: 650; }
   .paid-pilot p { margin: 6px 0 0; color: rgba(248, 250, 252, .7); font-size: 14px; }
   .paid-pilot .button.primary { background: var(--color-accent); color: #06121F; border-color: var(--color-accent); flex-shrink: 0; }
-  .paid-pilot .button.primary:hover { background: #A5B4FC; border-color: #A5B4FC; }
+  .paid-pilot .button.primary:hover { background: #67E8F9; border-color: #67E8F9; }
 
   .faq { display: grid; gap: 0; border-top: 1px solid var(--color-border); }
   details { border-bottom: 1px solid var(--color-border); padding: 20px 0; }
@@ -400,7 +426,7 @@ const LANDING_CSS = `
   .final h2 { max-width: 14ch; color: #E6EDF6; }
   .final .section-copy { color: rgba(248, 250, 252, .72); }
   .final .button.primary { background: var(--color-accent); color: #06121F; }
-  .final .button.primary:hover { background: #A5B4FC; }
+  .final .button.primary:hover { background: #67E8F9; }
   .final .button.secondary { color: #E6EDF6; border-color: rgba(248, 250, 252, .3); background: transparent; }
   .final .button.secondary:hover { background: rgba(248, 250, 252, .08); color: #FFFFFF; border-color: rgba(248, 250, 252, .55); }
 
@@ -414,6 +440,7 @@ const LANDING_CSS = `
 
   @media (max-width: 900px) {
     .nav { display: none; }
+    .burger { display: inline-flex; }
     .hero, .section-head, .grid-3, .grid-2, .security-grid, .proof-row, .roi-grid { grid-template-columns: 1fr; }
     .paid-pilot { align-items: flex-start; flex-direction: column; }
     .tool-grid { grid-template-columns: 1fr; }
@@ -428,6 +455,15 @@ const LANDING_CSS = `
     .price { font-size: 36px; }
     .final { padding: 34px 20px; }
   }
+
+  .card-link {
+    display: inline-block; margin-top: 12px;
+    color: var(--color-primary); text-decoration: none;
+    font-weight: 650; font-size: 14px;
+  }
+  .card-link:hover { text-decoration: underline; }
+  .card-link-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .card p a, .faq details p a { color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; }
 `;
 
 const SOFTWARE_APPLICATION_JSONLD = {
@@ -480,13 +516,41 @@ const SOFTWARE_APPLICATION_JSONLD = {
         ]
       : []),
   ],
+  url: siteUrl,
+  image: `${siteUrl}/icon-512.png`,
+  inLanguage: 'fr',
+  publisher: { '@id': `${siteUrl}/#organization` },
 };
 
-const faqs = [
+/** Organisation éditrice — logo réel, rattachée à bimcheck-consulting.com. */
+const ORGANIZATION_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${siteUrl}/#organization`,
+  name: 'BIMCHECK-Rename',
+  legalName: 'Winter Kily Fernandes (Entrepreneur individuel)',
+  url: siteUrl,
+  logo: `${siteUrl}/icon-512.png`,
+  email: 'bimcheck-consulting@proton.me',
+  sameAs: ['https://bimcheck-consulting.com'],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer support',
+    email: 'bimcheck-consulting@proton.me',
+    availableLanguage: ['fr'],
+  },
+};
+
+const faqs: {
+  question: string;
+  answer: string;
+  link?: { href: string; label: string };
+}[] = [
   {
     question: 'À qui s’adresse BIMCHECK-Rename ?',
     answer:
       'À toute équipe qui standardise des noms de fichiers avant dépôt, archivage ou partage : juridique, finance, RH, santé, industrie, immobilier, BIM / construction, et plus. Des profils métier prêts à l’emploi sont inclus ; vous les adaptez à votre convention interne.',
+    link: { href: '/iso-19650', label: 'Équipe BIM ? Voir le guide ISO 19650.' },
   },
   {
     question: 'Remplace-t-il notre GED, Drive ou outil métier ?',
@@ -502,6 +566,7 @@ const faqs = [
     question: 'Quels formats puis-je renommer ?',
     answer:
       'PDF, Word, Excel, images, archives ZIP et de nombreux formats métier (plans, maquettes, tableurs, etc.). L’outil renomme les fichiers : il ne modifie pas le contenu interne des documents.',
+    link: { href: '/iso-19650', label: 'Formats BIM (IFC, RVT, DWG) : guide ISO 19650.' },
   },
   {
     question: 'Puis-je importer ma propre liste d’entités (clients, sociétés, codes) ?',
@@ -545,6 +610,24 @@ export default function LandingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(SOFTWARE_APPLICATION_JSONLD) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_JSONLD) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.question,
+              acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+            })),
+          }),
+        }}
+      />
 
       <div className="wrap">
         <header className="topbar">
@@ -560,12 +643,24 @@ export default function LandingPage() {
             <a href="#fonctionnement">Comment</a>
             <a href="#vertical">Métiers</a>
             <a href="#securite">Sécurité</a>
-            <a href="#tarifs">Tarifs</a>
-            <a href="/pricing">Offres</a>
+            <a href="/pricing">Tarifs</a>
             <a href="#faq">FAQ</a>
           </nav>
 
           <a className="pill-link" href="/app">Essayer sans compte</a>
+
+          <MobileNav
+            label="Navigation"
+            buttonClassName="burger"
+            panelClassName="mobile-panel"
+            links={[
+              { href: '/pricing', label: 'Tarifs' },
+              { href: '#securite', label: 'Sécurité' },
+              { href: '#faq', label: 'FAQ' },
+              { href: '/iso-19650', label: 'Guide ISO 19650' },
+              { href: '/app', label: 'Essayer sans compte' },
+            ]}
+          />
         </header>
 
         <main>
@@ -771,26 +866,38 @@ export default function LandingPage() {
               <article className="card">
                 <strong>Juridique</strong>
                 <p>Actes de cession, contrats, dossiers clients, procédures, pièces. Numérotation claire et traçable.</p>
+                <a className="card-link" href="/app?profil=juridique">Ouvrir le profil Juridique →</a>
               </article>
               <article className="card">
                 <strong>BIM / Construction</strong>
-                <p>ISO 19650, SIA 2051, BIM France. Plans, maquettes, rapports techniques et dépôts CDE.</p>
+                <p>
+                  ISO 19650, SIA 2051, BIM France. Plans, maquettes, rapports techniques et dépôts CDE.{' '}
+                  <a href="/iso-19650">Voir le guide ISO 19650</a>.
+                </p>
+                <a className="card-link" href="/app?profil=bim">Ouvrir le profil BIM →</a>
               </article>
               <article className="card">
                 <strong>Finance</strong>
                 <p>Factures, justificatifs, clôtures, rapports financiers, budgets. Classement par entité et période.</p>
+                <a className="card-link" href="/app?profil=finance">Ouvrir le profil Finance →</a>
               </article>
               <article className="card">
                 <strong>RH</strong>
                 <p>Contrats, fiches de paie, attestations, entretiens annuels, formations. Dossier collaborateur.</p>
+                <a className="card-link" href="/app?profil=rh">Ouvrir le profil RH →</a>
               </article>
               <article className="card">
                 <strong>Santé</strong>
                 <p>Procédures, protocoles, documents qualité, audits internes. Traçabilité et versionning.</p>
+                <a className="card-link" href="/app?profil=sante">Ouvrir le profil Santé →</a>
               </article>
               <article className="card">
                 <strong>Industrie & Immobilier</strong>
                 <p>Fiches techniques, maintenance, diagnostics, baux, états des lieux. Documentation équipement et bien.</p>
+                <span className="card-link-row">
+                  <a className="card-link" href="/app?profil=industrie">Industrie →</a>
+                  <a className="card-link" href="/app?profil=immobilier">Immobilier →</a>
+                </span>
               </article>
             </div>
           </section>
@@ -932,7 +1039,7 @@ export default function LandingPage() {
             <div className="section-head">
               <div>
                 <span className="kicker">Tarifs</span>
-                <h2>Des prix bas pour ne pas freiner l’équipe.</h2>
+                <h2>{TEAM_PRICE_EUR} €/mois — moins qu’une heure de reprise manuelle.</h2>
               </div>
               <p className="section-copy">
                 {HAS_DIRECT_CHECKOUT
@@ -960,7 +1067,15 @@ export default function LandingPage() {
               {faqs.map((faq) => (
                 <details key={faq.question}>
                   <summary>{faq.question}</summary>
-                  <p>{faq.answer}</p>
+                  <p>
+                    {faq.answer}
+                    {faq.link ? (
+                      <>
+                        {' '}
+                        <a href={faq.link.href}>{faq.link.label}</a>
+                      </>
+                    ) : null}
+                  </p>
                 </details>
               ))}
             </div>
@@ -989,15 +1104,20 @@ export default function LandingPage() {
 
       <footer>
         <div className="wrap foot">
-          <span>© 2026 BIMCHECK-Rename — Convention de nommage pour équipes</span>
+          <span>
+            © 2026 BIMCHECK-Rename — Convention de nommage pour équipes
+            <br />
+            <small>{LEGAL_FOOTER_LINE}</small>
+          </span>
           <span>
             <a href="/pricing">Tarifs</a> ·{' '}
             <a href="/mentions-legales">Mentions légales</a> ·{' '}
             <a href="/privacy">Confidentialité</a> ·{' '}
             <a href="/conditions">CGU / CGV</a> ·{' '}
             <a href="/security">Sécurité</a> ·{' '}
+            <a href="/iso-19650">Guide ISO 19650</a> ·{' '}
             <a href="/pilot">Pilote</a> ·{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
+            <a href={`mailto:${CONTACT_EMAIL}`}>Contact ({CONTACT_RESPONSE_TIME.toLowerCase()})</a>
           </span>
         </div>
       </footer>
