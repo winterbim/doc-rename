@@ -26,6 +26,8 @@ export interface PlanFeatures {
   reportCsv: boolean;
   /** Bibliothèque de conventions multi-clients (enregistrer / basculer). */
   conventionLibrary: boolean;
+  /** Postes actifs simultanés par licence (bascule automatique au-delà). */
+  seats: number;
 }
 
 const MIB = 1024 * 1024;
@@ -37,6 +39,7 @@ const FREE_FEATURES: PlanFeatures = {
   reportTxt: false,
   reportCsv: false,
   conventionLibrary: false,
+  seats: 1,
 };
 
 const TEAM_FEATURES: PlanFeatures = {
@@ -46,6 +49,7 @@ const TEAM_FEATURES: PlanFeatures = {
   reportTxt: true,
   reportCsv: false,
   conventionLibrary: false,
+  seats: 1,
 };
 
 const CABINET_FEATURES: PlanFeatures = {
@@ -55,15 +59,17 @@ const CABINET_FEATURES: PlanFeatures = {
   reportTxt: true,
   reportCsv: true,
   conventionLibrary: true,
+  seats: 3,
 };
 
 export function getPlanFeatures(plan: AccessPlan): PlanFeatures {
   switch (plan) {
     case 'cabinet':
       return CABINET_FEATURES;
-    // Le pilote découvre l'offre Cabinet complète pendant 14 jours.
+    // Le pilote découvre l'offre Cabinet complète pendant 14 jours,
+    // mais sur un seul poste (essai individuel).
     case 'pilot':
-      return CABINET_FEATURES;
+      return { ...CABINET_FEATURES, seats: 1 };
     case 'team':
     case 'pro':
       return TEAM_FEATURES;

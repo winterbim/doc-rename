@@ -91,9 +91,9 @@ export function LandingPricing() {
             <li>Lots de renommage illimités</li>
             <li>1 000 fichiers / 1 Go par lot</li>
             <li>Rapport de renommage TXT</li>
+            <li>1 poste actif — bascule de PC en un clic</li>
             <li>Licence auto après paiement Stripe</li>
             <li>Support email — 24 h ouvrées</li>
-            <li>Sans upload de vos fichiers</li>
           </ul>
           <a
             className="button primary"
@@ -119,9 +119,9 @@ export function LandingPricing() {
             <li>Tout Team +</li>
             <li>Bibliothèque de conventions multi-clients</li>
             <li>Rapport CSV d’audit</li>
+            <li>3 postes actifs simultanés</li>
             <li>5 000 fichiers / 2 Go · entités illimitées</li>
             <li>Support prioritaire · onboarding assisté</li>
-            <li>Facture Stripe</li>
           </ul>
           <a
             className="button primary"

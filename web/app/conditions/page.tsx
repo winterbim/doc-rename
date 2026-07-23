@@ -125,8 +125,8 @@ export default function ConditionsPage() {
           <Section id="offres" title="4. Offres et prix">
             <ul className="list-disc pl-5">
               <li><strong>Free</strong> : 0 € — 5 lots de renommage par jour (200 fichiers / 250 Mo par lot), sans compte, traitement local.</li>
-              <li><strong>Team</strong> : 19 € / mois — lots illimités (1 000 fichiers / 1 Go par lot), rapport de renommage TXT, support email, licence activée automatiquement après paiement.</li>
-              <li><strong>Cabinet</strong> : 49 € / mois — tout Team, plus bibliothèque de conventions multi-clients, rapport CSV d’audit, 5 000 fichiers / 2 Go par lot, entités illimitées, support prioritaire, onboarding assisté.</li>
+              <li><strong>Team</strong> : 19 € / mois — lots illimités (1 000 fichiers / 1 Go par lot), rapport de renommage TXT, 1 poste actif, support email, licence activée automatiquement après paiement.</li>
+              <li><strong>Cabinet</strong> : 49 € / mois — tout Team, plus bibliothèque de conventions multi-clients, rapport CSV d’audit, 5 000 fichiers / 2 Go par lot, entités illimitées, 3 postes actifs simultanés, support prioritaire, onboarding assisté.</li>
               <li><strong>Pilote 14 jours</strong> : 49 € (paiement unique) — accès aux fonctionnalités Cabinet pendant 14 jours, onboarding guidé.</li>
             </ul>
             <p>

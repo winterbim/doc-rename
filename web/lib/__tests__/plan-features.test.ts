@@ -28,7 +28,7 @@ describe('getPlanFeatures — échelle produit Free / Team / Cabinet', () => {
     expect(getPlanFeatures('pro')).toEqual(getPlanFeatures('team'));
   });
 
-  it('Cabinet : volumes max, entités illimitées, CSV + bibliothèque', () => {
+  it('Cabinet : volumes max, entités illimitées, CSV + bibliothèque, 3 postes', () => {
     const f = getPlanFeatures('cabinet');
     expect(f.maxFilesPerBatch).toBe(5_000);
     expect(f.maxBatchBytes).toBe(2_048 * MIB);
@@ -36,10 +36,18 @@ describe('getPlanFeatures — échelle produit Free / Team / Cabinet', () => {
     expect(f.reportTxt).toBe(true);
     expect(f.reportCsv).toBe(true);
     expect(f.conventionLibrary).toBe(true);
+    expect(f.seats).toBe(3);
   });
 
-  it('Pilote = découverte de l’offre Cabinet', () => {
-    expect(getPlanFeatures('pilot')).toEqual(getPlanFeatures('cabinet'));
+  it('les postes actifs : Free 1 · Team 1 · Cabinet 3 · Pilote 1', () => {
+    expect(getPlanFeatures('free').seats).toBe(1);
+    expect(getPlanFeatures('team').seats).toBe(1);
+    expect(getPlanFeatures('cabinet').seats).toBe(3);
+    expect(getPlanFeatures('pilot').seats).toBe(1);
+  });
+
+  it('Pilote = découverte de l’offre Cabinet, mais sur un seul poste', () => {
+    expect(getPlanFeatures('pilot')).toEqual({ ...getPlanFeatures('cabinet'), seats: 1 });
   });
 });
 

@@ -63,6 +63,12 @@ export default defineSchema({
     stripeSubscriptionId: v.optional(v.string()),
     status: v.string(),
     expiresAt: v.optional(v.number()),
+    /** Postes actifs (Team/Pilote : 1 · Cabinet : 3) — bascule automatique. */
+    devices: v.optional(
+      v.array(v.object({ deviceId: v.string(), activatedAt: v.number() })),
+    ),
+    /** Horodatages de réactivation (fenêtre 24 h, anti-abus). */
+    reactivations: v.optional(v.array(v.number())),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

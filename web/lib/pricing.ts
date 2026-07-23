@@ -345,9 +345,9 @@ export function getTeamPlan(currency: CurrencyCode = DEFAULT_CURRENCY): PricingP
           'Tout Free + lots de renommage illimités',
           '1 000 fichiers / 1 Go par lot · 1 000 entités',
           'Rapport de renommage TXT (preuve Avant → Après)',
+          '1 poste actif — changez de PC en un clic',
           'Licence activée automatiquement après paiement',
           'Support email — réponse sous 24 h ouvrées',
-          'Sans upload de vos fichiers',
         ]
       : [
           'Lots illimités après activation',
@@ -382,9 +382,9 @@ export function getCabinetPlan(currency: CurrencyCode = DEFAULT_CURRENCY): Prici
           'Tout Team +',
           'Bibliothèque de conventions multi-clients',
           'Rapport CSV d’audit (traçabilité tableur)',
+          '3 postes actifs simultanés',
           '5 000 fichiers / 2 Go par lot · entités illimitées',
           'Support prioritaire · onboarding assisté',
-          'Facture Stripe / devis possible',
         ]
       : [
           'Tout Team +',
@@ -458,6 +458,12 @@ export const planComparisonRows: readonly PlanComparisonRow[] = [
     free: false,
     team: false,
     cabinet: true,
+  },
+  {
+    feature: 'Postes actifs simultanés (bascule de PC en un clic)',
+    free: '1 (ce navigateur)',
+    team: '1',
+    cabinet: '3',
   },
   {
     feature: 'Licence activée automatiquement après paiement',

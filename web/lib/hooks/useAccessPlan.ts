@@ -6,6 +6,7 @@ import { api } from '@/convex/_generated/api';
 import { useAuthStatus } from '@/lib/auth-status';
 import {
   clearStoredLicense,
+  getDeviceId,
   licensePlanFromStorage,
   readStoredLicense,
 } from '@/lib/license-client';
@@ -76,7 +77,10 @@ export function useAccessPlan(): AccessPlanState {
         const response = await fetch('/api/license/status', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ licenseKey: stored.licenseKey }),
+          body: JSON.stringify({
+            licenseKey: stored.licenseKey,
+            deviceId: getDeviceId(),
+          }),
           cache: 'no-store',
         });
         const result = (await response.json().catch(() => null)) as

@@ -28,6 +28,36 @@ async function seedPlan(page: Page, plan: 'team' | 'cabinet') {
   }, plan);
 }
 
+test('Déjà client ? — réactivation d’une licence sur ce poste (bascule)', async ({ page }) => {
+  // Backend mocké : la réactivation réussit et renvoie une licence Team.
+  await page.route('**/api/license/reactivate', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        activated: true,
+        licenseKey: 'bcr_e2e_reactivated_0001',
+        plan: 'team',
+        email: 'client@societe.fr',
+        expiresAt: null,
+        seats: 1,
+      }),
+    }),
+  );
+  await page.goto('/app');
+
+  // Plan Free au départ, lien « Déjà client ? » visible dans la pastille
+  await page.getByRole('button', { name: 'Déjà client ?' }).click();
+  const input = page.getByLabel('Clé de licence ou email de paiement');
+  await input.fill('bcr_e2e_reactivated_0001');
+  await page.getByRole('button', { name: 'Réactiver', exact: true }).click();
+
+  // La licence est écrite et le plan bascule immédiatement sur Team
+  await expect(page.getByText(/Licence Team réactivée sur ce poste/i)).toBeVisible();
+  const planPill = page.locator("div[aria-live='polite']").filter({ hasText: 'lots illimités' });
+  await expect(planPill.getByText('Team', { exact: true })).toBeVisible();
+});
+
 test('Free — rapport verrouillé et bibliothèque en teaser Cabinet', async ({ page }) => {
   await page.goto('/app');
   await expect(page.getByRole('button', { name: /Rapport de renommage — disponible avec/i })).toBeVisible();

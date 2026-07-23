@@ -21,6 +21,7 @@ import {
   recordFreeRenames,
 } from '@/lib/usage-limits';
 import { useAccessPlan } from '@/lib/hooks/useAccessPlan';
+import { ReactivateLicense } from './commercial/ReactivateLicense';
 import { Button } from './ui/Button';
 
 function normalizeZipFolder(folder: string): string {
@@ -305,6 +306,7 @@ export function ActionBar() {
             >
               Voir Team
             </a>
+            <ReactivateLicense />
           </>
         ) : (
           <span>lots illimités</span>

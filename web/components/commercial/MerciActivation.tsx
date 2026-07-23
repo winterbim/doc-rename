@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { writeStoredLicense } from '@/lib/license-client';
+import { getDeviceId, writeStoredLicense } from '@/lib/license-client';
 import { getAccessPlanLabel, normalizeAccessPlan } from '@/lib/usage-limits';
 import { Button } from '@/components/ui/Button';
 import { CONTACT_EMAIL } from '@/lib/contact';
@@ -15,6 +15,7 @@ type ActivationState =
       plan: string;
       email: string;
       expiresAt: number | null;
+      licenseKey: string;
     }
   | { status: 'error'; message: string }
   | { status: 'missing_session' };
@@ -41,7 +42,7 @@ export function MerciActivation() {
         const response = await fetch('/api/license/activate', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ sessionId }),
+          body: JSON.stringify({ sessionId, deviceId: getDeviceId() }),
           cache: 'no-store',
         });
         const result = (await response.json().catch(() => null)) as
@@ -77,6 +78,7 @@ export function MerciActivation() {
           plan,
           email: result.email || '',
           expiresAt: result.expiresAt ?? null,
+          licenseKey: result.licenseKey,
         });
       } catch {
         if (!cancelled) {
@@ -123,6 +125,29 @@ export function MerciActivation() {
             </p>
           ) : null}
         </div>
+
+        <div className="rounded-lg border border-border bg-surface-2 px-4 py-3 text-left text-sm">
+          <p className="font-semibold text-ink">Votre clé de licence — conservez-la</p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <code className="rounded bg-surface px-2 py-1 font-mono text-xs text-ink break-all">
+              {state.licenseKey}
+            </code>
+            <button
+              type="button"
+              onClick={() => {
+                void navigator.clipboard?.writeText(state.licenseKey);
+              }}
+              className="rounded-md border border-border px-2.5 py-1 text-xs font-medium text-ink-soft hover:border-primary hover:text-primary"
+            >
+              Copier
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-ink-mute">
+            Vous changez de PC ? Ouvrez l’atelier et cliquez « Déjà client ? » avec cette clé
+            (ou votre email de paiement) — ce nouveau poste devient le poste actif.
+          </p>
+        </div>
+
         <Button asChild size="lg" className="w-full sm:w-auto">
           <Link href="/app">Ouvrir l’atelier illimité</Link>
         </Button>

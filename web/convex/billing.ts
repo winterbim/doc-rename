@@ -9,6 +9,13 @@ import {
   type PaidPlan,
 } from './stripeWebhookModel';
 import { isPaidSaasEnabled, isStripeBillingEnabled, requireStripeBillingEnabled } from './paidFeature';
+import {
+  bindDevice,
+  isDeviceActive,
+  isReactivationRateLimited,
+  pruneReactivations,
+  seatsForPlan,
+} from './deviceSeats';
 
 const PILOT_DURATION_MS = 14 * 24 * 60 * 60 * 1_000;
 
@@ -332,6 +339,108 @@ export const getLicenseBySession = internalQuery({
       status: license.status,
       expiresAt: license.expiresAt ?? null,
       active,
+    };
+  },
+});
+
+/**
+ * Statut d'une licence POUR UN APPAREIL donné (mutation : lie l'appareil
+ * si la licence n'en a encore aucun — migration douce des licences
+ * antérieures à la fonctionnalité « postes actifs » — ou s'il reste un
+ * siège libre).
+ */
+export const checkDeviceStatus = internalMutation({
+  args: { licenseKey: v.string(), deviceId: v.string() },
+  handler: async (ctx, { licenseKey, deviceId }) => {
+    const license = await ctx.db
+      .query('licenses')
+      .withIndex('by_license_key', (q) => q.eq('licenseKey', licenseKey))
+      .unique();
+    if (!license) return null;
+    const active = isLicenseActive(license.status, license.expiresAt);
+    if (!active) return { active: false as const };
+
+    const seats = seatsForPlan(license.plan);
+    const now = Date.now();
+    let devices = license.devices;
+    let deviceActive = isDeviceActive(devices, deviceId);
+    if (deviceActive && (!devices || devices.length === 0)) {
+      // Première prise de contact : lier cet appareil.
+      devices = bindDevice(devices, deviceId, seats, now);
+      await ctx.db.patch(license._id, { devices, updatedAt: now });
+    } else if (!deviceActive && (devices?.length ?? 0) < seats) {
+      // Un siège est libre : liaison automatique (ex. 2e poste Cabinet).
+      devices = bindDevice(devices, deviceId, seats, now);
+      await ctx.db.patch(license._id, { devices, updatedAt: now });
+      deviceActive = true;
+    }
+
+    return {
+      active: deviceActive,
+      reason: deviceActive ? undefined : ('device_evicted' as const),
+      plan: license.plan,
+      email: license.email,
+      expiresAt: license.expiresAt ?? null,
+      seats,
+    };
+  },
+});
+
+/**
+ * Réactivation sur un nouveau poste (clé de licence OU email de paiement).
+ * Bascule : au-delà du quota de postes, le poste le plus ancien est évincé.
+ */
+export const reactivateDevice = internalMutation({
+  args: {
+    licenseKey: v.optional(v.string()),
+    email: v.optional(v.string()),
+    deviceId: v.string(),
+  },
+  handler: async (ctx, { licenseKey, email, deviceId }) => {
+    let license = null;
+    if (licenseKey) {
+      license = await ctx.db
+        .query('licenses')
+        .withIndex('by_license_key', (q) => q.eq('licenseKey', licenseKey))
+        .unique();
+    } else if (email) {
+      // Plusieurs licences possibles pour un email : préférer la plus
+      // récente encore active.
+      const candidates = await ctx.db
+        .query('licenses')
+        .withIndex('by_email', (q) => q.eq('email', email))
+        .collect();
+      license =
+        candidates
+          .filter((l) => isLicenseActive(l.status, l.expiresAt))
+          .sort((a, b) => b.createdAt - a.createdAt)[0] ?? null;
+    }
+    if (!license) return null;
+    if (!isLicenseActive(license.status, license.expiresAt)) {
+      return { active: false as const };
+    }
+
+    const now = Date.now();
+    const recent = pruneReactivations(license.reactivations, now);
+    if (isReactivationRateLimited(recent, now)) {
+      return { active: false as const, rateLimited: true as const };
+    }
+
+    const seats = seatsForPlan(license.plan);
+    const devices = bindDevice(license.devices, deviceId, seats, now);
+    await ctx.db.patch(license._id, {
+      devices,
+      reactivations: [...recent, now],
+      updatedAt: now,
+    });
+
+    return {
+      active: true as const,
+      licenseKey: license.licenseKey,
+      plan: license.plan,
+      email: license.email,
+      expiresAt: license.expiresAt ?? null,
+      seats,
     };
   },
 });

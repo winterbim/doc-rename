@@ -12,6 +12,7 @@ import type * as auth from "../auth.js";
 import type * as billing from "../billing.js";
 import type * as conventions from "../conventions.js";
 import type * as crons from "../crons.js";
+import type * as deviceSeats from "../deviceSeats.js";
 import type * as http from "../http.js";
 import type * as organizations from "../organizations.js";
 import type * as paidFeature from "../paidFeature.js";
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   billing: typeof billing;
   conventions: typeof conventions;
   crons: typeof crons;
+  deviceSeats: typeof deviceSeats;
   http: typeof http;
   organizations: typeof organizations;
   paidFeature: typeof paidFeature;

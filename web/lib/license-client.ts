@@ -3,6 +3,23 @@
 import type { AccessPlan } from '@/lib/usage-limits';
 
 const STORAGE_KEY = 'bimcheck_license_v1';
+const DEVICE_KEY = 'bimcheck_device_id_v1';
+
+/**
+ * Identifiant stable de CE navigateur (postes actifs par licence).
+ * Généré une fois, réutilisé pour status / activate / reactivate.
+ */
+export function getDeviceId(): string {
+  const store = storage();
+  const existing = store?.getItem(DEVICE_KEY);
+  if (existing && /^[A-Za-z0-9_-]{8,80}$/.test(existing)) return existing;
+  const generated =
+    globalThis.crypto?.randomUUID?.().replace(/-/g, '') ??
+    `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 12)}`;
+  const deviceId = `dev_${generated}`.slice(0, 60);
+  store?.setItem(DEVICE_KEY, deviceId);
+  return deviceId;
+}
 
 export type StoredLicense = {
   licenseKey: string;

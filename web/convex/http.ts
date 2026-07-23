@@ -179,6 +179,73 @@ http.route({
 });
 
 http.route({
+  path: '/license/device-status',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    if (!authorizeLicenseApi(request)) return new Response('Unauthorized', { status: 401 });
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return new Response('Invalid payload', { status: 400 });
+    }
+    const source = (body ?? {}) as Record<string, unknown>;
+    const licenseKey = typeof source.licenseKey === 'string' ? source.licenseKey.trim() : '';
+    const deviceId = typeof source.deviceId === 'string' ? source.deviceId.trim() : '';
+    if (!licenseKey.startsWith('bcr_') || licenseKey.length < 20 || licenseKey.length > 120) {
+      return new Response('Invalid key', { status: 400 });
+    }
+    if (!/^[A-Za-z0-9_-]{8,80}$/.test(deviceId)) {
+      return new Response('Invalid device', { status: 400 });
+    }
+    const result = await ctx.runMutation(internal.billing.checkDeviceStatus, {
+      licenseKey,
+      deviceId,
+    });
+    if (!result) {
+      return Response.json({ found: false, active: false }, { status: 404, headers: { 'cache-control': 'no-store' } });
+    }
+    return Response.json({ found: true, ...result }, { headers: { 'cache-control': 'no-store' } });
+  }),
+});
+
+http.route({
+  path: '/license/reactivate',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    if (!authorizeLicenseApi(request)) return new Response('Unauthorized', { status: 401 });
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return new Response('Invalid payload', { status: 400 });
+    }
+    const source = (body ?? {}) as Record<string, unknown>;
+    const licenseKeyRaw = typeof source.licenseKey === 'string' ? source.licenseKey.trim() : '';
+    const emailRaw =
+      typeof source.email === 'string' ? source.email.trim().toLowerCase() : '';
+    const deviceId = typeof source.deviceId === 'string' ? source.deviceId.trim() : '';
+    const hasKey = licenseKeyRaw.startsWith('bcr_') && licenseKeyRaw.length >= 20 && licenseKeyRaw.length <= 120;
+    const hasEmail = emailRaw.includes('@') && emailRaw.length <= 200;
+    if ((!hasKey && !hasEmail) || !/^[A-Za-z0-9_-]{8,80}$/.test(deviceId)) {
+      return new Response('Invalid payload', { status: 400 });
+    }
+    const result = await ctx.runMutation(internal.billing.reactivateDevice, {
+      licenseKey: hasKey ? licenseKeyRaw : undefined,
+      email: !hasKey && hasEmail ? emailRaw : undefined,
+      deviceId,
+    });
+    if (!result) {
+      return Response.json({ found: false, active: false }, { status: 404, headers: { 'cache-control': 'no-store' } });
+    }
+    if ('rateLimited' in result && result.rateLimited) {
+      return Response.json({ found: true, active: false, rateLimited: true }, { status: 429, headers: { 'cache-control': 'no-store' } });
+    }
+    return Response.json({ found: true, ...result }, { headers: { 'cache-control': 'no-store' } });
+  }),
+});
+
+http.route({
   path: '/license/upsert-verified',
   method: 'POST',
   handler: httpAction(async (ctx, request) => {

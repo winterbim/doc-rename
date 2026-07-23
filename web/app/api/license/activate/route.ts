@@ -1,4 +1,4 @@
-import { activateFromStripeSession } from '@/lib/license-server';
+import { activateFromStripeSession, reactivateLicense } from '@/lib/license-server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -17,10 +17,9 @@ export async function POST(request: Request) {
   } catch {
     return json({ error: 'Demande invalide.' }, 400);
   }
-  const sessionId =
-    body && typeof body === 'object' && typeof (body as { sessionId?: unknown }).sessionId === 'string'
-      ? (body as { sessionId: string }).sessionId.trim()
-      : '';
+  const source = (body ?? {}) as Record<string, unknown>;
+  const sessionId = typeof source.sessionId === 'string' ? source.sessionId.trim() : '';
+  const deviceId = typeof source.deviceId === 'string' ? source.deviceId.trim() : '';
   if (!sessionId.startsWith('cs_') || sessionId.length > 200) {
     return json({ error: 'Session de paiement invalide.' }, 400);
   }
@@ -44,6 +43,15 @@ export async function POST(request: Request) {
         },
         404,
       );
+    }
+    // Lier ce poste à la licence (premier siège) — best-effort : l'échec de
+    // liaison ne bloque pas l'activation, le statut la fera au prochain check.
+    if (/^[A-Za-z0-9_-]{8,80}$/.test(deviceId)) {
+      try {
+        await reactivateLicense({ licenseKey: license.licenseKey, deviceId });
+      } catch {
+        /* non bloquant */
+      }
     }
     return json({
       activated: true,

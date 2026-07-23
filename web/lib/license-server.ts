@@ -85,6 +85,68 @@ export async function fetchLicenseBySession(
   };
 }
 
+export type DeviceStatusPayload = {
+  active: boolean;
+  reason?: 'device_evicted';
+  plan?: LicensePlan;
+  email?: string;
+  expiresAt?: number | null;
+  seats?: number;
+};
+
+/** Statut de la licence POUR CET APPAREIL (lie l'appareil si un siège est libre). */
+export async function fetchDeviceStatus(
+  licenseKey: string,
+  deviceId: string,
+): Promise<DeviceStatusPayload | null> {
+  const response = await convexLicenseFetch('/license/device-status', { licenseKey, deviceId });
+  if (!response || response.status === 404) return null;
+  if (!response.ok) return null;
+  const data = (await response.json()) as Partial<DeviceStatusPayload> & { found?: boolean };
+  if (!data.found) return null;
+  return {
+    active: data.active === true,
+    reason: data.reason,
+    plan: data.plan as LicensePlan | undefined,
+    email: data.email,
+    expiresAt: data.expiresAt ?? null,
+    seats: data.seats,
+  };
+}
+
+export type ReactivatePayload = LicensePayload & { seats?: number };
+
+/** Réactivation sur un nouveau poste (bascule) par clé ou email de paiement. */
+export async function reactivateLicense(input: {
+  licenseKey?: string;
+  email?: string;
+  deviceId: string;
+}): Promise<{ status: 'ok'; license: ReactivatePayload } | { status: 'not-found' | 'rate-limited' | 'unavailable' }> {
+  const response = await convexLicenseFetch('/license/reactivate', input);
+  if (!response) return { status: 'unavailable' };
+  if (response.status === 404) return { status: 'not-found' };
+  if (response.status === 429) return { status: 'rate-limited' };
+  if (!response.ok) return { status: 'unavailable' };
+  const data = (await response.json()) as Partial<ReactivatePayload> & {
+    found?: boolean;
+    active?: boolean;
+  };
+  if (!data.found || !data.active || !data.licenseKey || !data.plan || !data.email) {
+    return { status: 'not-found' };
+  }
+  return {
+    status: 'ok',
+    license: {
+      licenseKey: data.licenseKey,
+      plan: data.plan as LicensePlan,
+      email: data.email,
+      expiresAt: data.expiresAt ?? null,
+      active: true,
+      seats: data.seats,
+    },
+  };
+}
+
 export async function fetchLicenseByKey(licenseKey: string): Promise<LicensePayload | null> {
   const response = await convexLicenseFetch('/license/by-key', { licenseKey });
   if (!response || response.status === 404) return null;
