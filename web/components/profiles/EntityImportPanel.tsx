@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { getIndustryProfile, importEntitiesFromText } from '@/lib/profiles';
 import { useAppContext } from '@/lib/app-state';
 import { checkFilename, checkSize } from '@/lib/upload-guard';
+import { useAccessPlan } from '@/lib/hooks/useAccessPlan';
+import { getPlanFeatures, planLimitMessage } from '@/lib/plan-features';
 
 function formatEntityCount(count: number): string {
   return count === 1 ? '1 entité dans ce profil' : `${count} entités dans ce profil`;
@@ -11,19 +13,37 @@ function formatEntityCount(count: number): string {
 
 export function EntityImportPanel() {
   const { state, dispatch } = useAppContext();
+  const { plan } = useAccessPlan();
   const [text, setText] = useState('');
   const [isImportingFile, setIsImportingFile] = useState(false);
   const profile = getIndustryProfile(state.profileId);
   const entities = state.profileEntities[state.profileId] ?? [];
 
   function importText(rawText: string, successMessage: string) {
-    const imported = importEntitiesFromText(rawText, state.profileId);
+    let imported = importEntitiesFromText(rawText, state.profileId);
     if (imported.length === 0) {
       dispatch({ type: 'TOAST_SHOW', msg: 'Aucune entité exploitable trouvée.' });
       return false;
     }
+
+    // Plafond commercial d'entités par profil selon la licence.
+    const { maxEntitiesPerProfile } = getPlanFeatures(plan);
+    const room = maxEntitiesPerProfile - entities.length;
+    let message = successMessage;
+    if (imported.length > room) {
+      if (room <= 0) {
+        dispatch({
+          type: 'TOAST_SHOW',
+          msg: planLimitMessage(plan, 'entities', maxEntitiesPerProfile),
+        });
+        return false;
+      }
+      imported = imported.slice(0, room);
+      message = planLimitMessage(plan, 'entities', maxEntitiesPerProfile);
+    }
+
     dispatch({ type: 'PROFILE_ENTITY_IMPORT', profileId: state.profileId, entities: imported });
-    dispatch({ type: 'TOAST_SHOW', msg: successMessage });
+    dispatch({ type: 'TOAST_SHOW', msg: message });
     return true;
   }
 

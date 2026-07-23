@@ -37,6 +37,7 @@ import { ActiveFieldsList } from './ActiveFieldsList';
 import { AvailableFieldsList } from './AvailableFieldsList';
 import { LivePreview } from './LivePreview';
 import { ProfilePicker } from '@/components/profiles/ProfilePicker';
+import { ConventionLibrary } from './ConventionLibrary';
 import { EntityImportPanel } from '@/components/profiles/EntityImportPanel';
 import type { FieldDefinition } from '@/lib/rename-engine/types';
 
@@ -356,6 +357,7 @@ export function NomenclatureBuilder() {
         )}
 
         <ProfilePicker />
+        <ConventionLibrary />
         <EntityImportPanel />
 
         {/* Section: model + separator on one row when both fit */}

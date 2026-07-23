@@ -22,6 +22,7 @@ import {
   type NomenclatureContext,
   type SequenceCounters,
   type ReportEntry,
+  generateReportCsv,
 } from '../nomenclature';
 import type { WorkspaceFile, FieldDefinition } from '../types';
 
@@ -182,6 +183,30 @@ describe('normalizeOutputName', () => {
     expect(out).toMatch(/^[\x20-\x7E]*$/);
     expect(out).toBe(out.toUpperCase());
     expect(out).not.toMatch(/\s/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// generateReportCsv (rapport d'audit Cabinet)
+// ---------------------------------------------------------------------------
+
+describe('generateReportCsv', () => {
+  it('produit un CSV RFC 4180 (séparateur ;) avec en-tête et statuts', () => {
+    const csv = generateReportCsv([
+      { fileId: 'a', original: 'facade v2.pdf', newName: 'PRJ_FACADE_V2.PDF', errors: [] },
+      { fileId: 'b', original: 'plan "special".dwg', newName: '', errors: ['Nom invalide'] },
+    ]);
+    const lines = csv.split('\r\n');
+    expect(lines[0]).toContain('"Nom original";"Nouveau nom";"Statut";"Erreurs"');
+    expect(lines[1]).toBe('"facade v2.pdf";"PRJ_FACADE_V2.PDF";"RENOMME";""');
+    // guillemets internes doublés
+    expect(lines[2]).toContain('"plan ""special"".dwg"');
+    expect(lines[2]).toContain('"ERREUR"');
+  });
+
+  it('commence par un BOM UTF-8 pour Excel', () => {
+    const csv = generateReportCsv([]);
+    expect(csv.charCodeAt(0)).toBe(0xfeff);
   });
 });
 

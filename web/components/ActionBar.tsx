@@ -3,7 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
 import { useAppContext } from '@/lib/app-state';
-import { batchGenerate, cleanFilename, normalizeOutputName } from '@/lib/rename-engine/nomenclature';
+import {
+  batchGenerate,
+  cleanFilename,
+  generateReport,
+  generateReportCsv,
+  normalizeOutputName,
+} from '@/lib/rename-engine/nomenclature';
+import { getPlanFeatures } from '@/lib/plan-features';
 import { getActiveFieldsForProfile, normalizeFieldValuesForGeneration } from '@/lib/profiles';
 import { normalizeZipArchiveName, writeZip } from '@/lib/rename-engine/zip-io';
 import { useFileIngestion } from '@/lib/hooks/useFileIngestion';
@@ -32,7 +39,8 @@ export function ActionBar() {
   const [remainingFreeRenames, setRemainingFreeRenames] = useState(FREE_DAILY_RENAME_LIMIT);
   const { processFiles } = useFileIngestion();
   const addInputRef = useRef<HTMLInputElement | null>(null);
-  const { label: accessPlanLabel, usageLimitEnabled } = useAccessPlan();
+  const { label: accessPlanLabel, usageLimitEnabled, plan } = useAccessPlan();
+  const planFeatures = getPlanFeatures(plan);
 
   const refreshUsage = useCallback(() => {
     setRemainingFreeRenames(getRemainingFreeRenames());
@@ -195,7 +203,7 @@ export function ActionBar() {
     try {
       const entries = renamedFiles.map((f) => {
         const folder = normalizeZipFolder(f.folder);
-        const filename = normalizeOutputName(f.newName!);
+        const filename = normalizeOutputName(f.newName!, separator);
         return {
           path: folder ? `${folder}/${filename}` : filename,
           blob: f.blob,
@@ -211,6 +219,42 @@ export function ActionBar() {
       });
     }
   }, [targetFiles, zipName, dispatch]);
+
+  // --- Rapport de renommage (Team : TXT · Cabinet : CSV) ---
+
+  const handleDownloadReport = useCallback(() => {
+    if (!planFeatures.reportTxt && !planFeatures.reportCsv) {
+      dispatch({
+        type: 'TOAST_SHOW',
+        msg: 'Rapport de renommage disponible avec Team (TXT) et Cabinet (CSV d’audit) — voir la page Tarifs.',
+      });
+      return;
+    }
+    const renamedFiles = targetFiles.filter((f) => f.newName && f.status !== 'ready');
+    if (renamedFiles.length === 0) {
+      dispatch({ type: 'TOAST_SHOW', msg: 'Renommez les fichiers avant d’exporter le rapport.' });
+      return;
+    }
+    const entries = renamedFiles.map((f) => ({
+      fileId: f.id,
+      original: f.folder ? `${f.folder}/${f.original}` : f.original,
+      newName: f.newName ?? '',
+      errors: f.status === 'error' ? ['Nom invalide'] : [],
+    }));
+    if (planFeatures.reportCsv) {
+      const blob = new Blob([generateReportCsv(entries)], {
+        type: 'text/csv;charset=utf-8',
+      });
+      saveAs(blob, 'RAPPORT_RENOMMAGE.CSV');
+      dispatch({ type: 'TOAST_SHOW', msg: 'Rapport CSV d’audit exporté.' });
+    } else {
+      const blob = new Blob([generateReport(entries)], {
+        type: 'text/plain;charset=utf-8',
+      });
+      saveAs(blob, 'RAPPORT_RENOMMAGE.TXT');
+      dispatch({ type: 'TOAST_SHOW', msg: 'Rapport TXT exporté.' });
+    }
+  }, [planFeatures, targetFiles, dispatch]);
 
   // --- Reset ---
 
@@ -399,6 +443,46 @@ export function ActionBar() {
           />
         </svg>
         {zipLabel}
+      </Button>
+
+      <Button
+        variant="ghost"
+        onClick={handleDownloadReport}
+        disabled={!hasRenamed}
+        aria-label={
+          planFeatures.reportCsv
+            ? 'Exporter le rapport CSV d’audit'
+            : planFeatures.reportTxt
+              ? 'Exporter le rapport de renommage TXT'
+              : 'Rapport de renommage — disponible avec Team et Cabinet'
+        }
+        title={
+          planFeatures.reportCsv || planFeatures.reportTxt
+            ? undefined
+            : 'Disponible avec Team (TXT) et Cabinet (CSV)'
+        }
+      >
+        {/* Report icon */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M9 12h6M9 16h4M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1ZM14 3v5h5"
+          />
+        </svg>
+        {planFeatures.reportCsv
+          ? 'Rapport CSV'
+          : planFeatures.reportTxt
+            ? 'Rapport TXT'
+            : 'Rapport 🔒'}
       </Button>
 
       {hasFiles && (

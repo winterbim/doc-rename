@@ -303,6 +303,7 @@ function freeFeatures(): string[] {
     'Tous les profils métier',
     'Convention personnalisée',
     `${FREE_DAILY_LOTS} lots de renommage par jour`,
+    '200 fichiers / 250 Mo par lot',
     'Export ZIP avec arborescence',
     'Aperçu Avant / Après',
   ];
@@ -342,17 +343,17 @@ export function getTeamPlan(currency: CurrencyCode = DEFAULT_CURRENCY): PricingP
     features: selling
       ? [
           'Tout Free + lots de renommage illimités',
+          '1 000 fichiers / 1 Go par lot · 1 000 entités',
+          'Rapport de renommage TXT (preuve Avant → Après)',
           'Licence activée automatiquement après paiement',
-          'Support email',
-          PAID_ACCOUNTS_AVAILABLE
-            ? 'Compte + sync cloud des conventions (JSON)'
-            : 'Sans compte obligatoire (export JSON inclus)',
+          'Support email — réponse sous 24 h ouvrées',
           'Sans upload de vos fichiers',
         ]
       : [
           'Lots illimités après activation',
+          '1 000 fichiers / 1 Go par lot',
+          'Rapport de renommage TXT',
           'Support email',
-          'Export conventions JSON',
           'Paiement en ligne dès configuration Stripe live',
         ],
     cta: getTeamCta(currency),
@@ -379,16 +380,16 @@ export function getCabinetPlan(currency: CurrencyCode = DEFAULT_CURRENCY): Prici
     features: selling
       ? [
           'Tout Team +',
-          'Support prioritaire',
-          'Onboarding assisté sur demande',
-          PAID_ACCOUNTS_AVAILABLE
-            ? 'Jusqu’à 1 000 utilisateurs et projets'
-            : 'Périmètre multi-équipes (activation auto de licence)',
+          'Bibliothèque de conventions multi-clients',
+          'Rapport CSV d’audit (traçabilité tableur)',
+          '5 000 fichiers / 2 Go par lot · entités illimitées',
+          'Support prioritaire · onboarding assisté',
           'Facture Stripe / devis possible',
         ]
       : [
-          'Tout Team + support prioritaire',
-          'Onboarding assisté sur demande',
+          'Tout Team +',
+          'Bibliothèque de conventions multi-clients',
+          'Rapport CSV d’audit',
           'Paiement en ligne dès configuration Stripe live',
         ],
     cta: getCabinetCta(currency),
@@ -435,16 +436,34 @@ export const planComparisonRows: readonly PlanComparisonRow[] = [
     cabinet: HAS_DIRECT_CHECKOUT || PAID_ACCOUNTS_AVAILABLE ? 'Illimité' : 'Sur activation',
   },
   {
+    feature: 'Fichiers / volume par lot',
+    free: '200 · 250 Mo',
+    team: '1 000 · 1 Go',
+    cabinet: '5 000 · 2 Go',
+  },
+  {
+    feature: 'Entités importées par profil',
+    free: '100',
+    team: '1 000',
+    cabinet: 'Illimité',
+  },
+  {
+    feature: 'Rapport de renommage (preuve Avant → Après)',
+    free: false,
+    team: 'TXT',
+    cabinet: 'CSV d’audit',
+  },
+  {
+    feature: 'Bibliothèque de conventions multi-clients',
+    free: false,
+    team: false,
+    cabinet: true,
+  },
+  {
     feature: 'Licence activée automatiquement après paiement',
     free: '—',
     team: HAS_DIRECT_CHECKOUT ? true : 'Dès ouverture',
     cabinet: HAS_DIRECT_CHECKOUT ? true : 'Dès ouverture',
-  },
-  {
-    feature: 'Multi-équipes / volume',
-    free: '—',
-    team: '1 équipe',
-    cabinet: 'Multi-équipes',
   },
   {
     feature: 'Onboarding guidé',

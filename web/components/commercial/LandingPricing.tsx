@@ -14,7 +14,6 @@ import {
   PILOT_PRICE_EUR,
   CURRENCIES,
   HAS_DIRECT_CHECKOUT,
-  PAID_ACCOUNTS_AVAILABLE,
 } from '@/lib/pricing';
 
 /**
@@ -67,6 +66,7 @@ export function LandingPricing() {
           <ul>
             <li>Tous les profils métier</li>
             <li>Convention personnalisée</li>
+            <li>200 fichiers / 250 Mo par lot</li>
             <li>Aperçu Avant / Après</li>
             <li>Traitement local navigateur</li>
             <li>Export ZIP propre</li>
@@ -89,14 +89,10 @@ export function LandingPricing() {
           </p>
           <ul>
             <li>Lots de renommage illimités</li>
+            <li>1 000 fichiers / 1 Go par lot</li>
+            <li>Rapport de renommage TXT</li>
             <li>Licence auto après paiement Stripe</li>
-            <li>Support email</li>
-            <li>Export conventions JSON</li>
-            <li>
-              {PAID_ACCOUNTS_AVAILABLE
-                ? 'Sync cloud multi-comptes'
-                : 'Sans compte obligatoire pour démarrer'}
-            </li>
+            <li>Support email — 24 h ouvrées</li>
             <li>Sans upload de vos fichiers</li>
           </ul>
           <a
@@ -121,13 +117,10 @@ export function LandingPricing() {
           </p>
           <ul>
             <li>Tout Team +</li>
-            <li>Support prioritaire</li>
-            <li>Onboarding assisté sur demande</li>
-            <li>
-              {PAID_ACCOUNTS_AVAILABLE
-                ? 'Jusqu’à 1 000 utilisateurs / projets'
-                : 'Multi-équipes (licence navigateur)'}
-            </li>
+            <li>Bibliothèque de conventions multi-clients</li>
+            <li>Rapport CSV d’audit</li>
+            <li>5 000 fichiers / 2 Go · entités illimitées</li>
+            <li>Support prioritaire · onboarding assisté</li>
             <li>Facture Stripe</li>
           </ul>
           <a

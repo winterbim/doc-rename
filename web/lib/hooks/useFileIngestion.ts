@@ -2,6 +2,8 @@
 
 import { useCallback } from 'react';
 import { useAppContext } from '@/lib/app-state';
+import { useAccessPlan } from '@/lib/hooks/useAccessPlan';
+import { getPlanFeatures, planLimitMessage } from '@/lib/plan-features';
 import { readZip, isZip } from '@/lib/rename-engine/zip-io';
 import { isOtherArchive, readOtherArchive, archiveLabel } from '@/lib/rename-engine/archive-io';
 import { detectCategory } from '@/lib/rename-engine/detection';
@@ -174,7 +176,8 @@ export interface UseFileIngestionReturn {
  * the SAME validation + dispatch behavior — no duplication risk.
  */
 export function useFileIngestion(): UseFileIngestionReturn {
-  const { dispatch } = useAppContext();
+  const { state, dispatch } = useAppContext();
+  const { plan } = useAccessPlan();
 
   const processFiles = useCallback(
     async (nativeFiles: File[], options?: { demo?: boolean }) => {
@@ -223,16 +226,41 @@ export function useFileIngestion(): UseFileIngestionReturn {
           workspaceFiles.push(...expanded);
         }
 
-        if (workspaceFiles.length > 0) {
+        // Plafonds commerciaux du plan (les plafonds techniques de
+        // upload-guard restent le garde-fou absolu au-dessus).
+        const features = getPlanFeatures(plan);
+        const existingCount = state.files.length;
+        const existingBytes = state.files.reduce((sum, f) => sum + f.size, 0);
+        let limitMsg: string | null = null;
+        let admitted = workspaceFiles;
+        if (existingCount + workspaceFiles.length > features.maxFilesPerBatch) {
+          const room = Math.max(0, features.maxFilesPerBatch - existingCount);
+          admitted = admitted.slice(0, room);
+          limitMsg = planLimitMessage(plan, 'files', features.maxFilesPerBatch);
+        }
+        let runningBytes = existingBytes;
+        const withinBytes: WorkspaceFile[] = [];
+        for (const f of admitted) {
+          if (runningBytes + f.size > features.maxBatchBytes) {
+            limitMsg = planLimitMessage(plan, 'bytes', features.maxBatchBytes);
+            break;
+          }
+          runningBytes += f.size;
+          withinBytes.push(f);
+        }
+
+        if (withinBytes.length > 0) {
           const files = options?.demo
-            ? workspaceFiles.map((f) => ({ ...f, isDemo: true }))
-            : workspaceFiles;
+            ? withinBytes.map((f) => ({ ...f, isDemo: true }))
+            : withinBytes;
           dispatch({ type: 'FILES_ADD', files });
-          dispatch({
-            type: 'TOAST_SHOW',
-            msg: formatAddedFiles(workspaceFiles.length),
-          });
-          prefetchUniqueExtensions(workspaceFiles);
+          prefetchUniqueExtensions(files);
+        }
+        // Le message de limite (avec chemin d'upgrade) prime sur le compteur.
+        if (limitMsg) {
+          dispatch({ type: 'TOAST_SHOW', msg: limitMsg });
+        } else if (withinBytes.length > 0) {
+          dispatch({ type: 'TOAST_SHOW', msg: formatAddedFiles(withinBytes.length) });
         }
       } catch (error) {
         dispatch({
@@ -243,7 +271,7 @@ export function useFileIngestion(): UseFileIngestionReturn {
         dispatch({ type: 'UPLOAD_END' });
       }
     },
-    [dispatch],
+    [dispatch, plan, state.files],
   );
 
   return { processFiles };

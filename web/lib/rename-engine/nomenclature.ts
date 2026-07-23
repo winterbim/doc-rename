@@ -556,6 +556,31 @@ export function generateReport(results: ReportEntry[]): string {
   return lines.join('\n');
 }
 
+/**
+ * Rapport d'audit CSV (fonctionnalité Cabinet) — mêmes données que le rapport
+ * TXT, en colonnes tableur : traçabilité Avant → Après par fichier.
+ * Échappement CSV standard (RFC 4180) ; séparateur point-virgule (Excel FR).
+ */
+export function generateReportCsv(results: ReportEntry[]): string {
+  const escape = (value: string): string => `"${value.replace(/"/g, '""')}"`;
+  const lines = [
+    ['Nom original', 'Nouveau nom', 'Statut', 'Erreurs'].map(escape).join(';'),
+  ];
+  for (const result of results) {
+    lines.push(
+      [
+        result.original,
+        result.newName,
+        result.errors.length > 0 ? 'ERREUR' : 'RENOMME',
+        result.errors.join(' / '),
+      ]
+        .map(escape)
+        .join(';'),
+    );
+  }
+  return `﻿${lines.join('\r\n')}`;
+}
+
 // ---------------------------------------------------------------------------
 // NomenclatureCache
 // ---------------------------------------------------------------------------
