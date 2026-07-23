@@ -1,0 +1,7 @@
+# SKEPTIC_CATCHES — connaissances payées par l'échec
+
+2026-07-23 | closure périmée | useProfileFromUrl comparait state.profileId capturé AVANT l'hydratation localStorage — le param URL aurait été perdu si le profil persisté différait | demander : « cet effet lit-il un state qui peut changer entre le mount et l'exécution ? »
+2026-07-23 | a11y de mes propres ajouts | les 2 violations axe (link-in-text-block) venaient des liens que je venais d'ajouter (carte BIM, mailto pilote) — couleur seule sans soulignement | demander : « chaque lien inséré dans un paragraphe a-t-il un signal non-couleur ? »
+2026-07-23 | allowlist implicite | robots.txt, sitemap.xml, /iso-19650, /security, /mentions-legales absents de PUBLIC_PATH_PREFIXES du proxy — bloqués dès que la gate d'accès s'active = SEO silencieusement cassé | demander : « toute nouvelle route/fichier public est-il dans l'allowlist du proxy ? »
+2026-07-23 | tests = ancien contrat | 3 E2E verts encodaient précisément les comportements que l'audit exigeait de changer (rename sans champs, quota brûlé au lot démo, upsell sur démo) — un échec E2E après un changement produit voulu est une preuve, pas un bug | demander : « cet échec teste-t-il l'ancien contrat ou une régression réelle ? »
+2026-07-23 | env ≠ prod | la phrase « portail Stripe » des CGV vit dans la branche HAS_DIRECT_CHECKOUT=true, invisible en dev (env Stripe absent) — un grep du HTML local ne prouve pas la branche prod | demander : « quelle branche de feature-flag le rendu local exerce-t-il ? »
