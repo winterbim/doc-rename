@@ -1,8 +1,14 @@
 import {
   CONTACT_EMAIL,
+  LEGAL_ACTIVITY,
+  LEGAL_ADDRESS,
+  LEGAL_APE,
+  LEGAL_DOMICILIATION,
   LEGAL_ENTITY_STATUS,
-  PUBLISHER_LABEL,
-  PUBLISHER_NAME,
+  LEGAL_SIREN,
+  LEGAL_SIRET,
+  LEGAL_VAT,
+  PUBLISHER_LEGAL_NAME,
 } from "@/lib/contact";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -11,17 +17,17 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Mentions légales",
   description:
-    "Identification de l’éditeur de BIMCHECK-Rename, hébergement, propriété intellectuelle et droit applicable.",
+    "Identification de l’éditeur de BIMCHECK-Rename (Winter Fernandes EI, SIREN 492 849 088), hébergement, propriété intellectuelle et droit applicable.",
   alternates: { canonical: "/mentions-legales" },
   openGraph: {
     title: "Mentions légales BIMCHECK-Rename",
-    description: "Éditeur, hébergeurs et état actuel des informations légales.",
+    description: "Éditeur, hébergeurs et informations légales du service.",
     url: "/mentions-legales",
   },
   robots: { index: true, follow: true },
 };
 
-const LAST_UPDATED = "2026-07-21";
+const LAST_UPDATED = "2026-07-23";
 
 export default function MentionsLegalesPage() {
   return (
@@ -37,7 +43,7 @@ export default function MentionsLegalesPage() {
 
         <header className="border-b border-line pb-10">
           <p className="mb-3 text-xs font-sans font-semibold uppercase tracking-[0.16em] text-ink-mute">
-            Informations légales · Suisse &amp; France
+            Informations légales
           </p>
           <h1 className="max-w-3xl font-sans text-5xl font-semibold leading-tight tracking-tight text-ink sm:text-6xl">
             Mentions légales
@@ -54,9 +60,15 @@ export default function MentionsLegalesPage() {
               <table className="w-full border-collapse text-left text-sm">
                 <tbody className="divide-y divide-line">
                   {[
-                    ["Éditeur", PUBLISHER_LABEL],
-                    ["Statut", LEGAL_ENTITY_STATUS],
-                    ["Directeur de la publication", PUBLISHER_NAME],
+                    ["Éditeur", `${PUBLISHER_LEGAL_NAME} — Entrepreneur individuel (EI)`],
+                    ["Nom commercial", "BIMCHECK-Rename (service édité sous le domaine bimcheck-consulting.com)"],
+                    ["SIREN / SIRET", `SIREN ${LEGAL_SIREN} · SIRET (siège) ${LEGAL_SIRET}`],
+                    ["Immatriculation", LEGAL_ENTITY_STATUS],
+                    ["Code APE", LEGAL_APE],
+                    ["Siège", `${LEGAL_ADDRESS} — ${LEGAL_DOMICILIATION}`],
+                    ["Activité", LEGAL_ACTIVITY],
+                    ["TVA", LEGAL_VAT],
+                    ["Directeur de la publication", PUBLISHER_LEGAL_NAME],
                     ["Contact", CONTACT_EMAIL],
                     ["Hébergement application", "Vercel Inc. (voir section ci-dessous)"],
                     ["Backend demandes commerciales", "Convex, Inc. (conservation des demandes ; auth et conventions seulement si ces fonctions sont ouvertes)"],
@@ -117,9 +129,10 @@ export default function MentionsLegalesPage() {
               Droit applicable
             </h2>
             <p className="mt-4 text-sm leading-6 text-ink-soft">
-              Le présent site est régi par le droit du siège de l’éditeur. Tout litige relève des
-              tribunaux compétents du siège de l’éditeur, sous réserve des dispositions impératives
-              protégeant les consommateurs.
+              Le présent site est régi par le <strong>droit français</strong>. Tout litige relève des
+              tribunaux compétents de <strong>Paris</strong>, sous réserve des dispositions impératives
+              protégeant les consommateurs. Le service est accessible depuis la Suisse ; la
+              facturation est établie en euros (EUR).
             </p>
           </section>
         </div>

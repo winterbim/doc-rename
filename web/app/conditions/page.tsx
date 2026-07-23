@@ -8,7 +8,7 @@ import { HAS_DIRECT_CHECKOUT } from "@/lib/pricing";
 export const metadata: Metadata = {
   title: "Conditions générales d’utilisation et de vente",
   description:
-    "CGU/CGV de BIMCHECK-Rename : objet, offres Free/Team/Cabinet, paiement, résiliation, responsabilité et droit applicable (Suisse & France).",
+    "CGU/CGV de BIMCHECK-Rename : objet, offres Free/Team/Cabinet, paiement, résiliation, responsabilité et droit applicable (droit français).",
   alternates: { canonical: "/conditions" },
   openGraph: {
     title: "Conditions générales d’utilisation et de vente",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-const LAST_UPDATED = "2026-07-21";
+const LAST_UPDATED = "2026-07-23";
 
 const sections = [
   { href: "#objet", label: "Objet" },
@@ -66,7 +66,7 @@ export default function ConditionsPage() {
 
         <header className="border-b border-line pb-10">
           <p className="mb-3 text-xs font-sans font-semibold uppercase tracking-[0.16em] text-ink-mute">
-            Conditions générales · Suisse &amp; France
+            Conditions générales
           </p>
           <h1 className="max-w-3xl font-sans text-5xl font-semibold leading-tight tracking-tight text-ink sm:text-6xl">
             Conditions d’utilisation et de vente
@@ -132,10 +132,11 @@ export default function ConditionsPage() {
             <p>
               Prix de référence en euros (EUR). L’interface peut afficher des
               équivalents CHF ou USD à titre indicatif (conversion arrondie). La facturation
-              suit le lien de paiement Stripe (mode live) ou un devis écrit.
+              suit le lien de paiement Stripe (mode live) ou un devis écrit. Les factures
+              portent la mention « TVA non applicable, art. 293 B du CGI ».
               {!HAS_DIRECT_CHECKOUT && (
-                <> Tant que le paiement en ligne n’est pas activé sur le site, aucune commande
-                n’est acceptée via les boutons publics.</>
+                <> Lorsque le paiement en ligne n’est pas actif sur ce déploiement, la
+                souscription s’effectue sur devis écrit.</>
               )}
             </p>
           </Section>
@@ -154,8 +155,11 @@ export default function ConditionsPage() {
                 <p>
                   Vous pouvez résilier à tout moment ; la résiliation prend effet à la fin de la
                   période en cours, sans remboursement du mois entamé sauf disposition légale
-                  impérative contraire. Modalités de résiliation : notification par email à{' '}
-                  {CONTACT_EMAIL}.
+                  impérative contraire. Modalités de résiliation :{' '}
+                  <strong>en self-service depuis le portail client Stripe</strong> (lien « Gérer
+                  mon abonnement » communiqué dans l’email de confirmation Stripe et sur la{' '}
+                  <Link href="/pricing" className="text-brick hover:underline">page Tarifs</Link>),
+                  ou par notification email à {CONTACT_EMAIL}.
                 </p>
               </>
             ) : (
@@ -215,10 +219,20 @@ export default function ConditionsPage() {
               à la date d’utilisation.
             </p>
             <p>
-              Droit applicable : droit du siège de l’éditeur. Juridiction compétente : tribunaux du
-              siège de l’éditeur, sous réserve des règles protectrices des consommateurs. Pour la
-              France, en cas de litige de consommation, un médiateur de la consommation peut être saisi
-              conformément aux dispositions légales en vigueur.
+              Droit applicable : <strong>droit français</strong>. Juridiction compétente : tribunaux
+              de <strong>Paris</strong>, sous réserve des règles protectrices des consommateurs. Le
+              service reste accessible aux clients établis en Suisse ; la facturation est établie en
+              euros (EUR).
+            </p>
+            {/* TODO(Winter) — obligation légale (art. L.612-1 code conso) : souscrire à un
+                médiateur de la consommation et remplacer le placeholder ci-dessous par
+                « Médiateur : [NOM] — [site web] ». Ne pas publier de faux nom. */}
+            <p>
+              <strong>Médiation de la consommation</strong> : conformément aux articles L.612-1 et
+              suivants du Code de la consommation, tout consommateur a le droit de recourir
+              gratuitement à un médiateur de la consommation. Médiateur désigné : désignation en
+              cours — le nom et les coordonnées du médiateur seront publiés ici dès la souscription
+              effective. Dans l’intervalle, adressez toute réclamation à {CONTACT_EMAIL}.
             </p>
             <p className="text-ink-mute">Contact : {CONTACT_EMAIL}.</p>
           </Section>
