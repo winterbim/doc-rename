@@ -9,15 +9,20 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#FAF7EE",
-    theme_color: "#FAF7EE",
+    background_color: "#F8FAFC",
+    theme_color: "#0E7490",
     lang: "fr",
     categories: ["business", "productivity"],
     icons: [
       {
-        src: "/favicon.ico",
-        sizes: "256x256",
-        type: "image/x-icon",
+        src: "/icon-192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        src: "/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
       },
     ],
   };

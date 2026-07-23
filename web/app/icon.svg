@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Red background - Swiss style -->
+  <rect width="512" height="512" rx="64" fill="#DC2626"/>
+
+  <!-- Modern 3D Cube / Building Icon in white -->
+  <g transform="translate(80, 60)">
+    <!-- Left face -->
+    <path d="M175 60 L175 280 L35 350 L35 130 Z" fill="white" opacity="0.95"/>
+
+    <!-- Right face -->
+    <path d="M175 60 L315 130 L315 350 L175 280 Z" fill="white" opacity="0.8"/>
+
+    <!-- Top face -->
+    <path d="M35 130 L175 60 L315 130 L175 200 Z" fill="white"/>
+
+    <!-- BIM Grid lines -->
+    <path d="M105 95 L105 315" stroke="#DC2626" stroke-width="3" opacity="0.25"/>
+    <path d="M245 95 L245 315" stroke="#DC2626" stroke-width="3" opacity="0.25"/>
+    <path d="M35 180 L175 110 L315 180" stroke="#DC2626" stroke-width="3" opacity="0.25" fill="none"/>
+    <path d="M35 230 L175 160 L315 230" stroke="#DC2626" stroke-width="3" opacity="0.25" fill="none"/>
+    <path d="M35 280 L175 210 L315 280" stroke="#DC2626" stroke-width="3" opacity="0.25" fill="none"/>
+  </g>
+
+  <!-- QC Checkmark Badge -->
+  <circle cx="410" cy="410" r="82" fill="#059669"/>
+  <path d="M368 410 L398 440 L452 380" stroke="white" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
