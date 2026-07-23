@@ -1,0 +1,10 @@
+/* TEAM */
+Éditeur : Winter Fernandes — BIMCHECK Consulting
+Contact : bimcheck-consulting@proton.me
+Site : https://bimcheck-consulting.com
+
+/* SITE */
+Stack : Next.js, React, TypeScript, Tailwind CSS
+Hébergement : Vercel
+Particularité : renommage 100 % local dans le navigateur — aucun upload de fichiers
+Langue : français

@@ -1,0 +1,27 @@
+# BIMCHECK-Rename
+
+> Outil web local-first de convention de nommage de fichiers pour équipes
+> francophones : BIM / construction (ISO 19650, SIA 2051), juridique, finance,
+> RH, santé, administratif, industrie, immobilier. Le renommage, l'aperçu et
+> l'export ZIP s'exécutent entièrement dans le navigateur : le contenu des
+> fichiers n'est jamais envoyé au serveur (vérifiable via DevTools → Réseau).
+
+Éditeur : Winter Fernandes EI (SIREN 492 849 088) — service du domaine
+bimcheck-consulting.com. Contact : bimcheck-consulting@proton.me.
+
+## Pages
+
+- [Accueil](https://rename.bimcheck-consulting.com/) : présentation, exemples avant/après, FAQ (11 questions).
+- [Tarifs](https://rename.bimcheck-consulting.com/pricing) : Free (5 lots/jour, sans compte), Team 19 €/mois, Cabinet 49 €/mois, comparatif et FAQ.
+- [Pilote](https://rename.bimcheck-consulting.com/pilot) : pilote guidé 14 jours (49 €, paiement unique).
+- [Guide ISO 19650](https://rename.bimcheck-consulting.com/iso-19650) : champs de nommage BIM, exemples, modèle JSON téléchargeable.
+- [Sécurité](https://rename.bimcheck-consulting.com/security) : architecture local-first, CSP, en-têtes, périmètre des données.
+- [Confidentialité](https://rename.bimcheck-consulting.com/privacy) : RGPD / nLPD.
+- [CGU-CGV](https://rename.bimcheck-consulting.com/conditions) et [Mentions légales](https://rename.bimcheck-consulting.com/mentions-legales).
+
+## Faits clés
+
+- Les fichiers de l'utilisateur ne quittent jamais son navigateur pendant le renommage.
+- 9 profils métier prêts à l'emploi + convention personnalisée ; import d'entités (CSV/Excel/collage).
+- Sortie normalisée : MAJUSCULES sans accents ni espaces, séparateur au choix (_ - .).
+- Essai sans compte ; licence payante activée automatiquement après paiement Stripe.

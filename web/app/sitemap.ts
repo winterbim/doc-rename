@@ -18,9 +18,11 @@ const routes: Array<{
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  // Évaluée au build : chaque déploiement rafraîchit la date de modification.
+  const lastModified = new Date();
   return routes.map(({ path, changeFrequency, priority }) => ({
     url: `${siteUrl}${path}`,
-    lastModified: new Date('2026-07-21'),
+    lastModified,
     changeFrequency,
     priority,
   }));
