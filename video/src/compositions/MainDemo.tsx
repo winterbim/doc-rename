@@ -28,16 +28,25 @@ const s = (sec: number) => Math.round(sec * FPS);
 // ---- Timeline (frames) ----
 const INTRO = s(3.6);
 const DEMO_START_FROM = s(1.1);
-const DEMO_LEN = s(17.4);
+const DEMO_LEN = s(20.2);
+const BUILDER_START_FROM = s(1.2);
+const BUILDER_LEN = s(13.2);
+const STYLO_START_FROM = s(9.0);   // retouche.mp4 — phase éditeur (stylo)
+const STYLO_LEN = s(17.5);
+const OUTILS_START_FROM = s(26.6); // retouche.mp4 — phase Outils/Remplacer
+const OUTILS_LEN = s(11.9);
 const PROFILS_START_FROM = s(1.2);
-const PROFILS_LEN = s(12.8);
+const PROFILS_LEN = s(11.9);
 const CABINET_START_FROM = s(1.3);
-const CABINET_LEN = s(23.2);
+const CABINET_LEN = s(22.5);
 const OFFER = s(8);
 const OUTRO = s(5.6);
 
 const T_DEMO = INTRO;
-const T_PROFILS = T_DEMO + DEMO_LEN;
+const T_BUILDER = T_DEMO + DEMO_LEN;
+const T_STYLO = T_BUILDER + BUILDER_LEN;
+const T_OUTILS = T_STYLO + STYLO_LEN;
+const T_PROFILS = T_OUTILS + OUTILS_LEN;
 const T_CABINET = T_PROFILS + PROFILS_LEN;
 const T_OFFER = T_CABINET + CABINET_LEN;
 const T_OUTRO = T_OFFER + OFFER;
@@ -465,9 +474,50 @@ export function MainDemo() {
           badgeIndex="1"
           badgeLabel="Renommer un lot en 3 clics"
           captions={[
-            { from: 0.4, to: 5.2, text: <>Chargez un lot — <Em>vos fichiers restent dans votre navigateur</Em></> },
-            { from: 5.5, to: 11.0, text: <>« Renommer tout » : <Em>la convention s’applique à tout le lot</Em></> },
-            { from: 11.3, to: 17.0, text: <>Export <Em>ZIP propre</Em>, arborescence conservée</> },
+            { from: 0.3, to: 4.4, text: <>Chargez un lot — <Em>vos fichiers restent dans votre navigateur</Em></> },
+            { from: 4.7, to: 8.9, text: <>« Renommer tout » : <Em>la convention s’applique au lot entier</Em></> },
+            { from: 9.2, to: 13.4, text: <>Donnez <Em>votre nom</Em> au ZIP de livraison</> },
+            { from: 13.7, to: 19.7, text: <>Export <Em>ZIP propre</Em>, arborescence conservée</> },
+          ]}
+        />
+      </Sequence>
+
+      <Sequence from={T_BUILDER} durationInFrames={BUILDER_LEN} layout="none">
+        <RealClip
+          src="clips/builder.mp4"
+          startFrom={BUILDER_START_FROM}
+          badgeIndex="2"
+          badgeLabel="Votre convention, vos règles"
+          captions={[
+            { from: 0.3, to: 6.4, text: <>Composez la convention en <Em>glisser-déposer</Em></> },
+            { from: 6.7, to: 12.6, text: <>L’aperçu se met à jour <Em>en direct</Em></> },
+          ]}
+        />
+      </Sequence>
+
+      <Sequence from={T_STYLO} durationInFrames={STYLO_LEN} layout="none">
+        <RealClip
+          src="clips/retouche.mp4"
+          startFrom={STYLO_START_FROM}
+          badgeIndex="3"
+          badgeLabel="Retouche fichier par fichier"
+          captions={[
+            { from: 0.3, to: 4.5, text: <>Un fichier à ajuster ? <Em>Cliquez le stylo</Em></> },
+            { from: 4.8, to: 11.5, text: <>Chaque segment s’édite et se <Em>réordonne en drag & drop</Em></> },
+            { from: 11.8, to: 17.2, text: <>Appliquer — <Em>le nom est corrigé</Em></> },
+          ]}
+        />
+      </Sequence>
+
+      <Sequence from={T_OUTILS} durationInFrames={OUTILS_LEN} layout="none">
+        <RealClip
+          src="clips/retouche.mp4"
+          startFrom={OUTILS_START_FROM}
+          badgeIndex="4"
+          badgeLabel="Outils — Remplacer sur le lot"
+          captions={[
+            { from: 0.3, to: 5.6, text: <>Outils : <Em>remplacez du texte</Em> sur tout le lot</> },
+            { from: 5.9, to: 11.5, text: <>PROJET → MUSEE, appliqué aux <Em>5 fichiers d’un coup</Em></> },
           ]}
         />
       </Sequence>
@@ -476,11 +526,11 @@ export function MainDemo() {
         <RealClip
           src="clips/profils.mp4"
           startFrom={PROFILS_START_FROM}
-          badgeIndex="2"
+          badgeIndex="5"
           badgeLabel="9 profils métier"
           captions={[
             { from: 0.4, to: 6.0, text: <><Em>BIM, Juridique, Finance, Santé…</Em> un clic suffit</> },
-            { from: 6.3, to: 12.4, text: <>Champs, codes et modèles <Em>adaptés à chaque métier</Em></> },
+            { from: 6.3, to: 11.5, text: <>Champs, codes et modèles <Em>adaptés à chaque métier</Em></> },
           ]}
         />
       </Sequence>
@@ -489,13 +539,13 @@ export function MainDemo() {
         <RealClip
           src="clips/cabinet.mp4"
           startFrom={CABINET_START_FROM}
-          badgeIndex="3"
+          badgeIndex="6"
           badgeLabel="Cabinet — multi-clients"
           captions={[
             { from: 0.4, to: 6.4, text: <>Enregistrez <Em>une convention par client</Em></> },
             { from: 6.7, to: 12.8, text: <>Changez de client <Em>en un clic</Em> — tout se recharge</> },
             { from: 13.1, to: 18.4, text: <>Le lot suivant se renomme <Em>sans reconfigurer</Em></> },
-            { from: 18.7, to: 22.9, text: <>Rapport <Em>CSV d’audit</Em> : traçabilité totale</> },
+            { from: 18.7, to: 22.2, text: <>Rapport <Em>CSV d’audit</Em> : traçabilité totale</> },
           ]}
         />
       </Sequence>
