@@ -13,7 +13,9 @@
     "build:short:vertical": "remotion render MainShortVertical out/bimcheck-rename-how-it-works-short-1080x1920.mp4",
     "build:all": "npm run build && npm run build:vertical && npm run build:short && npm run build:short:vertical",
     "still:cover": "remotion still MainMaster out/bimcheck-rename-cover.png --frame=360",
-    "upgrade": "remotion upgrade"
+    "upgrade": "remotion upgrade",
+    "build:demo": "remotion render MainDemo out/bimcheck-rename-demo-reelle-1920x1080.mp4",
+    "still:demo": "remotion still MainDemo out/bimcheck-rename-demo-cover.png --frame=60"
   },
   "engines": {
     "node": ">=20"

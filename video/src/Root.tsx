@@ -2,6 +2,7 @@ import React from 'react';
 import { Composition } from 'remotion';
 import { FPS, SIZE_16x9, SIZE_9x16, TOTAL_FRAMES } from './lib/tokens';
 import { MainMaster } from './compositions/MainMaster';
+import { MainDemo, DEMO_TOTAL_FRAMES } from './compositions/MainDemo';
 import { MainVertical } from './compositions/MainVertical';
 import { MainShort } from './compositions/MainShort';
 import { MainShortVertical } from './compositions/MainShortVertical';
@@ -11,6 +12,14 @@ const SHORT_FRAMES = 30 * FPS;
 export const Root: React.FC = () => {
   return (
     <>
+      <Composition
+        id="MainDemo"
+        component={MainDemo}
+        durationInFrames={DEMO_TOTAL_FRAMES}
+        fps={FPS}
+        width={SIZE_16x9.width}
+        height={SIZE_16x9.height}
+      />
       <Composition
         id="MainMaster"
         component={MainMaster}
