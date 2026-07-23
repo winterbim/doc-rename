@@ -32,3 +32,5 @@ Statuts : CLAIMED (affirmé sans preuve) · EVIDENCED (preuve exécutée + inspe
 | — | Lighthouse mobile sans régression | lhci autorun sur le déploiement | PENDING | non exécuté dans cette session |
 | — | Médiateur de la consommation désigné | souscription par Winter | WAIVED (bloqué côté Winter) | placeholder honnête publié + TODO visible dans le code |
 | — | Factures Stripe avec mention TVA 293 B | réglage dashboard Stripe (hors code) | WAIVED (bloqué côté Winter) | mention ajoutée dans CGV §4 côté site |
+| H1 | Team (19 €) et Cabinet (49 €) sont fonctionnellement distincts : volumes par palier, rapport TXT vs CSV, bibliothèque de conventions Cabinet | 20 tests unitaires + 3 E2E par plan (licence seedée, statut serveur mocké) + rendu live | EVIDENCED | suite 733/733 + 22/22 E2E ; /pricing live affiche les nouvelles capacités ; /app live (Free) montre teaser + rapport verrouillé |
+| H2 | Le webhook attribue le bon plan selon le lien payé (TEAM_ID→team, CABINET_ID→cabinet, PILOT_ID→pilot) | revue lib/license-server.ts mapPaymentLinkToPlan + env prod listée | EVIDENCED | mapping lu ; les 3 STRIPE_PAYMENT_LINK_*_ID présents en Production |
