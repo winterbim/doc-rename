@@ -13,7 +13,10 @@
  */
 
 export const MAX_FILE_SIZE = 500 * 1024 * 1024;        // 500 MiB
-export const MAX_BATCH_SIZE = 1 * 1024 * 1024 * 1024;  // 1 GiB
+// Plafond TECHNIQUE absolu — doit couvrir la plus grande offre commerciale
+// (Cabinet : 2 Go/lot, voir lib/plan-features.ts). Les plafonds par plan
+// s'appliquent en dessous, dans useFileIngestion.
+export const MAX_BATCH_SIZE = 2 * 1024 * 1024 * 1024;  // 2 GiB
 export const MAX_EXTRACTED_BATCH_SIZE = 500 * 1024 * 1024; // 500 MiB of inflated data
 export const MAX_ARCHIVE_ENTRIES = 5_000;
 
